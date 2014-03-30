@@ -11,7 +11,8 @@
     "bower_components",
     "examples",
     "externs",
-    "js"
+    "js",
+    "dist"
   ],
   "dependencies": {
     "purescript-transformers": "*"

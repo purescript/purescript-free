@@ -1,12 +1,11 @@
 {
   "name": "purescript-free",
   "version": "0.0.0",
-  "private": true,
   "devDependencies": {
-    "gulp": "3.5.5",
-    "gulp-clean": "0.2.4",
-    "gulp-util": "2.2.14",
-    "gulp-plumber": "0.5.6",
-    "gulp-purescript": "0.0.1"
+    "gulp": "^3.5.5",
+    "gulp-clean": "^0.2.4",
+    "gulp-util": "^2.2.14",
+    "gulp-plumber": "^0.5.6",
+    "gulp-purescript": "^0.0.1"
   }
 }
