@@ -1,0 +1,19 @@
+{
+  "name": "purescript-free",
+  "version": "0.0.0",
+  "homepage": "https://github.com/ethul/purescript-free",
+  "description": "Free monads",
+  "keywords": ["purescript"],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "examples",
+    "externs",
+    "js"
+  ],
+  "dependencies": {
+    "purescript-transformers": "*"
+  }
+}
