@@ -28,3 +28,7 @@ instance monadFreeFree :: (Functor f) => MonadFree f (Free f) where
 
 liftF :: forall f m a. (Functor f, Monad m, MonadFree f m) => f a -> m a
 liftF fa = wrap $ return <$> fa
+
+iterM :: forall f m a. (Functor f, Monad m) => (f (m a) -> m a) -> Free f a -> m a
+iterM _ (Pure a) = return a
+iterM k (Free f) = k $ (iterM k) <$> f
