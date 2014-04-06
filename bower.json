@@ -1,6 +1,6 @@
 {
   "name": "purescript-free",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "https://github.com/ethul/purescript-free",
   "description": "Free monads",
   "keywords": ["purescript"],
