@@ -12,7 +12,7 @@ instance functorFree :: (Functor f) => Functor (Free f) where
   (<$>) f = go where
     go (Pure a)  = Pure (f a)
     go (Free fa) = Free (go <$> fa)
-    
+
 instance applicativeFree :: (Functor f) => Applicative (Free f) where
   pure = return
   (<*>) = ap
