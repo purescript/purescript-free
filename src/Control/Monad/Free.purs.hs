@@ -13,14 +13,17 @@ instance functorFree :: (Functor f) => Functor (Free f) where
     go (Pure a)  = Pure (f a)
     go (Free fa) = Free (go <$> fa)
 
-instance applicativeFree :: (Functor f) => Applicative (Free f) where
-  pure = return
+instance applyFree :: (Functor f) => Apply (Free f) where
   (<*>) = ap
 
-instance monadFree :: (Functor f) => Monad (Free f) where
-  return = Pure
+instance applicativeFree :: (Functor f) => Applicative (Free f) where
+  pure = return
+
+instance bindFree :: (Functor f) => Bind (Free f) where
   (>>=) (Pure a) f = f a
   (>>=) (Free m) f = Free ((<$>) (\a -> a >>= f) m)
+
+instance monadFree :: (Functor f) => Monad (Free f)
 
 instance monadTransFree :: MonadTrans Free where
   lift f = Free $ do
