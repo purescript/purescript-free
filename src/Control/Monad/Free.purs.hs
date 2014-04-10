@@ -17,7 +17,7 @@ instance applyFree :: (Functor f) => Apply (Free f) where
   (<*>) = ap
 
 instance applicativeFree :: (Functor f) => Applicative (Free f) where
-  pure = return
+  pure = Pure
 
 instance bindFree :: (Functor f) => Bind (Free f) where
   (>>=) (Pure a) f = f a
