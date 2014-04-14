@@ -1,6 +1,6 @@
 {
   "name": "purescript-free",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "homepage": "https://github.com/purescript/purescript-free",
   "description": "Free monads",
   "keywords": ["purescript"],
