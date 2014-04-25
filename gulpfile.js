@@ -8,9 +8,9 @@ var gulp = require('gulp')
       purescript: {
         src: [
           'bower_components/purescript-*/src/**/*.purs*',
-          'src/**/*.purs.hs'
+          'src/**/*.purs'
         ],
-        examples: 'examples/**/*.purs.hs',
+        examples: 'examples/**/*.purs',
         dest: 'dist/',
         options: {
           main: 'Teletype',
