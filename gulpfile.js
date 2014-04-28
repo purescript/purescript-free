@@ -46,7 +46,7 @@ gulp.task('make', function(){
   return (
     gulp.src(config.purescript.src).
     pipe(plumber()).
-    pipe(purescript.pscMake()).
+    pipe(purescript.pscMake({output: config.purescript.dest})).
     on('error', error)
   );
 });
