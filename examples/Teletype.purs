@@ -18,12 +18,12 @@ putStrLn s = liftF $ PutStrLn s {}
 getLine :: Teletype String
 getLine = liftF $ GetLine (\a -> a)
 
-runF :: forall a. TeletypeF (Eff (trace :: Trace) a) -> Eff (trace :: Trace) a
-runF (PutStrLn s a) = trace s >>= (\_ -> a)
-runF (GetLine k) = k "fake input"
+runF :: forall a. TeletypeF a -> Eff (trace :: Trace) a
+runF (PutStrLn s a) = (\_ -> a) <$> trace s
+runF (GetLine k) = return $ k "fake input"
 
 run :: forall a. Teletype a -> Eff (trace :: Trace) a
-run = iterM runF
+run = foldMap runF
 
 echo = do
   a <- getLine

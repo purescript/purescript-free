@@ -13,8 +13,7 @@ var gulp = require('gulp')
         examples: 'examples/**/*.purs',
         dest: 'dist/',
         options: {
-          main: 'Teletype',
-          modules: 'Teletype'
+          main: 'Teletype'
         }
       }
     }

@@ -47,6 +47,16 @@ iterM _ (Pure a) = return a
 iterM k (Free f) = k $ iterM k <$> f
 iterM k (Gosub f) = iterM k $ f (\req recv -> req {} >>= recv)
 
+runM :: forall f m a. (Functor f, Monad m) => (f (Free f a) -> m (Free f a)) -> Free f a -> m a
+runM k f = case resume f of
+             Left s -> k s >>= runM k
+             Right a -> return a
+
+foldMap :: forall f m a. (Functor f, Monad m) => (forall r. f r -> m r) -> Free f a -> m a
+foldMap k f = case resume f of
+                Left s -> k s >>= foldMap k
+                Right a -> return a
+
 resumeGosub :: forall f a. (Functor f) => (forall s. (forall r. ({} -> Free f r) -> (r -> Free f a) -> s) -> s) -> Either (f (Free f a)) (Free f a)
 resumeGosub f = f (\a g ->
   case a {} of
