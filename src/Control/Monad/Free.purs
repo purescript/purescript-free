@@ -1,8 +1,7 @@
 module Control.Monad.Free where
 
-import Prelude
-import Data.Either
 import Control.Monad.Trans
+import Data.Either
 
 data Free f a = Pure a
               | Free (f (Free f a))
@@ -42,10 +41,10 @@ pureF :: forall f a. (Applicative f) => a -> Free f a
 pureF a = Free (pure (Pure  a))
 
 -- Note: can blow the stack!
-iterM :: forall f m a. (Functor f, Monad m) => (f (m a) -> m a) -> Free f a -> m a
+iterM :: forall f m a. (Functor f, Monad m) => (forall a. f (m a) -> m a) -> Free f a -> m a
 iterM _ (Pure a) = return a
 iterM k (Free f) = k $ iterM k <$> f
-iterM k (Gosub f) = iterM k $ f (\req recv -> req {} >>= recv)
+iterM k (Gosub f) = f (\req recv -> iterM k (req {}) >>= (iterM k <<< recv))
 
 runM :: forall f m a. (Functor f, Monad m) => (f (Free f a) -> m (Free f a)) -> Free f a -> m a
 runM k f = case resume f of
