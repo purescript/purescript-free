@@ -11,7 +11,7 @@ var gulp = require('gulp')
           'src/**/*.purs'
         ],
         examples: 'examples/**/*.purs',
-        dest: 'dist/',
+        dest: 'dist',
         options: {
           main: 'Teletype'
         }
