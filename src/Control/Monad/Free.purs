@@ -1,6 +1,7 @@
 module Control.Monad.Free where
 
 import Control.Monad.Trans
+import Control.Monad.Eff
 import Data.Either
 
 data Free f a = Pure a
@@ -46,15 +47,11 @@ iterM _ (Pure a) = return a
 iterM k (Free f) = k $ iterM k <$> f
 iterM k (Gosub f) = f (\req recv -> iterM k (req {}) >>= (iterM k <<< recv))
 
-runM :: forall f m a. (Functor f, Monad m) => (f (Free f a) -> m (Free f a)) -> Free f a -> m a
-runM k f = case resume f of
-             Left s -> k s >>= runM k
-             Right a -> return a
-
-foldMap :: forall f m a. (Functor f, Monad m) => (forall r. f r -> m r) -> Free f a -> m a
-foldMap k f = case resume f of
-                Left s -> k s >>= foldMap k
-                Right a -> return a
+-- Note: can blow the stack!
+goM :: forall f m a. (Functor f, Monad m) => (f (Free f a) -> m (Free f a)) -> Free f a -> m a
+goM k f = case resume f of
+            Left s -> k s >>= goM k
+            Right a -> return a
 
 resumeGosub :: forall f a. (Functor f) => (forall s. (forall r. ({} -> Free f r) -> (r -> Free f a) -> s) -> s) -> Either (f (Free f a)) (Free f a)
 resumeGosub f = f (\a g ->
@@ -102,3 +99,23 @@ foreign import go
   \    };\
   \  };\
   \}" :: forall f a. (Functor f) => (f (Free f a) -> Free f a) -> Free f a -> a
+
+foreign import goEff
+  "function goEff(__dict_Functor) {\
+  \  return function(f) {\
+  \    return function(__copy__1) {\
+  \      return function(){\
+  \        var _1 = __copy__1;\
+  \        var r;\
+  \        tco: while (true) {\
+  \          r = resume(__dict_Functor)(_1);\
+  \          if (r.ctor === 'Data.Either.Left') {\
+  \            _1 = f(r.values[0])();\
+  \            continue tco;\
+  \          } else\
+  \            return function(){return r.values[0];};\
+  \        }\
+  \      };\
+  \    };\
+  \  };\
+  \}" :: forall e f a. (Functor f) => (f (Free f a) -> Eff e (Free f a)) -> Free f a -> Eff e a

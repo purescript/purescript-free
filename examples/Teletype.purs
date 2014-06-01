@@ -23,11 +23,11 @@ runF (PutStrLn s a) = (\_ -> a) <$> trace s
 runF (GetLine k) = return $ k "fake input"
 
 run :: forall a. Teletype a -> Eff (trace :: Trace) a
-run = foldMap runF
+run = goEff runF
 
 echo = do
   a <- getLine
   putStrLn a
   putStrLn "Finished"
 
-main = run echo
+main = run $ echo
