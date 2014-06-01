@@ -15,7 +15,7 @@
     "dist"
   ],
   "dependencies": {
-    "purescript-transformers": "64fa7200dc328fc79090426cddb64ed6e4ccffc9",
-    "purescript-either": "*"
+    "purescript-transformers": "0.0.1",
+    "purescript-either": "0.1.2"
   }
 }
