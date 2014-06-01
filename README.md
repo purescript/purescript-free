@@ -39,12 +39,17 @@
 
     go :: forall f a. (Functor f) => (f (Free f a) -> Free f a) -> Free f a -> a
 
+    -- Note: can blow the stack!
+    goM :: forall f m a. (Functor f, Monad m) => (f (Free f a) -> m (Free f a)) -> Free f a -> m a
+
+    goEff :: forall e f a. (Functor f) => (f (Free f a) -> Eff e (Free f a)) -> Free f a -> Eff e a
+
     liftF :: forall f a. (Functor f) => f a -> Free f a
 
     pureF :: forall f a. (Applicative f) => a -> Free f a
 
     -- Note: can blow the stack!
-    iterM :: forall f m a. (Functor f, Monad m) => (f (m a) -> m a) -> Free f a -> m a
+    iterM :: forall f m a. (Functor f, Monad m) => (forall a. f (m a) -> m a) -> Free f a -> m a
 
     resume :: forall f a. (Functor f) => Free f a -> Either (f (Free f a)) a
 
