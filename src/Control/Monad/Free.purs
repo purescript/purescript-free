@@ -6,7 +6,7 @@ import Data.Either
 
 data Free f a = Pure a
               | Free (f (Free f a))
-              | Gosub (forall s. (forall r. ({} -> Free f r) -> (r -> Free f a) -> s) -> s)
+              | Gosub (forall s. (forall r. (Unit -> Free f r) -> (r -> Free f a) -> s) -> s)
 
 class MonadFree f m where
   wrap :: forall a. f (m a) -> m a
@@ -45,7 +45,7 @@ pureF a = Free (pure (Pure  a))
 iterM :: forall f m a. (Functor f, Monad m) => (forall a. f (m a) -> m a) -> Free f a -> m a
 iterM _ (Pure a) = return a
 iterM k (Free f) = k $ iterM k <$> f
-iterM k (Gosub f) = f (\req recv -> iterM k (req {}) >>= (iterM k <<< recv))
+iterM k (Gosub f) = f (\req recv -> iterM k (req unit) >>= (iterM k <<< recv))
 
 -- Note: can blow the stack!
 goM :: forall f m a. (Functor f, Monad m) => (f (Free f a) -> m (Free f a)) -> Free f a -> m a
@@ -53,12 +53,12 @@ goM k f = case resume f of
             Left s -> k s >>= goM k
             Right a -> return a
 
-resumeGosub :: forall f a. (Functor f) => (forall s. (forall r. ({} -> Free f r) -> (r -> Free f a) -> s) -> s) -> Either (f (Free f a)) (Free f a)
+resumeGosub :: forall f a. (Functor f) => (forall s. (forall r. (Unit -> Free f r) -> (r -> Free f a) -> s) -> s) -> Either (f (Free f a)) (Free f a)
 resumeGosub f = f (\a g ->
-  case a {} of
+  case a unit of
     Pure a -> Right (g a)
     Free t -> Left ((\h -> h >>= g) <$> t)
-    Gosub h -> Right (h (\b i -> b {} >>= (\x -> i x >>= g)))
+    Gosub h -> Right (h (\b i -> b unit >>= (\x -> i x >>= g)))
   )
 
 foreign import resume
