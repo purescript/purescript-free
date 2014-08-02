@@ -1,8 +1,18 @@
-module Control.Monad.Free where
+module Control.Monad.Free
+  ( Free(..)
+  , MonadFree, wrap
+  , liftF
+  , pureF
+  , iterM
+  , goM
+  , go
+  , goEff
+  ) where
 
 import Control.Monad.Trans
 import Control.Monad.Eff
 import Data.Either
+import Data.Function
 
 data Free f a = Pure a
               | Free (f (Free f a))
@@ -53,69 +63,87 @@ goM k f = case resume f of
             Left s -> k s >>= goM k
             Right a -> return a
 
-resumeGosub :: forall f a. (Functor f) => (forall s. (forall r. (Unit -> Free f r) -> (r -> Free f a) -> s) -> s) -> Either (f (Free f a)) (Free f a)
-resumeGosub f = f (\a g ->
+resumeGosub :: forall f a. (Functor f) => Free f a -> Either (f (Free f a)) (Free f a)
+resumeGosub (Gosub f) = f (\a g ->
   case a unit of
     Pure a -> Right (g a)
     Free t -> Left ((\h -> h >>= g) <$> t)
     Gosub h -> Right (h (\b i -> b unit >>= (\x -> i x >>= g)))
   )
 
-foreign import resume
-  "function resume(__dict_Functor) {\
-  \  return function(__copy__1) {\
-  \    var _1 = __copy__1;\
-  \    tco: while (true)\
-  \      if (_1.ctor === 'Control.Monad.Free.Pure')\
-  \        return Data_Either.Right(_1.values[0]);\
-  \      else if (_1.ctor === 'Control.Monad.Free.Free')\
-  \        return Data_Either.Left(_1.values[0]);\
-  \      else {\
-  \        var x = resumeGosub(__dict_Functor)(_1.values[0]);\
-  \        if (x.ctor === 'Data.Either.Left')\
-  \          return x;\
-  \        else {\
-  \          _1 = x.values[0];\
-  \          continue tco;\
-  \        }\
-  \      }\
-  \  };\
-  \}" :: forall f a. (Functor f) => Free f a -> Either (f (Free f a)) a
+isGosub :: forall f a. Free f a -> Boolean
+isGosub (Gosub _) = true
+isGosub _ = false
 
-foreign import go
-  "function go(__dict_Functor) {\
-  \  return function(f) {\
-  \    return function(__copy__1) {\
-  \      var _1 = __copy__1;\
-  \      var r;\
-  \      tco: while (true) {\
-  \        r = resume(__dict_Functor)(_1);\
-  \        if (r.ctor === 'Data.Either.Left') {\
-  \          _1 = f(r.values[0]);\
-  \          continue tco;\
-  \        } else\
-  \          return r.values[0];\
-  \      }\
-  \    };\
-  \  };\
-  \}" :: forall f a. (Functor f) => (f (Free f a) -> Free f a) -> Free f a -> a
+unsafeFreeToEither :: forall f a. Free f a -> Either (f (Free f a)) a
+unsafeFreeToEither (Pure x) = Right x
+unsafeFreeToEither (Free x) = Left x
 
-foreign import goEff
-  "function goEff(__dict_Functor) {\
-  \  return function(f) {\
-  \    return function(__copy__1) {\
-  \      return function(){\
-  \        var _1 = __copy__1;\
-  \        var r;\
-  \        tco: while (true) {\
-  \          r = resume(__dict_Functor)(_1);\
-  \          if (r.ctor === 'Data.Either.Left') {\
-  \            _1 = f(r.values[0])();\
-  \            continue tco;\
-  \          } else\
-  \            return function(){return r.values[0];};\
-  \        }\
-  \      };\
-  \    };\
+unsafeLeft :: forall a b. Either a b -> a
+unsafeLeft (Left x) = x
+
+unsafeRight :: forall a b. Either a b -> b
+unsafeRight (Right x) = x
+
+foreign import resumeImpl
+  "function resumeImpl(isGosub, isLeft, toEither, fromRight, resumeGosub, value) {\
+  \  while (true) {\
+  \    if (!isGosub(value)) return toEither(value);\
+  \    var x = resumeGosub(value);\
+  \    if (isLeft(x)) return x;\
+  \    else value = fromRight(x);\
+  \  }\
+  \}" :: forall f a. Fn6
+         (Free f a -> Boolean)
+         (Either (f (Free f a)) a -> Boolean)
+         (Free f a -> Either (f (Free f a)) a)
+         (Either (f (Free f a)) a -> a)
+         (Free f a -> Either (f (Free f a)) (Free f a))
+         (Free f a)
+         (Either (f (Free f a)) a)
+
+resume :: forall f a. (Functor f) => Free f a -> Either (f (Free f a)) a
+resume f = runFn6 resumeImpl isGosub isLeft unsafeFreeToEither unsafeRight resumeGosub f
+
+foreign import goImpl
+  "function goImpl(resume, isRight, fromLeft, fromRight, fn, value) {\
+  \  while (true) {\
+  \    var r = resume(value);\
+  \    if (isRight(r)) return fromRight(r);\
+  \    value = fn(fromLeft(r));\
+  \  }\
+  \}" :: forall f a. Fn6
+         (Free f a -> Either (f (Free f a)) a)
+         (Either (f (Free f a)) a -> Boolean)
+         (Either (f (Free f a)) a -> (f (Free f a)))
+         (Either (f (Free f a)) a -> a)
+         (f (Free f a) -> Free f a)
+         (Free f a)
+         a
+
+go :: forall f a. (Functor f) => (f (Free f a) -> Free f a) -> Free f a -> a
+go fn f = runFn6 goImpl resume isRight unsafeLeft unsafeRight fn f
+
+foreign import goEffImpl
+  "function goEffImpl(resume, isRight, fromLeft, fromRight, fn, value) {\
+  \  return function(){\
+  \    while (true) {\
+  \      var r = resume(value);\
+  \      if (isRight(r)) {\
+  \        var x = fromRight(r);\
+  \        return function() { return x; };\
+  \      }\
+  \      value = fn(fromLeft(r))();\
+  \    }\
   \  };\
-  \}" :: forall e f a. (Functor f) => (f (Free f a) -> Eff e (Free f a)) -> Free f a -> Eff e a
+  \}" :: forall e f a. Fn6
+         (Free f a -> Either (f (Free f a)) a)
+         (Either (f (Free f a)) a -> Boolean)
+         (Either (f (Free f a)) a -> (f (Free f a)))
+         (Either (f (Free f a)) a -> a)
+         (f (Free f a) -> Eff e (Free f a))
+         (Free f a)
+         (Eff e a)
+
+goEff :: forall e f a. (Functor f) => (f (Free f a) -> Eff e (Free f a)) -> Free f a -> Eff e a
+goEff fn f = runFn6 goEffImpl resume isRight unsafeLeft unsafeRight fn f
