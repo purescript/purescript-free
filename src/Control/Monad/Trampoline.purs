@@ -2,7 +2,7 @@ module Control.Monad.Trampoline where
 
 import Control.Monad.Free
 
-data Delay a = Delay (Unit -> a)
+newtype Delay a = Delay (Unit -> a)
 
 instance delayFunctor :: Functor Delay where
   (<$>) f (Delay g) = Delay (const (f (g unit)))
