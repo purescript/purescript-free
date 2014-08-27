@@ -129,10 +129,7 @@ foreign import goEffImpl
   \  return function(){\
   \    while (true) {\
   \      var r = resume(value);\
-  \      if (isRight(r)) {\
-  \        var x = fromRight(r);\
-  \        return function() { return x; };\
-  \      }\
+  \      if (isRight(r)) return fromRight(r);\
   \      value = fn(fromLeft(r))();\
   \    }\
   \  };\

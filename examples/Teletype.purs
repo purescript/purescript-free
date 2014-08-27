@@ -12,8 +12,8 @@ instance teletypeFFunctor :: Functor TeletypeF where
 
 type Teletype = Free TeletypeF
 
-putStrLn :: String -> Teletype {}
-putStrLn s = liftF $ PutStrLn s {}
+putStrLn :: String -> Teletype Unit
+putStrLn s = liftF $ PutStrLn s unit
 
 getLine :: Teletype String
 getLine = liftF $ GetLine (\a -> a)
@@ -29,5 +29,8 @@ echo = do
   a <- getLine
   putStrLn a
   putStrLn "Finished"
+  return $ a ++ a
 
-main = run $ echo
+main = do
+  a <- run $ echo
+  trace a
