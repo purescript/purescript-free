@@ -1,0 +1,21 @@
+{
+  "name": "purescript-yoneda",
+  "version": "0.0.0",
+  "homepage": "https://github.com/ethul/purescript-yoneda",
+  "description": "Yoneda/Coyoneda",
+  "keywords": [
+    "purescript"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "examples",
+    "dist"
+  ],
+  "dependencies": {
+    "purescript-control": "0.2.1",
+    "purescript-transformers": "0.1.1"
+  }
+}

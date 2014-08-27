@@ -1,0 +1,12 @@
+{
+  "name": "purescript-kan",
+  "private": true,
+  "devDependencies": {
+    "gulp": "3.8.7",
+    "gulp-clean": "0.2.4",
+    "gulp-plumber": "0.5.6",
+    "gulp-purescript": "0.0.10",
+    "gulp-util": "2.2.14",
+    "run-sequence": "0.3.6"
+  }
+}

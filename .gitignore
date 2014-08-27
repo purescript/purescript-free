@@ -1,7 +1,6 @@
+.psci
+.psci_modules/
 node_modules
 bower_components
-js
-externs
 dist
-output
 tmp
