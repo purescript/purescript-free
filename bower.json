@@ -1,6 +1,6 @@
 {
   "name": "purescript-yoneda",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "homepage": "https://github.com/purescript-contrib/purescript-yoneda",
   "description": "Yoneda/Coyoneda",
   "keywords": [
