@@ -11,7 +11,6 @@ module Data.Coyoneda
 import Control.Comonad
 import Control.Extend
 import Control.Monad.Trans
-import Data.Tuple
 
 newtype Coyoneda f a = Coyoneda (forall i. { k :: i -> a , fi :: f i })
 
