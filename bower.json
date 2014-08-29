@@ -1,7 +1,7 @@
 {
   "name": "purescript-yoneda",
   "version": "0.0.0",
-  "homepage": "https://github.com/ethul/purescript-yoneda",
+  "homepage": "https://github.com/purescript-contrib/purescript-yoneda",
   "description": "Yoneda/Coyoneda",
   "keywords": [
     "purescript"

@@ -1,5 +1,5 @@
 {
-  "name": "purescript-kan",
+  "name": "purescript-yoneda",
   "private": true,
   "devDependencies": {
     "gulp": "3.8.7",
