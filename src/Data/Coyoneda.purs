@@ -44,7 +44,7 @@ instance comonadCoyoneda :: (Comonad w) => Comonad (Coyoneda w) where
   extract (Coyoneda e) = runExists (\(CoyonedaF w) -> w.k $ extract w.fi) e
 
 coyoneda :: forall f a b. (a -> b) -> f a -> Coyoneda f b
-coyoneda k fi = k <$> liftCoyoneda fi
+coyoneda k fi = Coyoneda $ mkExists $ CoyonedaF { k: k, fi: fi }
 
 liftCoyoneda :: forall f a. f a -> Coyoneda f a
 liftCoyoneda fa = Coyoneda $ mkExists $ CoyonedaF { k: id, fi: fa }
