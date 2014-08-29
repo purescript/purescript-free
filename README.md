@@ -5,7 +5,7 @@
 ### Types
 
     newtype Coyoneda f a where
-      Coyoneda :: forall i. { fi :: f i, k :: i -> a } -> Coyoneda f a
+      Coyoneda :: Exists (CoyonedaF f a) -> Coyoneda f a
 
     type Natural f g = forall a. f a -> g a
 
