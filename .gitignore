@@ -1,8 +1,4 @@
-.DS_Store
-*.log
+.psci
 node_modules
 bower_components
-js
-externs
 dist
-output
