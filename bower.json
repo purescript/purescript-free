@@ -1,6 +1,6 @@
 {
   "name": "purescript-free",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "homepage": "https://github.com/purescript-contrib/purescript-free",
   "description": "Free monads",
   "keywords": ["purescript"],
@@ -16,6 +16,6 @@
     "purescript-control": "0.2.1",
     "purescript-either": "0.1.3",
     "purescript-exists": "*",
-    "purescript-transformers": "0.1.2"
+    "purescript-transformers": "0.2.0"
   }
 }
