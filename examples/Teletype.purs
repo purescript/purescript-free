@@ -1,4 +1,4 @@
-module Main where
+module Teletype where
 
 import Control.Monad.Eff
 import Control.Monad.Free
