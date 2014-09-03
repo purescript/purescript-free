@@ -1,29 +1,26 @@
-module Teletype where
+module Main where
 
 import Control.Monad.Eff
 import Control.Monad.Free
+import Data.Coyoneda
 import Debug.Trace
 
 data TeletypeF a = PutStrLn String a | GetLine (String -> a)
 
-instance teletypeFFunctor :: Functor TeletypeF where
-  (<$>) f (PutStrLn s a) = PutStrLn s (f a)
-  (<$>) f (GetLine k) = GetLine (\s -> f (k s))
-
-type Teletype = Free TeletypeF
+type Teletype a = FreeC TeletypeF a
 
 putStrLn :: String -> Teletype Unit
-putStrLn s = liftF $ PutStrLn s unit
+putStrLn s = liftFC $ PutStrLn s unit
 
 getLine :: Teletype String
-getLine = liftF $ GetLine (\a -> a)
+getLine = liftFC $ GetLine id
 
-runF :: forall a. TeletypeF a -> Eff (trace :: Trace) a
-runF (PutStrLn s a) = (\_ -> a) <$> trace s
-runF (GetLine k) = return $ k "fake input"
+teletypeN :: forall e. Natural TeletypeF (Eff (trace :: Trace))
+teletypeN (PutStrLn s a) = const a <$> trace s
+teletypeN (GetLine k) = return $ k "fake input"
 
 run :: forall a. Teletype a -> Eff (trace :: Trace) a
-run = goEff runF
+run = goEffC teletypeN
 
 echo = do
   a <- getLine
