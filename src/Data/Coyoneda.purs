@@ -1,5 +1,6 @@
 module Data.Coyoneda
   ( Coyoneda(..)
+  , CoyonedaF(..)
   , Natural(..)
   , coyoneda
   , liftCoyoneda
