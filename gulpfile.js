@@ -33,7 +33,7 @@ gulp.task('clean', function(){
   );
 });
 
-gulp.task('examples', ['clean'], function(){
+gulp.task('examples', function(){
   return (
     gulp.src([config.purescript.examples].concat(config.purescript.src)).
     pipe(plumber()).
