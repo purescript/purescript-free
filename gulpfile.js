@@ -3,8 +3,9 @@ var gulp = require('gulp')
   , gutil = require('gulp-util')
   , plumber = require('gulp-plumber')
   , purescript = require('gulp-purescript')
+  , sequence = require('run-sequence')
   , config = {
-      clean: ['dist', 'js', 'externs'],
+      clean: ['dist'],
       purescript: {
         src: [
           'bower_components/purescript-*/src/**/*.purs*',
@@ -12,6 +13,7 @@ var gulp = require('gulp')
         ],
         examples: 'examples/**/*.purs',
         dest: 'dist',
+        docgen: 'MODULE.md',
         options: {
           main: 'Teletype'
         }
@@ -50,9 +52,29 @@ gulp.task('make', function(){
   );
 });
 
+gulp.task('psci', function(){
+  return (
+    gulp.src(config.purescript.src).
+    pipe(plumber()).
+    pipe(purescript.dotPsci()).
+    on('error', error)
+  );
+});
+
+gulp.task('docgen', function(){
+  return (
+    gulp.src(config.purescript.src[1]).
+    pipe(plumber()).
+    pipe(purescript.docgen()).
+    on('error', error).
+    pipe(gulp.dest(config.purescript.docgen))
+  );
+});
 
 gulp.task('watch', function(cb){
   gulp.watch(config.purescript.src, ['make']);
 });
 
-gulp.task('default', ['clean', 'make'], function(){});
+gulp.task('default', function(){
+  sequence('clean', 'make', ['psci', 'docgen']);
+});

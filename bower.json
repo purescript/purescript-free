@@ -10,12 +10,10 @@
     "node_modules",
     "bower_components",
     "examples",
-    "externs",
-    "js",
     "dist"
   ],
   "dependencies": {
-    "purescript-transformers": "0.0.1",
-    "purescript-either": "0.1.2"
+    "purescript-transformers": "0.1.2",
+    "purescript-either": "0.1.3"
   }
 }
