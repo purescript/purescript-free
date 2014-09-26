@@ -143,19 +143,7 @@
 
 ### Types
 
-    newtype Delay a where
-      Delay :: Unit -> a -> Delay a
-
-    type Trampoline a = Free Delay a
-
-
-### Type Class Instances
-
-    instance delayApplicative :: Applicative Delay
-
-    instance delayApply :: Apply Delay
-
-    instance delayFunctor :: Functor Delay
+    type Trampoline a = Free Lazy a
 
 
 ### Values
