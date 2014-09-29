@@ -3,7 +3,8 @@ module Control.Comonad.Cofree
     Cofree(),
     mkCofree,
     head,
-    tail
+    tail,
+    _tail
   ) where
 
   import Control.Comonad

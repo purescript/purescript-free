@@ -111,6 +111,8 @@
 
 ### Values
 
+    _tail :: forall f a. Cofree f a -> Trampoline (f (Cofree f a))
+
     head :: forall f a. Cofree f a -> a
 
     mkCofree :: forall f a. a -> f (Cofree f a) -> Cofree f a
