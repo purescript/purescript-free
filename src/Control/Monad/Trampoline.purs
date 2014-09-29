@@ -1,28 +1,31 @@
-module Control.Monad.Trampoline where
+module Control.Monad.Trampoline
+  ( Trampoline()
+  , done
+  , suspend
+  , delay'
+  , delay
+  , runTrampoline
+  ) where
 
 import Control.Monad.Free
 
-newtype Delay a = Delay (Unit -> a)
+import Data.Lazy
+import Data.Foldable 
+import Data.Traversable
 
-instance delayFunctor :: Functor Delay where
-  (<$>) f (Delay g) = Delay (const (f (g unit)))
-
-instance delayApply :: Apply Delay where
-  (<*>) (Delay f) (Delay a) = Delay (\_ -> (f unit) (a unit))
-
-instance delayApplicative :: Applicative Delay where
-  pure a = Delay (const a)
-
-type Trampoline a = Free Delay a
+type Trampoline a = Free Lazy a
 
 done :: forall a. a -> Trampoline a
-done = Pure
+done = pure
 
 suspend :: forall a. Trampoline a -> Trampoline a
-suspend a = Free (Delay (const a))
+suspend t = Free (defer (const t))
+
+delay' :: forall a. Lazy a -> Trampoline a
+delay' a = Free (done <$> a)
 
 delay :: forall a. (Unit -> a) -> Trampoline a
-delay a = Free (done <$> Delay a)
+delay = delay' <<< defer
 
 runTrampoline :: forall a. Trampoline a -> a
-runTrampoline = go (\(Delay f) -> f unit)
+runTrampoline = go force
