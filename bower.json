@@ -16,6 +16,7 @@
     "purescript-either": "*",
     "purescript-exists": "*",
     "purescript-transformers": "*",
-    "purescript-lazy": "*"
+    "purescript-lazy": "*",
+    "purescript-foldable-traversable": "*"
   }
 }

@@ -81,6 +81,43 @@
     runYoneda :: forall f a b. Yoneda f a -> (a -> b) -> f b
 
 
+## Module Control.Comonad.Cofree
+
+### Types
+
+    data Cofree f a
+
+
+### Type Class Instances
+
+    instance applicativeCofree :: (Applicative f) => Applicative (Cofree f)
+
+    instance applyCofree :: (Apply f) => Apply (Cofree f)
+
+    instance bindCofree :: (MonadPlus f) => Bind (Cofree f)
+
+    instance comonadCofree :: (Functor f) => Comonad (Cofree f)
+
+    instance extendCofree :: (Functor f) => Extend (Cofree f)
+
+    instance foldableCofree :: (Foldable f) => Foldable (Cofree f)
+
+    instance functorCofree :: (Functor f) => Functor (Cofree f)
+
+    instance monadCofree :: (MonadPlus f) => Monad (Cofree f)
+
+    instance traversableCofree :: (Traversable f) => Traversable (Cofree f)
+
+
+### Values
+
+    head :: forall f a. Cofree f a -> a
+
+    mkCofree :: forall f a. a -> f (Cofree f a) -> Cofree f a
+
+    tail :: forall f a. Cofree f a -> f (Cofree f a)
+
+
 ## Module Control.Monad.Free
 
 ### Types
@@ -149,6 +186,8 @@
 ### Values
 
     delay :: forall a. (Unit -> a) -> Trampoline a
+
+    delay' :: forall a. Lazy a -> Trampoline a
 
     done :: forall a. a -> Trampoline a
 
