@@ -1,11 +1,10 @@
 module Control.Monad.Trampoline
-  (
-    Trampoline(),
-    done,
-    suspend,
-    delay',
-    delay,
-    runTrampoline
+  ( Trampoline()
+  , done
+  , suspend
+  , delay'
+  , delay
+  , runTrampoline
   ) where
 
 import Control.Monad.Free

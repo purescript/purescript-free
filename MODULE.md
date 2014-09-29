@@ -117,6 +117,8 @@
 
     mkCofree :: forall f a. a -> f (Cofree f a) -> Cofree f a
 
+    mkCofree' :: forall f a. a -> Lazy (f (Cofree f a)) -> Cofree f a
+
     tail :: forall f a. Cofree f a -> f (Cofree f a)
 
 

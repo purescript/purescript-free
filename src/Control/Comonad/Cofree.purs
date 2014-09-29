@@ -1,10 +1,9 @@
 module Control.Comonad.Cofree
-  (
-    Cofree(),
-    mkCofree,
-    head,
-    tail,
-    _tail
+  ( Cofree()
+  , mkCofree
+  , mkCofree'
+  , head
+  , tail
   ) where
 
   import Control.Comonad
