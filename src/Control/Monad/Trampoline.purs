@@ -13,7 +13,7 @@ import Data.Lazy
 import Data.Foldable 
 import Data.Traversable
 
-type Trampoline a = Free Lazy a
+type Trampoline = Free Lazy
 
 done :: forall a. a -> Trampoline a
 done = pure

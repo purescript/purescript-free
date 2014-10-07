@@ -180,7 +180,7 @@
 
 ### Types
 
-    type Trampoline a = Free Lazy a
+    type Trampoline  = Free Lazy
 
 
 ### Values
