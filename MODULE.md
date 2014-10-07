@@ -180,7 +180,21 @@
 
 ### Types
 
-    type Trampoline a = Free Lazy a
+    newtype Trampoline a where
+      Trampoline :: Free Lazy a -> Trampoline a
+
+
+### Type Class Instances
+
+    instance applicativeTrampoline :: Applicative Trampoline
+
+    instance applyTrampoline :: Apply Trampoline
+
+    instance bindTrampoline :: Bind Trampoline
+
+    instance functorTrampoline :: Functor Trampoline
+
+    instance monadTrampoline :: Monad Trampoline
 
 
 ### Values
@@ -194,6 +208,8 @@
     runTrampoline :: forall a. Trampoline a -> a
 
     suspend :: forall a. Trampoline a -> Trampoline a
+
+    unTrampoline :: forall a. Trampoline a -> Free Lazy a
 
 
 

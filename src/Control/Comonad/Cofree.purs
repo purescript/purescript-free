@@ -1,7 +1,6 @@
 module Control.Comonad.Cofree
   ( Cofree()
   , mkCofree
-  , mkCofree'
   , head
   , tail
   ) where
