@@ -81,12 +81,6 @@ resumeGosub (Gosub f) = f (\a g ->
     Gosub h -> Right (h (\b i -> b unit >>= (\x -> i x >>= g)))
   )
 
-unsafeLeft :: forall a b. Either a b -> a
-unsafeLeft (Left x) = x
-
-unsafeRight :: forall a b. Either a b -> b
-unsafeRight (Right x) = x
-
 resume :: forall f a. (Functor f) => Free f a -> Either (f (Free f a)) a
 resume f = case f of
   Pure x -> Right x
@@ -100,26 +94,10 @@ go fn f = case resume f of
   Left l -> go fn (fn l)
   Right r -> r
 
-foreign import goEffImpl
-  "function goEffImpl(resume, isRight, fromLeft, fromRight, fn, value) {\
-  \  return function(){\
-  \    while (true) {\
-  \      var r = resume(value);\
-  \      if (isRight(r)) return fromRight(r);\
-  \      value = fn(fromLeft(r))();\
-  \    }\
-  \  };\
-  \}" :: forall e f a. Fn6
-         (Free f a -> Either (f (Free f a)) a)
-         (Either (f (Free f a)) a -> Boolean)
-         (Either (f (Free f a)) a -> (f (Free f a)))
-         (Either (f (Free f a)) a -> a)
-         (f (Free f a) -> Eff e (Free f a))
-         (Free f a)
-         (Eff e a)
-
 goEff :: forall e f a. (Functor f) => (f (Free f a) -> Eff e (Free f a)) -> Free f a -> Eff e a
-goEff fn f = runFn6 goEffImpl resume isRight unsafeLeft unsafeRight fn f
+goEff fn f = case resume f of
+  Left l -> fn l >>= goEff fn
+  Right r -> return r
 
 -- Note: can blow the stack!
 goMC :: forall f m a. (Monad m) => Natural f m -> FreeC f a -> m a
