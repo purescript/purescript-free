@@ -50,7 +50,7 @@
 ### Types
 
     newtype Yoneda f a where
-      Yoneda :: forall b. (a -> b) -> f b -> Yoneda f a
+      Yoneda :: (forall b. (a -> b) -> f b) -> Yoneda f a
 
 
 ### Type Class Instances
@@ -85,8 +85,7 @@
 
 ### Types
 
-    data Cofree f a where
-      Cofree :: a -> Trampoline (f (Cofree f a)) -> Cofree f a
+    data Cofree f a
 
 
 ### Type Class Instances
@@ -126,7 +125,7 @@
     data Free f a where
       Pure :: a -> Free f a
       Free :: f (Free f a) -> Free f a
-      Gosub :: forall s. (forall r. (Unit -> Free f r) -> (r -> Free f a) -> s) -> s -> Free f a
+      Gosub :: (forall s. (forall r. (Unit -> Free f r) -> (r -> Free f a) -> s) -> s) -> Free f a
 
     type FreeC f a = Free (Coyoneda f) a
 
@@ -181,7 +180,7 @@
 
 ### Types
 
-    type Trampoline  = Free Lazy
+    type Trampoline = Free Lazy
 
 
 ### Values
