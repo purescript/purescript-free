@@ -115,24 +115,10 @@ foreign import resumeImpl
 resume :: forall f a. (Functor f) => Free f a -> Either (f (Free f a)) a
 resume f = runFn6 resumeImpl isGosub isLeft unsafeFreeToEither unsafeRight resumeGosub f
 
-foreign import goImpl
-  "function goImpl(resume, isRight, fromLeft, fromRight, fn, value) {\
-  \  while (true) {\
-  \    var r = resume(value);\
-  \    if (isRight(r)) return fromRight(r);\
-  \    value = fn(fromLeft(r));\
-  \  }\
-  \}" :: forall f a. Fn6
-         (Free f a -> Either (f (Free f a)) a)
-         (Either (f (Free f a)) a -> Boolean)
-         (Either (f (Free f a)) a -> (f (Free f a)))
-         (Either (f (Free f a)) a -> a)
-         (f (Free f a) -> Free f a)
-         (Free f a)
-         a
-
 go :: forall f a. (Functor f) => (f (Free f a) -> Free f a) -> Free f a -> a
-go fn f = runFn6 goImpl resume isRight unsafeLeft unsafeRight fn f
+go fn f = case resume f of
+  Left l -> go fn (fn l)
+  Right r -> r
 
 foreign import goEffImpl
   "function goEffImpl(resume, isRight, fromLeft, fromRight, fn, value) {\
