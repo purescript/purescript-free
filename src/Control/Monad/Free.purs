@@ -81,39 +81,19 @@ resumeGosub (Gosub f) = f (\a g ->
     Gosub h -> Right (h (\b i -> b unit >>= (\x -> i x >>= g)))
   )
 
-isGosub :: forall f a. Free f a -> Boolean
-isGosub (Gosub _) = true
-isGosub _ = false
-
-unsafeFreeToEither :: forall f a. Free f a -> Either (f (Free f a)) a
-unsafeFreeToEither (Pure x) = Right x
-unsafeFreeToEither (Free x) = Left x
-
 unsafeLeft :: forall a b. Either a b -> a
 unsafeLeft (Left x) = x
 
 unsafeRight :: forall a b. Either a b -> b
 unsafeRight (Right x) = x
 
-foreign import resumeImpl
-  "function resumeImpl(isGosub, isLeft, toEither, fromRight, resumeGosub, value) {\
-  \  while (true) {\
-  \    if (!isGosub(value)) return toEither(value);\
-  \    var x = resumeGosub(value);\
-  \    if (isLeft(x)) return x;\
-  \    else value = fromRight(x);\
-  \  }\
-  \}" :: forall f a. Fn6
-         (Free f a -> Boolean)
-         (Either (f (Free f a)) a -> Boolean)
-         (Free f a -> Either (f (Free f a)) a)
-         (Either (f (Free f a)) a -> a)
-         (Free f a -> Either (f (Free f a)) (Free f a))
-         (Free f a)
-         (Either (f (Free f a)) a)
-
 resume :: forall f a. (Functor f) => Free f a -> Either (f (Free f a)) a
-resume f = runFn6 resumeImpl isGosub isLeft unsafeFreeToEither unsafeRight resumeGosub f
+resume f = case f of
+  Pure x -> Right x
+  Free x -> Left x
+  g -> case resumeGosub g of
+    Left l -> Left l
+    Right r -> resume r
 
 go :: forall f a. (Functor f) => (f (Free f a) -> Free f a) -> Free f a -> a
 go fn f = case resume f of
