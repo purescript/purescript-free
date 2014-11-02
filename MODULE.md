@@ -85,8 +85,7 @@
 
 ### Types
 
-    data Cofree f a where
-      Cofree :: a -> Trampoline (f (Cofree f a)) -> Cofree f a
+    data Cofree f a
 
 
 ### Type Class Instances
