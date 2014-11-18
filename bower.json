@@ -1,15 +1,27 @@
 {
   "name": "purescript-free",
-  "homepage": "https://github.com/purescript-contrib/purescript-free",
-  "description": "Free monads",
-  "keywords": ["purescript"],
+  "homepage": "https://github.com/purescript/purescript-free",
+  "description": "Free, Trampoline, Yoneda, Coyoneda",
+  "keywords": [
+    "purescript"
+  ],
+  "authors": [
+    "Eric Thul",
+    "Brian McKenna <brian@brianmckenna.org>",
+    "John A. De Goes <john@degoes.net> (http://degoes.net)",
+    "Gary Burgess <gary.burgess@gmail.com>",
+    "Phil Freeman <paf31@cantab.net>"
+  ],
   "license": "MIT",
   "ignore": [
     "**/.*",
     "node_modules",
     "bower_components",
     "examples",
-    "dist"
+    "tmp",
+    "bower.json",
+    "Gruntfile.js",
+    "package.json"
   ],
   "dependencies": {
     "purescript-control": "~0.2.1",

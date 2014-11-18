@@ -1,5 +1,5 @@
 module Control.Comonad.Cofree
-  ( Cofree(..) -- FIXME: Purescript error (can't infer kinds in externs unless constructor exported)
+  ( Cofree()
   , mkCofree
   , head
   , tail
