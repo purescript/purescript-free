@@ -2,7 +2,7 @@
   "name": "purescript-free",
   "private": true,
   "devDependencies": {
-    "gulp": "3.8.7",
+    "gulp": "3.8.10",
     "gulp-clean": "0.2.4",
     "gulp-util": "2.2.14",
     "gulp-plumber": "0.5.6",
