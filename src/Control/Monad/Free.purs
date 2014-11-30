@@ -4,6 +4,7 @@ module Control.Monad.Free
   , MonadFree, wrap
   , liftF, liftFC
   , pureF, pureFC
+  , mapF
   , iterM
   , goM, goMC
   , go
@@ -61,6 +62,9 @@ liftFC = liftF <<< liftCoyoneda
 pureFC :: forall f a. (Applicative f) => a -> FreeC f a
 pureFC = liftFC <<< pure
 
+mapF :: forall f g a. (Functor f, Functor g) => Natural f g -> Free f a -> Free g a
+mapF t fa = either (\s -> Free <<< t $ mapF t <$> s) Pure (resume fa)
+
 -- Note: can blow the stack!
 iterM :: forall f m a. (Functor f, Monad m) => (forall a. f (m a) -> m a) -> Free f a -> m a
 iterM _ (Pure a) = return a
@@ -100,23 +104,23 @@ go fn f = case resume f of
   Left l -> go fn (fn l)
   Right r -> r
 
-foreign import goEffImpl
-  "function goEffImpl(resume, isRight, fromLeft, fromRight, fn, value) {\
-  \  return function(){\
-  \    while (true) {\
-  \      var r = resume(value);\
-  \      if (isRight(r)) return fromRight(r);\
-  \      value = fn(fromLeft(r))();\
-  \    }\
-  \  };\
-  \}" :: forall e f a. Fn6
-         (Free f a -> Either (f (Free f a)) a)
-         (Either (f (Free f a)) a -> Boolean)
-         (Either (f (Free f a)) a -> (f (Free f a)))
-         (Either (f (Free f a)) a -> a)
-         (f (Free f a) -> Eff e (Free f a))
-         (Free f a)
-         (Eff e a)
+foreign import goEffImpl """
+  function goEffImpl(resume, isRight, fromLeft, fromRight, fn, value) {
+    return function(){
+      while (true) {
+        var r = resume(value);
+        if (isRight(r)) return fromRight(r);
+        value = fn(fromLeft(r))();
+      }
+    };
+  }""" :: forall e f a. Fn6
+          (Free f a -> Either (f (Free f a)) a)
+          (Either (f (Free f a)) a -> Boolean)
+          (Either (f (Free f a)) a -> (f (Free f a)))
+          (Either (f (Free f a)) a -> a)
+          (f (Free f a) -> Eff e (Free f a))
+          (Free f a)
+          (Eff e a)
 
 goEff :: forall e f a. (Functor f) => (f (Free f a) -> Eff e (Free f a)) -> Free f a -> Eff e a
 goEff fn f = runFn6 goEffImpl resume isRight unsafeLeft unsafeRight fn f
