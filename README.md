@@ -84,11 +84,15 @@
 
     goMC :: forall f m a. (Monad m) => Natural f m -> FreeC f a -> m a
 
+    injC :: forall f g a. (Inject f g) => FreeC f a -> FreeC g a
+
     iterM :: forall f m a. (Functor f, Monad m) => (forall a. f (m a) -> m a) -> Free f a -> m a
 
     liftF :: forall f m a. (Functor f, Monad m, MonadFree f m) => f a -> m a
 
     liftFC :: forall f a. f a -> FreeC f a
+
+    mapF :: forall f g a. (Functor f, Functor g) => Natural f g -> Free f a -> Free g a
 
     pureF :: forall f a. (Applicative f) => a -> Free f a
 
