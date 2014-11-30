@@ -117,25 +117,6 @@
     suspend :: forall a. Trampoline a -> Trampoline a
 
 
-## Module Data.Coproduct
-
-### Types
-
-    data Coproduct f g a where
-      Inl :: f a -> Coproduct f g a
-      Inr :: g a -> Coproduct f g a
-
-
-### Type Class Instances
-
-    instance coproductFunctor :: (Functor f, Functor g) => Functor (Coproduct f g)
-
-
-### Values
-
-    coproduct :: forall f g a b. (f a -> b) -> (g a -> b) -> Coproduct f g a -> b
-
-
 ## Module Data.Coyoneda
 
 ### Types

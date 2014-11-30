@@ -5,8 +5,9 @@ module Data.Inject
   ) where
 
 import Control.Monad.Free (FreeC(), mapF)
-import Data.Coproduct (Coproduct(..), coproduct)
 import Data.Coyoneda (liftCoyonedaT)
+import Data.Either (Either(..))
+import Data.Functor.Coproduct (Coproduct(..), coproduct)
 import Data.Maybe (Maybe(..))
 
 class Inject f g where
@@ -18,12 +19,12 @@ instance injectReflexive :: Inject f f where
   prj = Just
 
 instance injectLeft :: Inject f (Coproduct f g) where
-  inj = Inl
+  inj = Coproduct <<< Left
   prj = coproduct Just (const Nothing)
 
 instance injectRight :: (Inject f g) => Inject f (Coproduct h g) where
-  inj = Inr <<< inj
+  inj = Coproduct <<< Right <<< inj
   prj = coproduct (const Nothing) prj
 
 injC :: forall f g a. (Inject f g) => FreeC f a -> FreeC g a
-injC fa = mapF (liftCoyonedaT inj) fa
+injC = mapF (liftCoyonedaT inj)
