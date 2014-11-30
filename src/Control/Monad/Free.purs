@@ -4,7 +4,7 @@ module Control.Monad.Free
   , MonadFree, wrap
   , liftF, liftFC
   , pureF, pureFC
-  , mapF
+  , mapF, injC
   , iterM
   , goM, goMC
   , go
@@ -16,6 +16,7 @@ import Control.Monad.Eff
 import Data.Coyoneda
 import Data.Either
 import Data.Function
+import Data.Inject (Inject, inj)
 
 data Free f a = Pure a
               | Free (f (Free f a))
@@ -64,6 +65,9 @@ pureFC = liftFC <<< pure
 
 mapF :: forall f g a. (Functor f, Functor g) => Natural f g -> Free f a -> Free g a
 mapF t fa = either (\s -> Free <<< t $ mapF t <$> s) Pure (resume fa)
+
+injC :: forall f g a. (Inject f g) => FreeC f a -> FreeC g a
+injC = mapF (liftCoyonedaT inj)
 
 -- Note: can blow the stack!
 iterM :: forall f m a. (Functor f, Monad m) => (forall a. f (m a) -> m a) -> Free f a -> m a

@@ -84,6 +84,8 @@
 
     goMC :: forall f m a. (Monad m) => Natural f m -> FreeC f a -> m a
 
+    injC :: forall f g a. (Inject f g) => FreeC f a -> FreeC g a
+
     iterM :: forall f m a. (Functor f, Monad m) => (forall a. f (m a) -> m a) -> Free f a -> m a
 
     liftF :: forall f m a. (Functor f, Monad m, MonadFree f m) => f a -> m a
@@ -160,29 +162,6 @@
     liftCoyonedaTF :: forall f g. (Functor g) => Natural f g -> Natural (Coyoneda f) g
 
     lowerCoyoneda :: forall f a. (Functor f) => Coyoneda f a -> f a
-
-
-## Module Data.Inject
-
-### Type Classes
-
-    class Inject f g where
-      inj :: forall a. f a -> g a
-      prj :: forall a. g a -> Maybe (f a)
-
-
-### Type Class Instances
-
-    instance injectLeft :: Inject f (Coproduct f g)
-
-    instance injectReflexive :: Inject f f
-
-    instance injectRight :: (Inject f g) => Inject f (Coproduct h g)
-
-
-### Values
-
-    injC :: forall f g a. (Inject f g) => FreeC f a -> FreeC g a
 
 
 ## Module Data.Yoneda
