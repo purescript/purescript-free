@@ -90,6 +90,8 @@
 
     liftFC :: forall f a. f a -> FreeC f a
 
+    mapF :: forall f g a. (Functor f, Functor g) => Natural f g -> Free f a -> Free g a
+
     pureF :: forall f a. (Applicative f) => a -> Free f a
 
     pureFC :: forall f a. (Applicative f) => a -> FreeC f a
@@ -113,6 +115,25 @@
     runTrampoline :: forall a. Trampoline a -> a
 
     suspend :: forall a. Trampoline a -> Trampoline a
+
+
+## Module Data.Coproduct
+
+### Types
+
+    data Coproduct f g a where
+      Inl :: f a -> Coproduct f g a
+      Inr :: g a -> Coproduct f g a
+
+
+### Type Class Instances
+
+    instance coproductFunctor :: (Functor f, Functor g) => Functor (Coproduct f g)
+
+
+### Values
+
+    coproduct :: forall f g a b. (f a -> b) -> (g a -> b) -> Coproduct f g a -> b
 
 
 ## Module Data.Coyoneda
@@ -158,6 +179,29 @@
     liftCoyonedaTF :: forall f g. (Functor g) => Natural f g -> Natural (Coyoneda f) g
 
     lowerCoyoneda :: forall f a. (Functor f) => Coyoneda f a -> f a
+
+
+## Module Data.Inject
+
+### Type Classes
+
+    class Inject f g where
+      inj :: forall a. f a -> g a
+      prj :: forall a. g a -> Maybe (f a)
+
+
+### Type Class Instances
+
+    instance injectLeft :: Inject f (Coproduct f g)
+
+    instance injectReflexive :: Inject f f
+
+    instance injectRight :: (Inject f g) => Inject f (Coproduct h g)
+
+
+### Values
+
+    injC :: forall f g a. (Inject f g) => FreeC f a -> FreeC g a
 
 
 ## Module Data.Yoneda

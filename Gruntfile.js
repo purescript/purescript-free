@@ -13,7 +13,7 @@ module.exports = function(grunt) {
 
     pscMake: ["<%=libFiles%>"],
     dotPsci: ["<%=libFiles%>"],
-    docgen: {
+    pscDocs: {
         readme: {
             src: "src/**/*.purs",
             dest: "README.md"
@@ -21,18 +21,28 @@ module.exports = function(grunt) {
     },
 
     psc: {
-      options: {
-        main: "Teletype"
-      },
-      example: {
+      teletypeExample: {
+        options: {
+          main: "Teletype"
+        },
         src: ["examples/Teletype.purs", "<%=libFiles%>"],
         dest: "tmp/Teletype.js"
+      },
+      teletypeCoproductExample: {
+        options: {
+          main: "TeletypeCoproduct"
+        },
+        src: ["examples/TeletypeCoproduct.purs", "<%=libFiles%>"],
+        dest: "tmp/TeletypeCoproduct.js"
       }
     },
 
     execute: {
-      example: {
+      teletypeExample: {
         src: "tmp/Teletype.js"
+      },
+      teletypeCoproductExample: {
+        src: "tmp/TeletypeCoproduct.js"
       }
     }
 
@@ -43,6 +53,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-clean");
 
   grunt.registerTask("example", ["psc", "execute"]);
-  grunt.registerTask("make", ["pscMake", "dotPsci", "docgen"]);
+  grunt.registerTask("make", ["pscMake", "dotPsci", "pscDocs"]);
   grunt.registerTask("default", ["make"]);
 };
