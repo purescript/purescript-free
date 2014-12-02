@@ -57,9 +57,9 @@ teletype3N :: forall e. Natural Teletype3F (Eff (trace :: Trace | e))
 teletype3N (Print3 s a) = const a <$> trace ("teletype3: " ++ s)
 
 tN :: forall e. Natural TF (Eff (trace :: Trace | e))
-tN fa = fromJust$ (teletype1N <$> prj fa) <|>
-                  (teletype2N <$> prj fa) <|>
-                  (teletype3N <$> prj fa)
+tN fa = fromJust $ (teletype1N <$> prj fa) <|>
+                   (teletype2N <$> prj fa) <|>
+                   (teletype3N <$> prj fa)
 
 run :: forall a. T a -> Eff (trace :: Trace) a
 run = goEffC tN

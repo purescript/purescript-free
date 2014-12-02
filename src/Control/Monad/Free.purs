@@ -22,7 +22,7 @@ data Free f a = Pure a
               | Free (f (Free f a))
               | Gosub (forall s. (forall r. (Unit -> Free f r) -> (r -> Free f a) -> s) -> s)
 
-type FreeC f a = Free (Coyoneda f) a
+type FreeC f = Free (Coyoneda f)
 
 class MonadFree f m where
   wrap :: forall a. f (m a) -> m a
