@@ -44,15 +44,18 @@ module.exports = function(grunt) {
       teletypeCoproductExample: {
         src: "tmp/TeletypeCoproduct.js"
       }
-    }
+    },
+
+    jsvalidate: ["output/**/*.js"]
 
   });
 
-  grunt.loadNpmTasks("grunt-purescript");
-  grunt.loadNpmTasks("grunt-execute");
   grunt.loadNpmTasks("grunt-contrib-clean");
+  grunt.loadNpmTasks("grunt-execute");
+  grunt.loadNpmTasks("grunt-jsvalidate");
+  grunt.loadNpmTasks("grunt-purescript");
 
   grunt.registerTask("example", ["psc", "execute"]);
-  grunt.registerTask("make", ["pscMake", "dotPsci", "pscDocs"]);
+  grunt.registerTask("make", ["pscMake", "dotPsci", "pscDocs", "jsvalidate"]);
   grunt.registerTask("default", ["make"]);
 };
