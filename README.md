@@ -46,7 +46,7 @@
       Free :: f (Free f a) -> Free f a
       Gosub :: (forall s. (forall r. (Unit -> Free f r) -> (r -> Free f a) -> s) -> s) -> Free f a
 
-    type FreeC f a = Free (Coyoneda f) a
+    type FreeC f = Free (Coyoneda f)
 
 
 ### Type Classes
