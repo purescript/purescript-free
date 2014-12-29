@@ -102,40 +102,30 @@ go fn f = case resume f of
   Left l -> go fn (fn l)
   Right r -> r
 
-foreign import goEffImpl """
-  function goEffImpl(f, isRight, fromLeft, fromRight, value) {
+foreign import iterateEff """
+  function iterateEff(f, done, a) {
     return function() {
-      return (function (value) {
-        while (true) {
-          var r = f(value)();
-          if (isRight(r)) {
-            return fromRight(r);
-          }
-          value = fromLeft(r);
+      return (function (a) {
+        while (!done(a)) {
+          a = f(a)();
         }
-      })(value);
+        return a;
+      })(a);
     };
-  }""" :: forall e a r. Fn5
-          (a -> Eff e (Either a r))
-          (Either a r -> Boolean)
-          (Either a r -> a)
-          (Either a r -> r)
-          a
-          (Eff e r)
+  }""" :: forall e a. Fn3 (a -> Eff e a) (a -> Boolean) a (Eff e a)
 
 goEff :: forall e f a. (Functor f) => (f (Free f a) -> Eff e (Free f a)) -> Free f a -> Eff e a
-goEff fn f = runFn5 goEffImpl continue isRight unsafeLeft unsafeRight f
+goEff fn f = fromRight <$> runFn3 iterateEff step done (Left f)
   where
-  continue f = case resume f of
-                 Left a -> Left <$> fn a
-                 Right b -> pure $ Right b
+  step (Left f) = case resume f of
+                    Left a -> Left <$> fn a
+                    Right b -> pure $ Right b
 
-  unsafeLeft :: forall a b. Either a b -> a
-  unsafeLeft (Left x) = x
+  done (Left _) = false
+  done _ = true
 
-  unsafeRight :: forall a b. Either a b -> b
-  unsafeRight (Right x) = x
-
+  fromRight :: forall a b. Either a b -> b
+  fromRight (Right b) = b
 
 -- Note: can blow the stack!
 goMC :: forall f m a. (Monad m) => Natural f m -> FreeC f a -> m a
