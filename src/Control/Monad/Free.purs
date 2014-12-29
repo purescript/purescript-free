@@ -114,19 +114,21 @@ foreign import goEffImpl """
       return (function (value) {
         while (true) {
           var r = resume(value);
-          if (isRight(r)) return fromRight(r);
+          if (isRight(r)) {
+            return fromRight(r);
+          }
           value = fn(fromLeft(r))();
         }
       })(value);
     };
-  }""" :: forall e f a. Fn6
-          (Free f a -> Either (f (Free f a)) a)
-          (Either (f (Free f a)) a -> Boolean)
-          (Either (f (Free f a)) a -> (f (Free f a)))
-          (Either (f (Free f a)) a -> a)
-          (f (Free f a) -> Eff e (Free f a))
-          (Free f a)
-          (Eff e a)
+  }""" :: forall e f a b r. Fn6
+          (a -> Either b r)
+          (Either b r -> Boolean)
+          (Either b r -> b)
+          (Either b r -> r)
+          (b -> Eff e a)
+          a
+          (Eff e r)
 
 goEff :: forall e f a. (Functor f) => (f (Free f a) -> Eff e (Free f a)) -> Free f a -> Eff e a
 goEff fn f = runFn6 goEffImpl resume isRight unsafeLeft unsafeRight fn f
