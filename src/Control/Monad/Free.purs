@@ -110,12 +110,14 @@ go fn f = case resume f of
 
 foreign import goEffImpl """
   function goEffImpl(resume, isRight, fromLeft, fromRight, fn, value) {
-    return function(){
-      while (true) {
-        var r = resume(value);
-        if (isRight(r)) return fromRight(r);
-        value = fn(fromLeft(r))();
-      }
+    return function() {
+      return (function (value) {
+        while (true) {
+          var r = resume(value);
+          if (isRight(r)) return fromRight(r);
+          value = fn(fromLeft(r))();
+        }
+      })(value);
     };
   }""" :: forall e f a. Fn6
           (Free f a -> Either (f (Free f a)) a)
