@@ -27,10 +27,10 @@
     "purescript-control": "~0.2.1",
     "purescript-either": "~0.1.4",
     "purescript-exists": "~0.1.0",
-    "purescript-transformers": "~0.3.0",
-    "purescript-lazy": "~0.1.1",
-    "purescript-foldable-traversable": "~0.1.4",
-    "purescript-coproducts": "~0.1.0",
-    "purescript-inject": "~0.0.2"
+    "purescript-transformers": "~0.4.0",
+    "purescript-lazy": "~0.2.0",
+    "purescript-foldable-traversable": "~0.2.1",
+    "purescript-coproducts": "~0.2.0",
+    "purescript-inject": "~0.1.0"
   }
 }
