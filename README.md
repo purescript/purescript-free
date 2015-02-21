@@ -2,199 +2,500 @@
 
 ## Module Control.Comonad.Cofree
 
-### Types
+#### `Cofree`
 
-    data Cofree f a
-
-
-### Type Class Instances
-
-    instance applicativeCofree :: (Applicative f) => Applicative (Cofree f)
-
-    instance applyCofree :: (Apply f) => Apply (Cofree f)
-
-    instance bindCofree :: (MonadPlus f) => Bind (Cofree f)
-
-    instance comonadCofree :: (Functor f) => Comonad (Cofree f)
-
-    instance extendCofree :: (Functor f) => Extend (Cofree f)
-
-    instance foldableCofree :: (Foldable f) => Foldable (Cofree f)
-
-    instance functorCofree :: (Functor f) => Functor (Cofree f)
-
-    instance monadCofree :: (MonadPlus f) => Monad (Cofree f)
-
-    instance traversableCofree :: (Traversable f) => Traversable (Cofree f)
+``` purescript
+data Cofree f a
+```
 
 
-### Values
+#### `mkCofree`
 
-    head :: forall f a. Cofree f a -> a
+``` purescript
+mkCofree :: forall f a. a -> f (Cofree f a) -> Cofree f a
+```
 
-    mkCofree :: forall f a. a -> f (Cofree f a) -> Cofree f a
 
-    tail :: forall f a. Cofree f a -> f (Cofree f a)
+#### `head`
+
+``` purescript
+head :: forall f a. Cofree f a -> a
+```
+
+
+#### `tail`
+
+``` purescript
+tail :: forall f a. Cofree f a -> f (Cofree f a)
+```
+
+
+#### `functorCofree`
+
+``` purescript
+instance functorCofree :: (Functor f) => Functor (Cofree f)
+```
+
+
+#### `foldableCofree`
+
+``` purescript
+instance foldableCofree :: (Foldable f) => Foldable (Cofree f)
+```
+
+
+#### `traversableCofree`
+
+``` purescript
+instance traversableCofree :: (Traversable f) => Traversable (Cofree f)
+```
+
+
+#### `extendCofree`
+
+``` purescript
+instance extendCofree :: (Functor f) => Extend (Cofree f)
+```
+
+
+#### `comonadCofree`
+
+``` purescript
+instance comonadCofree :: (Functor f) => Comonad (Cofree f)
+```
+
+
+#### `applyCofree`
+
+``` purescript
+instance applyCofree :: (Apply f) => Apply (Cofree f)
+```
+
+
+#### `applicativeCofree`
+
+``` purescript
+instance applicativeCofree :: (Applicative f) => Applicative (Cofree f)
+```
+
+
+#### `bindCofree`
+
+``` purescript
+instance bindCofree :: (MonadPlus f) => Bind (Cofree f)
+```
+
+
+#### `monadCofree`
+
+``` purescript
+instance monadCofree :: (MonadPlus f) => Monad (Cofree f)
+```
+
 
 
 ## Module Control.Monad.Free
 
-### Types
+#### `Free`
 
-    data Free f a where
-      Pure :: a -> Free f a
-      Free :: f (Free f a) -> Free f a
-      Gosub :: (forall s. (forall r. (Unit -> Free f r) -> (r -> Free f a) -> s) -> s) -> Free f a
-
-    type FreeC f = Free (Coyoneda f)
-
-
-### Type Classes
-
-    class MonadFree f m where
-      wrap :: forall a. f (m a) -> m a
+``` purescript
+data Free f a
+  = Pure a
+  | Free (f (Free f a))
+  | Gosub (forall s. (forall r. (Unit -> Free f r) -> (r -> Free f a) -> s) -> s)
+```
 
 
-### Type Class Instances
+#### `FreeC`
 
-    instance applicativeFree :: (Functor f) => Applicative (Free f)
-
-    instance applyFree :: (Functor f) => Apply (Free f)
-
-    instance bindFree :: (Functor f) => Bind (Free f)
-
-    instance functorFree :: (Functor f) => Functor (Free f)
-
-    instance monadFree :: (Functor f) => Monad (Free f)
-
-    instance monadFreeFree :: (Functor f) => MonadFree f (Free f)
-
-    instance monadTransFree :: MonadTrans Free
+``` purescript
+type FreeC f = Free (Coyoneda f)
+```
 
 
-### Values
+#### `MonadFree`
 
-    go :: forall f a. (Functor f) => (f (Free f a) -> Free f a) -> Free f a -> a
+``` purescript
+class MonadFree f m where
+  wrap :: forall a. f (m a) -> m a
+```
 
-    goEff :: forall e f a. (Functor f) => (f (Free f a) -> Eff e (Free f a)) -> Free f a -> Eff e a
 
-    goEffC :: forall e f a. Natural f (Eff e) -> FreeC f a -> Eff e a
+#### `functorFree`
 
-    goM :: forall f m a. (Functor f, Monad m) => (f (Free f a) -> m (Free f a)) -> Free f a -> m a
+``` purescript
+instance functorFree :: (Functor f) => Functor (Free f)
+```
 
-    goMC :: forall f m a. (Monad m) => Natural f m -> FreeC f a -> m a
 
-    injC :: forall f g a. (Inject f g) => FreeC f a -> FreeC g a
+#### `applyFree`
 
-    iterM :: forall f m a. (Functor f, Monad m) => (forall a. f (m a) -> m a) -> Free f a -> m a
+``` purescript
+instance applyFree :: (Functor f) => Apply (Free f)
+```
 
-    liftF :: forall f m a. (Functor f, Monad m, MonadFree f m) => f a -> m a
 
-    liftFC :: forall f a. f a -> FreeC f a
+#### `applicativeFree`
 
-    mapF :: forall f g a. (Functor f, Functor g) => Natural f g -> Free f a -> Free g a
+``` purescript
+instance applicativeFree :: (Functor f) => Applicative (Free f)
+```
 
-    pureF :: forall f a. (Applicative f) => a -> Free f a
 
-    pureFC :: forall f a. (Applicative f) => a -> FreeC f a
+#### `bindFree`
+
+``` purescript
+instance bindFree :: (Functor f) => Bind (Free f)
+```
+
+
+#### `monadFree`
+
+``` purescript
+instance monadFree :: (Functor f) => Monad (Free f)
+```
+
+
+#### `monadTransFree`
+
+``` purescript
+instance monadTransFree :: MonadTrans Free
+```
+
+
+#### `monadFreeFree`
+
+``` purescript
+instance monadFreeFree :: (Functor f) => MonadFree f (Free f)
+```
+
+
+#### `liftF`
+
+``` purescript
+liftF :: forall f m a. (Functor f, Monad m, MonadFree f m) => f a -> m a
+```
+
+
+#### `pureF`
+
+``` purescript
+pureF :: forall f a. (Applicative f) => a -> Free f a
+```
+
+
+#### `liftFC`
+
+``` purescript
+liftFC :: forall f a. f a -> FreeC f a
+```
+
+
+#### `pureFC`
+
+``` purescript
+pureFC :: forall f a. (Applicative f) => a -> FreeC f a
+```
+
+
+#### `mapF`
+
+``` purescript
+mapF :: forall f g a. (Functor f, Functor g) => Natural f g -> Free f a -> Free g a
+```
+
+
+#### `injC`
+
+``` purescript
+injC :: forall f g a. (Inject f g) => FreeC f a -> FreeC g a
+```
+
+
+#### `iterM`
+
+``` purescript
+iterM :: forall f m a. (Functor f, Monad m) => (forall a. f (m a) -> m a) -> Free f a -> m a
+```
+
+#### `goM`
+
+``` purescript
+goM :: forall f m a. (Functor f, Monad m) => (f (Free f a) -> m (Free f a)) -> Free f a -> m a
+```
+
+#### `go`
+
+``` purescript
+go :: forall f a. (Functor f) => (f (Free f a) -> Free f a) -> Free f a -> a
+```
+
+
+#### `goEff`
+
+``` purescript
+goEff :: forall e f a. (Functor f) => (f (Free f a) -> Eff e (Free f a)) -> Free f a -> Eff e a
+```
+
+
+#### `goMC`
+
+``` purescript
+goMC :: forall f m a. (Monad m) => Natural f m -> FreeC f a -> m a
+```
+
+#### `goEffC`
+
+``` purescript
+goEffC :: forall e f a. Natural f (Eff e) -> FreeC f a -> Eff e a
+```
+
 
 
 ## Module Control.Monad.Trampoline
 
-### Types
+#### `Trampoline`
 
-    type Trampoline = Free Lazy
+``` purescript
+type Trampoline = Free Lazy
+```
 
 
-### Values
+#### `done`
 
-    delay :: forall a. (Unit -> a) -> Trampoline a
+``` purescript
+done :: forall a. a -> Trampoline a
+```
 
-    delay' :: forall a. Lazy a -> Trampoline a
 
-    done :: forall a. a -> Trampoline a
+#### `suspend`
 
-    runTrampoline :: forall a. Trampoline a -> a
+``` purescript
+suspend :: forall a. Trampoline a -> Trampoline a
+```
 
-    suspend :: forall a. Trampoline a -> Trampoline a
+
+#### `delay'`
+
+``` purescript
+delay' :: forall a. Lazy a -> Trampoline a
+```
+
+
+#### `delay`
+
+``` purescript
+delay :: forall a. (Unit -> a) -> Trampoline a
+```
+
+
+#### `runTrampoline`
+
+``` purescript
+runTrampoline :: forall a. Trampoline a -> a
+```
+
 
 
 ## Module Data.Coyoneda
 
-### Types
+#### `CoyonedaF`
 
-    newtype Coyoneda f a where
-      Coyoneda :: Exists (CoyonedaF f a) -> Coyoneda f a
-
-    newtype CoyonedaF f a i where
-      CoyonedaF :: { fi :: f i, k :: i -> a } -> CoyonedaF f a i
-
-    type Natural f g = forall a. f a -> g a
+``` purescript
+newtype CoyonedaF f a i
+  = CoyonedaF { fi :: f i, k :: i -> a }
+```
 
 
-### Type Class Instances
+#### `Coyoneda`
 
-    instance applicativeCoyoneda :: (Applicative f) => Applicative (Coyoneda f)
-
-    instance applyCoyoneda :: (Apply f) => Apply (Coyoneda f)
-
-    instance bindCoyoneda :: (Bind f) => Bind (Coyoneda f)
-
-    instance comonadCoyoneda :: (Comonad w) => Comonad (Coyoneda w)
-
-    instance extendCoyoneda :: (Extend w) => Extend (Coyoneda w)
-
-    instance functorCoyoneda :: Functor (Coyoneda f)
-
-    instance monadCoyoneda :: (Monad f) => Monad (Coyoneda f)
-
-    instance monadTransCoyoneda :: MonadTrans Coyoneda
+``` purescript
+newtype Coyoneda f a
+  = Coyoneda (Exists (CoyonedaF f a))
+```
 
 
-### Values
+#### `Natural`
 
-    coyoneda :: forall f a b. (a -> b) -> f a -> Coyoneda f b
+``` purescript
+type Natural f g = forall a. f a -> g a
+```
 
-    liftCoyoneda :: forall f a. f a -> Coyoneda f a
 
-    liftCoyonedaT :: forall f g. Natural f g -> Natural (Coyoneda f) (Coyoneda g)
+#### `functorCoyoneda`
 
-    liftCoyonedaTF :: forall f g. (Functor g) => Natural f g -> Natural (Coyoneda f) g
+``` purescript
+instance functorCoyoneda :: Functor (Coyoneda f)
+```
 
-    lowerCoyoneda :: forall f a. (Functor f) => Coyoneda f a -> f a
+
+#### `applyCoyoneda`
+
+``` purescript
+instance applyCoyoneda :: (Apply f) => Apply (Coyoneda f)
+```
+
+
+#### `applicativeCoyoneda`
+
+``` purescript
+instance applicativeCoyoneda :: (Applicative f) => Applicative (Coyoneda f)
+```
+
+
+#### `bindCoyoneda`
+
+``` purescript
+instance bindCoyoneda :: (Bind f) => Bind (Coyoneda f)
+```
+
+
+#### `monadCoyoneda`
+
+``` purescript
+instance monadCoyoneda :: (Monad f) => Monad (Coyoneda f)
+```
+
+
+#### `monadTransCoyoneda`
+
+``` purescript
+instance monadTransCoyoneda :: MonadTrans Coyoneda
+```
+
+
+#### `extendCoyoneda`
+
+``` purescript
+instance extendCoyoneda :: (Extend w) => Extend (Coyoneda w)
+```
+
+
+#### `comonadCoyoneda`
+
+``` purescript
+instance comonadCoyoneda :: (Comonad w) => Comonad (Coyoneda w)
+```
+
+
+#### `coyoneda`
+
+``` purescript
+coyoneda :: forall f a b. (a -> b) -> f a -> Coyoneda f b
+```
+
+
+#### `liftCoyoneda`
+
+``` purescript
+liftCoyoneda :: forall f a. f a -> Coyoneda f a
+```
+
+
+#### `lowerCoyoneda`
+
+``` purescript
+lowerCoyoneda :: forall f a. (Functor f) => Coyoneda f a -> f a
+```
+
+
+#### `liftCoyonedaT`
+
+``` purescript
+liftCoyonedaT :: forall f g. Natural f g -> Natural (Coyoneda f) (Coyoneda g)
+```
+
+
+#### `liftCoyonedaTF`
+
+``` purescript
+liftCoyonedaTF :: forall f g. (Functor g) => Natural f g -> Natural (Coyoneda f) g
+```
+
 
 
 ## Module Data.Yoneda
 
-### Types
+#### `Yoneda`
 
-    newtype Yoneda f a where
-      Yoneda :: (forall b. (a -> b) -> f b) -> Yoneda f a
-
-
-### Type Class Instances
-
-    instance applicativeYoneda :: (Applicative f) => Applicative (Yoneda f)
-
-    instance applyYoneda :: (Apply f) => Apply (Yoneda f)
-
-    instance bindCoyoneda :: (Bind f) => Bind (Yoneda f)
-
-    instance comonadYoneda :: (Comonad w) => Comonad (Yoneda w)
-
-    instance extendYoneda :: (Extend w) => Extend (Yoneda w)
-
-    instance functorYoneda :: Functor (Yoneda f)
-
-    instance monadTransYoneda :: MonadTrans Yoneda
-
-    instance monadYoneda :: (Monad f) => Monad (Yoneda f)
+``` purescript
+newtype Yoneda f a
+  = Yoneda (forall b. (a -> b) -> f b)
+```
 
 
-### Values
+#### `functorYoneda`
 
-    liftYoneda :: forall f a. (Functor f) => f a -> Yoneda f a
+``` purescript
+instance functorYoneda :: Functor (Yoneda f)
+```
 
-    lowerYoneda :: forall f a. Yoneda f a -> f a
 
-    runYoneda :: forall f a b. Yoneda f a -> (a -> b) -> f b
+#### `applyYoneda`
+
+``` purescript
+instance applyYoneda :: (Apply f) => Apply (Yoneda f)
+```
+
+
+#### `applicativeYoneda`
+
+``` purescript
+instance applicativeYoneda :: (Applicative f) => Applicative (Yoneda f)
+```
+
+
+#### `bindCoyoneda`
+
+``` purescript
+instance bindCoyoneda :: (Bind f) => Bind (Yoneda f)
+```
+
+
+#### `monadYoneda`
+
+``` purescript
+instance monadYoneda :: (Monad f) => Monad (Yoneda f)
+```
+
+
+#### `monadTransYoneda`
+
+``` purescript
+instance monadTransYoneda :: MonadTrans Yoneda
+```
+
+
+#### `extendYoneda`
+
+``` purescript
+instance extendYoneda :: (Extend w) => Extend (Yoneda w)
+```
+
+
+#### `comonadYoneda`
+
+``` purescript
+instance comonadYoneda :: (Comonad w) => Comonad (Yoneda w)
+```
+
+
+#### `runYoneda`
+
+``` purescript
+runYoneda :: forall f a b. Yoneda f a -> (a -> b) -> f b
+```
+
+
+#### `liftYoneda`
+
+``` purescript
+liftYoneda :: forall f a. (Functor f) => f a -> Yoneda f a
+```
+
+
+#### `lowerYoneda`
+
+``` purescript
+lowerYoneda :: forall f a. Yoneda f a -> f a
+```
