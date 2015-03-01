@@ -218,11 +218,7 @@ injC :: forall f g a. (Inject f g) => FreeC f a -> FreeC g a
 iterM :: forall f m a. (Functor f, Monad m) => (forall a. f (m a) -> m a) -> Free f a -> m a
 ```
 
-#### `goM`
-
-``` purescript
-goM :: forall f m a. (Functor f, Monad m) => (f (Free f a) -> m (Free f a)) -> Free f a -> m a
-```
+Note: can blow the stack!
 
 #### `go`
 
@@ -230,6 +226,17 @@ goM :: forall f m a. (Functor f, Monad m) => (f (Free f a) -> m (Free f a)) -> F
 go :: forall f a. (Functor f) => (f (Free f a) -> Free f a) -> Free f a -> a
 ```
 
+`go` runs a computation of type `Free f a`, using a function which unwraps a single layer of
+the functor `f` at a time.
+
+#### `goM`
+
+``` purescript
+goM :: forall f m a. (Functor f, MonadRec m) => (f (Free f a) -> m (Free f a)) -> Free f a -> m a
+```
+
+`goM` runs a compuation of type `Free f a` in any `Monad` which supports tail recursion.
+See the `MonadRec` type class for more details.
 
 #### `goEff`
 
@@ -237,12 +244,15 @@ go :: forall f a. (Functor f) => (f (Free f a) -> Free f a) -> Free f a -> a
 goEff :: forall e f a. (Functor f) => (f (Free f a) -> Eff e (Free f a)) -> Free f a -> Eff e a
 ```
 
+`goEff` is `goM` specialized to the `Eff` monad.
 
 #### `goMC`
 
 ``` purescript
-goMC :: forall f m a. (Monad m) => Natural f m -> FreeC f a -> m a
+goMC :: forall f m a. (MonadRec m) => Natural f m -> FreeC f a -> m a
 ```
+
+Note: can blow the stack!
 
 #### `goEffC`
 
