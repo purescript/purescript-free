@@ -28,4 +28,4 @@ delay :: forall a. (Unit -> a) -> Trampoline a
 delay = delay' <<< defer
 
 runTrampoline :: forall a. Trampoline a -> a
-runTrampoline = go force
+runTrampoline = runFree force

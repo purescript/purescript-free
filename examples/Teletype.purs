@@ -20,7 +20,7 @@ teletypeN (PutStrLn s a) = const a <$> trace s
 teletypeN (GetLine k) = return $ k "fake input"
 
 run :: forall a. Teletype a -> Eff (trace :: Trace) a
-run = goEffC teletypeN
+run = runFreeMC teletypeN
 
 echo = do
   a <- getLine
