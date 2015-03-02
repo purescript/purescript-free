@@ -3,7 +3,7 @@ module TeletypeCoproduct where
 import Control.Apply ((*>))
 import Control.Alt ((<|>))
 import Control.Monad.Eff (Eff())
-import Control.Monad.Free (FreeC(), liftFC, injC, goEffC)
+import Control.Monad.Free (FreeC(), liftFC, injC, runFreeCM)
 import Data.Coyoneda (Natural())
 import Data.Inject (prj)
 import Data.Functor.Coproduct (Coproduct())
@@ -62,6 +62,6 @@ tN fa = fromJust $ (teletype1N <$> prj fa) <|>
                    (teletype3N <$> prj fa)
 
 run :: forall a. T a -> Eff (trace :: Trace) a
-run = goEffC tN
+run = runFreeCM tN
 
 main = run u
