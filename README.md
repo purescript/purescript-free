@@ -252,7 +252,8 @@ goEff :: forall e f a. (Functor f) => (f (Free f a) -> Eff e (Free f a)) -> Free
 goMC :: forall f m a. (MonadRec m) => Natural f m -> FreeC f a -> m a
 ```
 
-Note: can blow the stack!
+`goMC` is the equivalent of `goM` for type constructors transformed with `Coyoneda`,
+hence we have no requirement that `f` be a `Functor`.
 
 #### `goEffC`
 
@@ -260,6 +261,7 @@ Note: can blow the stack!
 goEffC :: forall e f a. Natural f (Eff e) -> FreeC f a -> Eff e a
 ```
 
+`goEffC` is `goMC` specialized to the `Eff` monad.
 
 
 ## Module Control.Monad.Trampoline
