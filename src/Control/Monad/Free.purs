@@ -7,7 +7,8 @@ module Control.Monad.Free
   , mapF, injC
   , runFree
   , runFreeM
-  , runFreeMC
+  , runFreeC
+  , runFreeCM
   ) where
 
 import Control.Monad.Trans
@@ -100,8 +101,13 @@ runFreeM fn = tailRecM \f ->
     Left fs -> Left <$> fn fs
     Right a -> return (Right a)
 
--- | `runFreeMC` is the equivalent of `runFreeM` for type constructors transformed with `Coyoneda`,
+-- | `runFreeC` is the equivalent of `runFree` for type constructors transformed with `Coyoneda`,
 -- | hence we have no requirement that `f` be a `Functor`.
-runFreeMC :: forall f m a. (MonadRec m) => Natural f m -> FreeC f a -> m a
-runFreeMC nat = runFreeM (liftCoyonedaTF nat)
+runFreeC :: forall f a. (forall a. f a -> a) -> FreeC f a -> a
+runFreeC nat = runIdentity <<< runFreeCM (Identity <<< nat)
+
+-- | `runFreeCM` is the equivalent of `runFreeM` for type constructors transformed with `Coyoneda`,
+-- | hence we have no requirement that `f` be a `Functor`.
+runFreeCM :: forall f m a. (MonadRec m) => Natural f m -> FreeC f a -> m a
+runFreeCM nat = runFreeM (liftCoyonedaTF nat)
 

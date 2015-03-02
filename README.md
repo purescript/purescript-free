@@ -230,13 +230,22 @@ runFreeM :: forall f m a. (Functor f, MonadRec m) => (f (Free f a) -> m (Free f 
 `runFreeM` runs a compuation of type `Free f a` in any `Monad` which supports tail recursion.
 See the `MonadRec` type class for more details.
 
-#### `runFreeMC`
+#### `runFreeC`
 
 ``` purescript
-runFreeMC :: forall f m a. (MonadRec m) => Natural f m -> FreeC f a -> m a
+runFreeC :: forall f a. (forall a. f a -> a) -> FreeC f a -> a
 ```
 
-`runFreeMC` is the equivalent of `runFreeM` for type constructors transformed with `Coyoneda`,
+`runFreeC` is the equivalent of `runFree` for type constructors transformed with `Coyoneda`,
+hence we have no requirement that `f` be a `Functor`.
+
+#### `runFreeCM`
+
+``` purescript
+runFreeCM :: forall f m a. (MonadRec m) => Natural f m -> FreeC f a -> m a
+```
+
+`runFreeCM` is the equivalent of `runFreeM` for type constructors transformed with `Coyoneda`,
 hence we have no requirement that `f` be a `Functor`.
 
 
