@@ -15,10 +15,18 @@ import Control.Comonad
 import Control.Extend
 import Control.Monad.Trans
 
+-- | `Coyoneda` is encoded as an existential type using `Data.Exists`.
+-- |
+-- | This type constructor encodes the contents of the existential package.
 newtype CoyonedaF f a i = CoyonedaF { k :: i -> a, fi :: f i }
 
+-- | The `Coyoneda` `Functor`.
+-- |
+-- | `Coyoneda f` is a `Functor` for any type constructor `f`. In fact,
+-- | it is the _free_ `Functor` for `f`.
 newtype Coyoneda f a = Coyoneda (Exists (CoyonedaF f a))
 
+-- | A natural transformation
 type Natural f g = forall a. f a -> g a
 
 instance functorCoyoneda :: Functor (Coyoneda f) where
@@ -44,12 +52,15 @@ instance extendCoyoneda :: (Extend w) => Extend (Coyoneda w) where
 instance comonadCoyoneda :: (Comonad w) => Comonad (Coyoneda w) where
   extract (Coyoneda e) = runExists (\(CoyonedaF w) -> w.k $ extract w.fi) e
 
+-- | Construct a value of type `Coyoneda f a`.
 coyoneda :: forall f a b. (a -> b) -> f a -> Coyoneda f b
 coyoneda k fi = Coyoneda $ mkExists $ CoyonedaF { k: k, fi: fi }
 
+-- | Lift a value described by the type constructor `f` to `Coyoneda f`.
 liftCoyoneda :: forall f a. f a -> Coyoneda f a
 liftCoyoneda fa = Coyoneda $ mkExists $ CoyonedaF { k: id, fi: fa }
 
+-- | Lower a value of type `Yoneda f a` to the `Functor` `f`. 
 lowerCoyoneda :: forall f a. (Functor f) => Coyoneda f a -> f a
 lowerCoyoneda (Coyoneda e) = runExists (\(CoyonedaF v) -> v.k <$> v.fi) e
 

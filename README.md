@@ -2,12 +2,22 @@
 
 ## Module Control.Comonad.Cofree
 
+
+The _cofree comonad_ for a `Functor`.
+
 #### `Cofree`
 
 ``` purescript
 data Cofree f a
 ```
 
+The `Cofree` `Comonad` for a functor.
+
+A value of type `Cofree f a` consists of an `f`-branching
+tree, annotated with labels of type `a`.
+
+The `Comonad` instance supports _redecoration_, recomputing
+labels from the local context.
 
 #### `mkCofree`
 
@@ -15,6 +25,8 @@ data Cofree f a
 mkCofree :: forall f a. a -> f (Cofree f a) -> Cofree f a
 ```
 
+Create a value of type `Cofree f a` from a label and a
+functor-full of "subtrees".
 
 #### `head`
 
@@ -22,6 +34,7 @@ mkCofree :: forall f a. a -> f (Cofree f a) -> Cofree f a
 head :: forall f a. Cofree f a -> a
 ```
 
+Returns the label for a tree.
 
 #### `tail`
 
@@ -29,6 +42,7 @@ head :: forall f a. Cofree f a -> a
 tail :: forall f a. Cofree f a -> f (Cofree f a)
 ```
 
+Returns the "subtrees" of a tree.
 
 #### `functorCofree`
 
@@ -105,6 +119,10 @@ data Free f a
   | Gosub (forall s. (forall r. (Unit -> Free f r) -> (r -> Free f a) -> s) -> s)
 ```
 
+The free `Monad` for a `Functor`.
+
+The implementation defers the evaluation of monadic binds so that it
+is safe to use monadic tail recursion, for example.
 
 #### `FreeC`
 
@@ -112,6 +130,7 @@ data Free f a
 type FreeC f = Free (Coyoneda f)
 ```
 
+The free `Monad` for an arbitrary type constructor.
 
 #### `MonadFree`
 
@@ -120,6 +139,10 @@ class MonadFree f m where
   wrap :: forall a. f (m a) -> m a
 ```
 
+The `MonadFree` class provides the `wrap` function, which lifts
+actions described by a generating functor into a monad.
+
+The canonical instance of `MonadFree f` is `Free f`.
 
 #### `functorFree`
 
@@ -176,6 +199,8 @@ instance monadFreeFree :: (Functor f) => MonadFree f (Free f)
 liftF :: forall f m a. (Functor f, Monad m, MonadFree f m) => f a -> m a
 ```
 
+Lift an action described by the generating functor `f` into the monad `m`
+(usually `Free f`).
 
 #### `pureF`
 
@@ -183,6 +208,7 @@ liftF :: forall f m a. (Functor f, Monad m, MonadFree f m) => f a -> m a
 pureF :: forall f a. (Applicative f) => a -> Free f a
 ```
 
+An implementation of `pure` for the `Free` monad.
 
 #### `liftFC`
 
@@ -190,6 +216,8 @@ pureF :: forall f a. (Applicative f) => a -> Free f a
 liftFC :: forall f a. f a -> FreeC f a
 ```
 
+Lift an action described by the generating type constructor `f` into the monad
+`FreeC f`.
 
 #### `pureFC`
 
@@ -197,6 +225,7 @@ liftFC :: forall f a. f a -> FreeC f a
 pureFC :: forall f a. (Applicative f) => a -> FreeC f a
 ```
 
+An implementation of `pure` for the `FreeC` monad.
 
 #### `mapF`
 
@@ -204,6 +233,7 @@ pureFC :: forall f a. (Applicative f) => a -> FreeC f a
 mapF :: forall f g a. (Functor f, Functor g) => Natural f g -> Free f a -> Free g a
 ```
 
+Use a natural transformation to change the generating functor of a `Free` monad.
 
 #### `injC`
 
@@ -211,6 +241,12 @@ mapF :: forall f g a. (Functor f, Functor g) => Natural f g -> Free f a -> Free 
 injC :: forall f g a. (Inject f g) => FreeC f a -> FreeC g a
 ```
 
+Embed computations in one `Free` monad as computations in the `Free` monad for
+a coproduct type constructor.
+
+This construction allows us to write computations which are polymorphic in the
+particular `Free` monad we use, allowing us to extend the functionality of
+our monad later.
 
 #### `runFree`
 
@@ -251,12 +287,21 @@ hence we have no requirement that `f` be a `Functor`.
 
 ## Module Control.Monad.Trampoline
 
+
+A _trampoline_ monad, which can be used at the bottom of
+a monad transformer stack to avoid stack overflows in large
+monadic computations.
+
 #### `Trampoline`
 
 ``` purescript
 type Trampoline = Free Lazy
 ```
 
+The `Trampoline` monad
+
+A computation of type `Trampoline a` consists of zero or more lazy 
+suspensions before a value is returned.
 
 #### `done`
 
@@ -264,6 +309,7 @@ type Trampoline = Free Lazy
 done :: forall a. a -> Trampoline a
 ```
 
+Return a value immediately
 
 #### `suspend`
 
@@ -271,6 +317,7 @@ done :: forall a. a -> Trampoline a
 suspend :: forall a. Trampoline a -> Trampoline a
 ```
 
+Suspend a computation by one step.
 
 #### `delay'`
 
@@ -278,6 +325,7 @@ suspend :: forall a. Trampoline a -> Trampoline a
 delay' :: forall a. Lazy a -> Trampoline a
 ```
 
+Use the `Trampoline` monad to represent a `Lazy` value.
 
 #### `delay`
 
@@ -285,6 +333,7 @@ delay' :: forall a. Lazy a -> Trampoline a
 delay :: forall a. (Unit -> a) -> Trampoline a
 ```
 
+Use the `Trampoline` monad to represent the delayed evaluation of a value.
 
 #### `runTrampoline`
 
@@ -292,6 +341,7 @@ delay :: forall a. (Unit -> a) -> Trampoline a
 runTrampoline :: forall a. Trampoline a -> a
 ```
 
+Run a computation in the `Trampoline` monad.
 
 
 ## Module Data.Coyoneda
@@ -303,6 +353,9 @@ newtype CoyonedaF f a i
   = CoyonedaF { fi :: f i, k :: i -> a }
 ```
 
+`Coyoneda` is encoded as an existential type using `Data.Exists`.
+
+This type constructor encodes the contents of the existential package.
 
 #### `Coyoneda`
 
@@ -311,6 +364,10 @@ newtype Coyoneda f a
   = Coyoneda (Exists (CoyonedaF f a))
 ```
 
+The `Coyoneda` `Functor`.
+
+`Coyoneda f` is a `Functor` for any type constructor `f`. In fact,
+it is the _free_ `Functor` for `f`.
 
 #### `Natural`
 
@@ -318,6 +375,7 @@ newtype Coyoneda f a
 type Natural f g = forall a. f a -> g a
 ```
 
+A natural transformation
 
 #### `functorCoyoneda`
 
@@ -381,6 +439,7 @@ instance comonadCoyoneda :: (Comonad w) => Comonad (Coyoneda w)
 coyoneda :: forall f a b. (a -> b) -> f a -> Coyoneda f b
 ```
 
+Construct a value of type `Coyoneda f a`.
 
 #### `liftCoyoneda`
 
@@ -388,6 +447,7 @@ coyoneda :: forall f a b. (a -> b) -> f a -> Coyoneda f b
 liftCoyoneda :: forall f a. f a -> Coyoneda f a
 ```
 
+Lift a value described by the type constructor `f` to `Coyoneda f`.
 
 #### `lowerCoyoneda`
 
@@ -395,6 +455,7 @@ liftCoyoneda :: forall f a. f a -> Coyoneda f a
 lowerCoyoneda :: forall f a. (Functor f) => Coyoneda f a -> f a
 ```
 
+Lower a value of type `Yoneda f a` to the `Functor` `f`. 
 
 #### `liftCoyonedaT`
 
@@ -420,6 +481,9 @@ newtype Yoneda f a
   = Yoneda (forall b. (a -> b) -> f b)
 ```
 
+The Yoneda `Functor`
+
+`Yoneda f` is a `Functor` for any type constructor `f`.
 
 #### `functorYoneda`
 
@@ -483,6 +547,7 @@ instance comonadYoneda :: (Comonad w) => Comonad (Yoneda w)
 runYoneda :: forall f a b. Yoneda f a -> (a -> b) -> f b
 ```
 
+Run a computation of type `Yoneda f a`.
 
 #### `liftYoneda`
 
@@ -490,9 +555,13 @@ runYoneda :: forall f a b. Yoneda f a -> (a -> b) -> f b
 liftYoneda :: forall f a. (Functor f) => f a -> Yoneda f a
 ```
 
+Lift a value described by the `Functor` `f` to the
+`Functor` `Yoneda f`.
 
 #### `lowerYoneda`
 
 ``` purescript
 lowerYoneda :: forall f a. Yoneda f a -> f a
 ```
+
+Lower a value of type `Yoneda f a` to the type constructor `f`.

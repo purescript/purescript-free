@@ -21,12 +21,21 @@ import Data.Either
 import Data.Function
 import Data.Inject (Inject, inj)
 
+-- | The free `Monad` for a `Functor`.
+-- |
+-- | The implementation defers the evaluation of monadic binds so that it
+-- | is safe to use monadic tail recursion, for example.
 data Free f a = Pure a
               | Free (f (Free f a))
               | Gosub (forall s. (forall r. (Unit -> Free f r) -> (r -> Free f a) -> s) -> s)
 
+-- | The free `Monad` for an arbitrary type constructor.
 type FreeC f = Free (Coyoneda f)
 
+-- | The `MonadFree` class provides the `wrap` function, which lifts
+-- | actions described by a generating functor into a monad.
+-- |
+-- | The canonical instance of `MonadFree f` is `Free f`.
 class MonadFree f m where
   wrap :: forall a. f (m a) -> m a
 
@@ -54,21 +63,34 @@ instance monadTransFree :: MonadTrans Free where
 instance monadFreeFree :: (Functor f) => MonadFree f (Free f) where
   wrap = Free
 
+-- | Lift an action described by the generating functor `f` into the monad `m`
+-- | (usually `Free f`).
 liftF :: forall f m a. (Functor f, Monad m, MonadFree f m) => f a -> m a
 liftF = wrap <<< (<$>) return
 
+-- | An implementation of `pure` for the `Free` monad.
 pureF :: forall f a. (Applicative f) => a -> Free f a
 pureF = Free <<< pure <<< Pure
 
+-- | Lift an action described by the generating type constructor `f` into the monad
+-- | `FreeC f`.
 liftFC :: forall f a. f a -> FreeC f a
 liftFC = liftF <<< liftCoyoneda
 
+-- | An implementation of `pure` for the `FreeC` monad.
 pureFC :: forall f a. (Applicative f) => a -> FreeC f a
 pureFC = liftFC <<< pure
 
+-- | Use a natural transformation to change the generating functor of a `Free` monad.
 mapF :: forall f g a. (Functor f, Functor g) => Natural f g -> Free f a -> Free g a
 mapF t fa = either (\s -> Free <<< t $ mapF t <$> s) Pure (resume fa)
 
+-- | Embed computations in one `Free` monad as computations in the `Free` monad for
+-- | a coproduct type constructor.
+-- |
+-- | This construction allows us to write computations which are polymorphic in the
+-- | particular `Free` monad we use, allowing us to extend the functionality of
+-- | our monad later.
 injC :: forall f g a. (Inject f g) => FreeC f a -> FreeC g a
 injC = mapF (liftCoyonedaT inj)
 
