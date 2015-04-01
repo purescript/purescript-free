@@ -23,7 +23,7 @@ instance applyYoneda :: (Apply f) => Apply (Yoneda f) where
 instance applicativeYoneda :: (Applicative f) => Applicative (Yoneda f) where
   pure = liftYoneda <<< pure
 
-instance bindCoyoneda :: (Bind f) => Bind (Yoneda f) where
+instance bindYoneda :: (Bind f) => Bind (Yoneda f) where
   (>>=) (Yoneda f) g = Yoneda (\k -> f id >>= \a -> runYoneda (g a) k)
 
 instance monadYoneda :: (Monad f) => Monad (Yoneda f)
