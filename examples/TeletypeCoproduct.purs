@@ -8,7 +8,7 @@ import Data.Coyoneda (Natural())
 import Data.Inject (prj)
 import Data.Functor.Coproduct (Coproduct())
 import Data.Maybe.Unsafe (fromJust)
-import Debug.Trace (Trace(), trace)
+import Console 
 
 data Teletype1F a = Print1 String a
 
@@ -47,21 +47,21 @@ t = injC $ print3 "3"
 u :: T Unit
 u =  r *> s *> t
 
-teletype1N :: forall e. Natural Teletype1F (Eff (trace :: Trace | e))
-teletype1N (Print1 s a) = const a <$> trace ("teletype1: " ++ s)
+teletype1N :: forall e. Natural Teletype1F (Eff (console :: CONSOLE | e))
+teletype1N (Print1 s a) = const a <$> log ("teletype1: " ++ s)
 
-teletype2N :: forall e. Natural Teletype2F (Eff (trace :: Trace | e))
-teletype2N (Print2 s a) = const a <$> trace ("teletype2: " ++ s)
+teletype2N :: forall e. Natural Teletype2F (Eff (console :: CONSOLE | e))
+teletype2N (Print2 s a) = const a <$> log ("teletype2: " ++ s)
 
-teletype3N :: forall e. Natural Teletype3F (Eff (trace :: Trace | e))
-teletype3N (Print3 s a) = const a <$> trace ("teletype3: " ++ s)
+teletype3N :: forall e. Natural Teletype3F (Eff (console :: CONSOLE | e))
+teletype3N (Print3 s a) = const a <$> log ("teletype3: " ++ s)
 
-tN :: forall e. Natural TF (Eff (trace :: Trace | e))
+tN :: forall e. Natural TF (Eff (console :: CONSOLE | e))
 tN fa = fromJust $ (teletype1N <$> prj fa) <|>
                    (teletype2N <$> prj fa) <|>
                    (teletype3N <$> prj fa)
 
-run :: forall a. T a -> Eff (trace :: Trace) a
+run :: forall a. T a -> Eff (console :: CONSOLE) a
 run = runFreeCM tN
 
 main = run u

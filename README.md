@@ -506,10 +506,10 @@ instance applicativeYoneda :: (Applicative f) => Applicative (Yoneda f)
 ```
 
 
-#### `bindCoyoneda`
+#### `bindYoneda`
 
 ``` purescript
-instance bindCoyoneda :: (Bind f) => Bind (Yoneda f)
+instance bindYoneda :: (Bind f) => Bind (Yoneda f)
 ```
 
 
