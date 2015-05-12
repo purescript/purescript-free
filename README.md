@@ -110,13 +110,20 @@ instance monadCofree :: (MonadPlus f) => Monad (Cofree f)
 
 ## Module Control.Monad.Free
 
+#### `GosubF`
+
+``` purescript
+newtype GosubF f a i
+```
+
+
 #### `Free`
 
 ``` purescript
 data Free f a
   = Pure a
   | Free (f (Free f a))
-  | Gosub (forall s. (forall r. (Unit -> Free f r) -> (r -> Free f a) -> s) -> s)
+  | Gosub (Exists (GosubF f a))
 ```
 
 The free `Monad` for a `Functor`.
