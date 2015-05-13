@@ -34,6 +34,13 @@ module.exports = function(grunt) {
         },
         src: ["examples/TeletypeCoproduct.purs", "<%=libFiles%>"],
         dest: "tmp/TeletypeCoproduct.js"
+      },
+      testBindExample: {
+        options: {
+          main: "TestBind"
+        },
+        src: ["examples/TestBind.purs", "<%=libFiles%>"],
+        dest: "tmp/TestBind.js"
       }
     },
 
@@ -43,6 +50,9 @@ module.exports = function(grunt) {
       },
       teletypeCoproductExample: {
         src: "tmp/TeletypeCoproduct.js"
+      },
+      testBindExample: {
+        src: "tmp/TestBind.js"
       }
     },
 
