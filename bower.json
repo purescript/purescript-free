@@ -24,7 +24,7 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-control": "~0.3.0",
+    "purescript-control": "~0.2.6",
     "purescript-either": "~0.2.0",
     "purescript-exists": "~0.2.0",
     "purescript-transformers": "~0.6.0",
