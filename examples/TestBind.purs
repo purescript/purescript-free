@@ -1,5 +1,7 @@
 module TestBind where
 
+import Prelude
+
 import Control.Monad.Eff
 import Control.Monad.Trampoline
 

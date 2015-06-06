@@ -9,6 +9,8 @@ module Data.Coyoneda
   , liftCoyonedaTF
   ) where
 
+import Prelude
+
 import Data.Exists
 
 import Control.Comonad
@@ -30,16 +32,16 @@ newtype Coyoneda f a = Coyoneda (Exists (CoyonedaF f a))
 type Natural f g = forall a. f a -> g a
 
 instance functorCoyoneda :: Functor (Coyoneda f) where
-  (<$>) f (Coyoneda e) = runExists (\(CoyonedaF v) -> coyoneda (f <<< v.k) v.fi) e
+  map f (Coyoneda e) = runExists (\(CoyonedaF v) -> coyoneda (f <<< v.k) v.fi) e
 
 instance applyCoyoneda :: (Apply f) => Apply (Coyoneda f) where
-  (<*>) f g = liftCoyoneda $ lowerCoyoneda f <*> lowerCoyoneda g
+  apply f g = liftCoyoneda $ lowerCoyoneda f <*> lowerCoyoneda g
 
 instance applicativeCoyoneda :: (Applicative f) => Applicative (Coyoneda f) where
   pure = liftCoyoneda <<< pure
 
 instance bindCoyoneda :: (Bind f) => Bind (Coyoneda f) where
-  (>>=) (Coyoneda e) k = liftCoyoneda $ runExists (\(CoyonedaF v) -> v.fi >>= lowerCoyoneda <<< k <<< v.k) e
+  bind (Coyoneda e) k = liftCoyoneda $ runExists (\(CoyonedaF v) -> v.fi >>= lowerCoyoneda <<< k <<< v.k) e
 
 instance monadCoyoneda :: (Monad f) => Monad (Coyoneda f)
 
@@ -47,7 +49,7 @@ instance monadTransCoyoneda :: MonadTrans Coyoneda where
   lift = liftCoyoneda
 
 instance extendCoyoneda :: (Extend w) => Extend (Coyoneda w) where
-  (<<=) f (Coyoneda e) = runExists (\(CoyonedaF w) -> liftCoyoneda $ f <<< coyoneda w.k <<= w.fi) e
+  extend f (Coyoneda e) = runExists (\(CoyonedaF w) -> liftCoyoneda $ f <<< coyoneda w.k <<= w.fi) e
 
 instance comonadCoyoneda :: (Comonad w) => Comonad (Coyoneda w) where
   extract (Coyoneda e) = runExists (\(CoyonedaF w) -> w.k $ extract w.fi) e

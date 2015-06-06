@@ -11,6 +11,8 @@ module Control.Monad.Free
   , runFreeCM
   ) where
 
+import Prelude
+
 import Data.Exists
 
 import Control.Monad.Trans
@@ -47,18 +49,18 @@ class MonadFree f m where
   wrap :: forall a. f (m a) -> m a
 
 instance functorFree :: (Functor f) => Functor (Free f) where
-  (<$>) f (Pure a) = Pure (f a)
-  (<$>) f g = liftA1 f g
+  map f (Pure a) = Pure (f a)
+  map f g = liftA1 f g
 
 instance applyFree :: (Functor f) => Apply (Free f) where
-  (<*>) = ap
+  apply = ap
 
 instance applicativeFree :: (Functor f) => Applicative (Free f) where
   pure = Pure
 
 instance bindFree :: (Functor f) => Bind (Free f) where
-  (>>=) (Gosub g) k = runExists (\(GosubF v) -> gosub v.a (\x -> gosub (\unit -> v.f x) k)) g
-  (>>=) a         k = gosub (\unit -> a) k
+  bind (Gosub g) k = runExists (\(GosubF v) -> gosub v.a (\x -> gosub (\unit -> v.f x) k)) g
+  bind a         k = gosub (\unit -> a) k
 
 instance monadFree :: (Functor f) => Monad (Free f)
 

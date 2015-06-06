@@ -1,5 +1,7 @@
 module TeletypeCoproduct where
 
+import Prelude
+
 import Control.Apply ((*>))
 import Control.Alt ((<|>))
 import Control.Monad.Eff (Eff())

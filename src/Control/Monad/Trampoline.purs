@@ -11,6 +11,8 @@ module Control.Monad.Trampoline
   , runTrampoline
   ) where
 
+import Prelude
+
 import Control.Monad.Free
 
 import Data.Lazy

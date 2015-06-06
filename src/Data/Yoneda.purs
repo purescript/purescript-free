@@ -5,6 +5,8 @@ module Data.Yoneda
   , lowerYoneda
   ) where
 
+import Prelude
+
 import Control.Comonad
 import Control.Extend
 import Control.Monad.Trans
@@ -15,16 +17,16 @@ import Control.Monad.Trans
 newtype Yoneda f a = Yoneda (forall b. (a -> b) -> f b)
 
 instance functorYoneda :: Functor (Yoneda f) where
-  (<$>) f m = Yoneda (\k -> runYoneda m (k <<< f))
+  map f m = Yoneda (\k -> runYoneda m (k <<< f))
 
 instance applyYoneda :: (Apply f) => Apply (Yoneda f) where
-  (<*>) (Yoneda f) (Yoneda g) = Yoneda (\k -> (f $ (<<<) k) <*> g id)
+  apply (Yoneda f) (Yoneda g) = Yoneda (\k -> (f $ (<<<) k) <*> g id)
 
 instance applicativeYoneda :: (Applicative f) => Applicative (Yoneda f) where
   pure = liftYoneda <<< pure
 
 instance bindYoneda :: (Bind f) => Bind (Yoneda f) where
-  (>>=) (Yoneda f) g = Yoneda (\k -> f id >>= \a -> runYoneda (g a) k)
+  bind (Yoneda f) g = Yoneda (\k -> f id >>= \a -> runYoneda (g a) k)
 
 instance monadYoneda :: (Monad f) => Monad (Yoneda f)
 
@@ -32,7 +34,7 @@ instance monadTransYoneda :: MonadTrans Yoneda where
   lift = liftYoneda
 
 instance extendYoneda :: (Extend w) => Extend (Yoneda w) where
-  (<<=) f (Yoneda w) = Yoneda (\k -> k <<< f <<< liftYoneda <<= w id)
+  extend f (Yoneda w) = Yoneda (\k -> k <<< f <<< liftYoneda <<= w id)
 
 instance comonadYoneda :: (Comonad w) => Comonad (Yoneda w) where
   extract = extract <<< lowerYoneda

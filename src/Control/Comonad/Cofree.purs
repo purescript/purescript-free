@@ -7,6 +7,8 @@ module Control.Comonad.Cofree
   , tail
   ) where
 
+import Prelude
+
 import Control.Comonad
 import Control.Apply
 import Control.Alt
@@ -49,7 +51,7 @@ _lift :: forall f a b. (Functor f) => (a -> b) -> Trampoline (f a) -> Trampoline
 _lift f = (<$>) $ (<$>) f
 
 instance functorCofree :: (Functor f) => Functor (Cofree f) where
-  (<$>) f = loop where
+  map f = loop where
     loop fa = Cofree (f (head fa)) (_lift loop (_tail fa))
 
 instance foldableCofree :: (Foldable f) => Foldable (Cofree f) where
@@ -73,14 +75,14 @@ instance traversableCofree :: (Traversable f) => Traversable (Cofree f) where
   sequence = traverse id
 
 instance extendCofree :: (Functor f) => Extend (Cofree f) where
-  (<<=) f = loop where
+  extend f = loop where
     loop fa = Cofree (f fa) (_lift loop (_tail fa))
 
 instance comonadCofree :: (Functor f) => Comonad (Cofree f) where
   extract = head
 
 instance applyCofree :: (Apply f) => Apply (Cofree f) where
-  (<*>) f x = mkCofree h t where
+  apply f x = mkCofree h t where
     h = (head f) (head x)
     t = (<*>) <$> (tail f) <*> (tail x)
 
@@ -88,7 +90,7 @@ instance applicativeCofree :: (Applicative f) => Applicative (Cofree f) where
   pure a = mkCofree a (pure $ pure a)
 
 instance bindCofree :: (MonadPlus f) => Bind (Cofree f) where
-  (>>=) fa f = loop fa where
+  bind fa f = loop fa where
     loop fa = let fh = f (head fa)
               in mkCofree (head fh) ((tail fh) <|> (loop <$> tail fa))
 
