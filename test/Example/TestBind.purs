@@ -1,14 +1,12 @@
-module TestBind where
+module Example.TestBind where
 
 import Prelude
 
 import Control.Monad.Eff
+import Control.Monad.Eff.Console
 import Control.Monad.Trampoline
-
 import Data.Array (range)
 import Data.Foldable (foldl)
-
-import Debug.Trace (Trace(), trace)
 
 -- Tests derived from
 -- https://github.com/mandubian/cats/tree/feature/freer
@@ -16,27 +14,27 @@ import Debug.Trace (Trace(), trace)
 gen :: forall a. a -> Trampoline a
 gen = suspend <<< done
 
-leftBind :: forall f. Number -> Trampoline Number
+leftBind :: forall f. Int -> Trampoline Int
 leftBind n = foldl (\b a -> b >>= const (gen a)) (gen 0) (range 1 n)
 
-rightBind :: forall f. Number -> Trampoline Number
+rightBind :: forall f. Int -> Trampoline Int
 rightBind n = foldl (\b a -> gen (n - a) >>= const b) (gen 0) (range 1 n)
 
-foreign import now "function now(){ return new Date().valueOf(); }" :: forall eff. Eff eff Number
+foreign import now :: forall eff. Eff eff Int
 
-runner :: forall eff. Number -> Eff (trace :: Trace | eff) Unit
+runner :: forall eff. Int -> Eff (console :: CONSOLE | eff) Unit
 runner n = do
   t1 <- now
   pure $ runTrampoline $ leftBind n
   t2 <- now
 
-  trace $ "leftBind: " ++ show (t2 - t1)
+  log $ "leftBind: " ++ show (t2 - t1)
 
   t3 <- now
   pure $ runTrampoline $ rightBind n
   t4 <- now
 
-  trace $ "rightBind: " ++ show (t4 - t3)
+  log $ "rightBind: " ++ show (t4 - t3)
 
   return unit
 

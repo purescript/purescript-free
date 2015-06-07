@@ -1,11 +1,11 @@
-module Teletype where
+module Example.Teletype where
 
 import Prelude
 
 import Control.Monad.Eff
+import Control.Monad.Eff.Console
 import Control.Monad.Free
 import Data.Coyoneda
-import Console
 
 data TeletypeF a = PutStrLn String a | GetLine (String -> a)
 

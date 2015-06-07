@@ -1,16 +1,16 @@
-module TeletypeCoproduct where
+module Example.TeletypeCoproduct where
 
 import Prelude
 
-import Control.Apply ((*>))
 import Control.Alt ((<|>))
+import Control.Apply ((*>))
 import Control.Monad.Eff (Eff())
+import Control.Monad.Eff.Console
 import Control.Monad.Free (FreeC(), liftFC, injC, runFreeCM)
 import Data.Coyoneda (Natural())
-import Data.Inject (prj)
 import Data.Functor.Coproduct (Coproduct())
+import Data.Inject (prj)
 import Data.Maybe.Unsafe (fromJust)
-import Console 
 
 data Teletype1F a = Print1 String a
 

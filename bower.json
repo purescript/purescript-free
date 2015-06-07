@@ -1,7 +1,7 @@
 {
   "name": "purescript-free",
   "homepage": "https://github.com/purescript/purescript-free",
-  "description": "Free, Trampoline, Yoneda, Coyoneda",
+  "description": "Free, Yoneda, Coyoneda, Trampoline",
   "keywords": [
     "purescript"
   ],
@@ -13,28 +13,27 @@
     "Phil Freeman <paf31@cantab.net>"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/purescript/purescript-free.git"
+  },
   "ignore": [
     "**/.*",
-    "node_modules",
     "bower_components",
-    "examples",
-    "tmp",
+    "node_modules",
+    "output",
+    "test",
     "bower.json",
-    "Gruntfile.js",
+    "gulpfile.js",
     "package.json"
   ],
   "dependencies": {
-    "purescript-control": "~0.3.0",
-    "purescript-either": "~0.2.0",
-    "purescript-exists": "~0.2.0",
-    "purescript-transformers": "~0.6.0",
-    "purescript-lazy": "~0.4.0",
-    "purescript-foldable-traversable": "~0.4.0",
-    "purescript-coproducts": "~0.4.0",
-    "purescript-inject": "~0.3.0",
-    "purescript-tailrec": "~0.3.0"
+    "purescript-exists": "^0.2.0",
+    "purescript-functions": "^0.1.0",
+    "purescript-inject": "^0.3.0",
+    "purescript-transformers": "^0.6.0"
   },
   "devDependencies": {
-    "purescript-console": "~0.1.0"
+    "purescript-console": "^0.1.0"
   }
 }
