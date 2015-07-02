@@ -1,12 +1,12 @@
 {
   "name": "purescript-free",
   "homepage": "https://github.com/purescript/purescript-free",
-  "description": "Free, Yoneda, Coyoneda, Trampoline",
+  "description": "Free, Cofree, Yoneda, Coyoneda, Trampoline",
   "keywords": [
     "purescript"
   ],
   "authors": [
-    "Eric Thul",
+    "Eric Thul <thul.eric@gmail.com>",
     "Brian McKenna <brian@brianmckenna.org>",
     "John A. De Goes <john@degoes.net> (http://degoes.net)",
     "Gary Burgess <gary.burgess@gmail.com>",
@@ -24,7 +24,6 @@
     "output",
     "test",
     "bower.json",
-    "gulpfile.js",
     "package.json"
   ],
   "dependencies": {

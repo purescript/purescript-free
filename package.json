@@ -1,10 +1,11 @@
 {
   "private": true,
+  "scripts": {
+    "postinstall": "pulp dep install",
+    "build": "pulp test && rimraf docs && pulp docs"
+  },
   "devDependencies": {
-    "gulp": "^3.8.11",
-    "gulp-plumber": "^1.0.0",
-    "gulp-purescript": "^0.5.0-rc.1",
-    "gulp-run": "^1.6.8",
-    "rimraf": "^2.3.3"
+    "pulp": "^4.0.2",
+    "rimraf": "^2.4.1"
   }
 }
