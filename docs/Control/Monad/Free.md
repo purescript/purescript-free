@@ -29,6 +29,13 @@ instance bindFree :: (Functor f) => Bind (Free f)
 instance monadFree :: (Functor f) => Monad (Free f)
 instance monadTransFree :: MonadTrans Free
 instance monadFreeFree :: (Functor f) => MonadFree f (Free f)
+instance monadContFree :: (MonadRec m, MonadCont m) => MonadCont (Free m)
+instance monadEffFree :: (Monad m, MonadEff e m) => MonadEff e (Free m)
+instance monadErrorFree :: (MonadRec m, MonadError e m) => MonadError e (Free m)
+instance monadReaderFree :: (Monad m, MonadReader r m) => MonadReader r (Free m)
+instance monadRWSFree :: (MonadRec m, Monoid w, MonadReader r m, MonadWriter w m, MonadState s m) => MonadRWS r w s (Free m)
+instance monadStateFree :: (Monad m, MonadState s m) => MonadState s (Free m)
+instance monadWriterFree :: (MonadRec m, MonadWriter e m) => MonadWriter e (Free m)
 ```
 
 #### `FreeC`

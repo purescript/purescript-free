@@ -13,17 +13,23 @@ module Control.Monad.Free
 
 import Prelude
 
-import Data.Exists
+import Control.Monad.Cont.Class (MonadCont, callCC)
+import Control.Monad.Eff (Eff())
+import Control.Monad.Eff.Class (MonadEff, liftEff)
+import Control.Monad.Error.Class (MonadError, throwError, catchError)
+import Control.Monad.Reader.Class (MonadReader, ask, local)
+import Control.Monad.Rec.Class (MonadRec, tailRecM)
+import Control.Monad.RWS.Class (MonadRWS)
+import Control.Monad.State.Class (MonadState, state)
+import Control.Monad.Trans (MonadTrans, lift)
+import Control.Monad.Writer.Class (MonadWriter, writer, listen, pass)
 
-import Control.Monad.Trans
-import Control.Monad.Eff
-import Control.Monad.Rec.Class
-
-import Data.Identity
 import Data.Coyoneda
-import Data.Either
-import Data.Function
+import Data.Either (Either(..), either)
+import Data.Exists (Exists(), mkExists, runExists)
+import Data.Identity (Identity(..), runIdentity)
 import Data.Inject (Inject, inj)
+import Data.Monoid (Monoid)
 
 newtype GosubF f a i = GosubF { a :: Unit -> Free f i, f :: i -> Free f a }
 
@@ -71,6 +77,30 @@ instance monadTransFree :: MonadTrans Free where
 
 instance monadFreeFree :: (Functor f) => MonadFree f (Free f) where
   wrap = Free
+
+instance monadContFree :: (MonadRec m, MonadCont m) => MonadCont (Free m) where
+  callCC f = lift (callCC (retract <<< f <<< map lift))
+
+instance monadEffFree :: (Monad m, MonadEff e m) => MonadEff e (Free m) where
+  liftEff = lift <<< liftEff
+
+instance monadErrorFree :: (MonadRec m, MonadError e m) => MonadError e (Free m) where
+  throwError = lift <<< throwError
+  catchError as f = lift (catchError (retract as) (retract <<< f))
+
+instance monadReaderFree :: (Monad m, MonadReader r m) => MonadReader r (Free m) where
+  ask = lift ask
+  local f = mapF (local f)
+
+instance monadRWSFree :: (MonadRec m, Monoid w, MonadReader r m, MonadWriter w m, MonadState s m) => MonadRWS r w s (Free m)
+
+instance monadStateFree :: (Monad m, MonadState s m) => MonadState s (Free m) where
+  state = lift <<< state
+
+instance monadWriterFree :: (MonadRec m, MonadWriter e m) => MonadWriter e (Free m) where
+  writer = lift <<< writer
+  listen = lift <<< listen <<< retract
+  pass = lift <<< pass <<< retract
 
 -- | Lift an action described by the generating functor `f` into the monad `m`
 -- | (usually `Free f`).
@@ -126,7 +156,7 @@ runFree fn = runIdentity <<< runFreeM (Identity <<< fn)
 -- | `runFreeM` runs a compuation of type `Free f a` in any `Monad` which supports tail recursion.
 -- | See the `MonadRec` type class for more details.
 runFreeM :: forall f m a. (Functor f, MonadRec m) => (f (Free f a) -> m (Free f a)) -> Free f a -> m a
-runFreeM fn = tailRecM \f -> 
+runFreeM fn = tailRecM \f ->
   case resume f of
     Left fs -> Left <$> fn fs
     Right a -> return (Right a)
@@ -141,3 +171,5 @@ runFreeC nat = runIdentity <<< runFreeCM (Identity <<< nat)
 runFreeCM :: forall f m a. (MonadRec m) => Natural f m -> FreeC f a -> m a
 runFreeCM nat = runFreeM (liftCoyonedaTF nat)
 
+retract :: forall f a. (MonadRec f) => Free f a -> f a
+retract = runFreeM id
