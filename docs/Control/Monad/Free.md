@@ -116,8 +116,6 @@ mapF :: forall f g a. (Functor f, Functor g) => Natural f g -> Free f a -> Free 
 
 Use a natural transformation to change the generating functor of a `Free` monad.
 
-_Note:_ This function is not stack safe.
-
 #### `mapFC`
 
 ``` purescript
@@ -127,8 +125,6 @@ mapFC :: forall f g a. (Functor g) => Natural f g -> FreeC f a -> Free g a
 Use a natural transformation to change the generating type constructor of
 a `FreeC` monad to another functor.
 
-_Note:_ This function is not stack safe.
-
 #### `bindF`
 
 ``` purescript
@@ -136,8 +132,6 @@ bindF :: forall f g a. (Functor f, Functor g) => Free f a -> Natural f (Free g) 
 ```
 
 Use a natural transformation to interpret one `Free` monad as another.
-
-_Note:_ This function is not stack safe.
 
 #### `bindFC`
 
@@ -148,15 +142,26 @@ bindFC :: forall f g a. (Functor g) => FreeC f a -> Natural f (Free g) -> Free g
 Use a natural transformation to interpret a `FreeC` monad as a different
 `Free` monad.
 
-_Note:_ This function is not stack safe.
-
-#### `injC`
+#### `injF`
 
 ``` purescript
-injC :: forall f g a. (Inject f g) => FreeC f a -> FreeC g a
+injF :: forall f g a. (Functor f, Functor g, Inject f g) => Free f a -> Free g a
 ```
 
 Embed computations in one `Free` monad as computations in the `Free` monad for
+a coproduct type constructor.
+
+This construction allows us to write computations which are polymorphic in the
+particular `Free` monad we use, allowing us to extend the functionality of
+our monad later.
+
+#### `injFC`
+
+``` purescript
+injFC :: forall f g a. (Inject f g) => FreeC f a -> FreeC g a
+```
+
+Embed computations in one `FreeC` monad as computations in the `FreeC` monad for
 a coproduct type constructor.
 
 This construction allows us to write computations which are polymorphic in the
