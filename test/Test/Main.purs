@@ -6,3 +6,4 @@ main = do
   Example.Teletype.main
   Example.TeletypeCoproduct.main
   Example.TestBind.main
+  Example.ReinterpretWithBindF.main

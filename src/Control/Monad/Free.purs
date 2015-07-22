@@ -5,6 +5,7 @@ module Control.Monad.Free
   , liftF, liftFC
   , pureF, pureFC
   , mapF, injC
+  , bindF
   , runFree
   , runFreeM
   , runFreeC
@@ -94,6 +95,10 @@ pureFC = liftFC <<< pure
 mapF :: forall f g a. (Functor f, Functor g) => Natural f g -> Free f a -> Free g a
 mapF t fa = either (\s -> Free <<< t $ mapF t <$> s) Pure (resume fa)
 
+-- | Use a natural transformation to interpret one `Free` monad as another.
+bindF :: forall f g a. (Functor f, Functor g) => Free f a -> Natural f (Free g) -> Free g a
+bindF fa t = either (\m -> t m >>= \fa' -> bindF fa' t) Pure (resume fa)
+
 -- | Embed computations in one `Free` monad as computations in the `Free` monad for
 -- | a coproduct type constructor.
 -- |
@@ -126,7 +131,7 @@ runFree fn = runIdentity <<< runFreeM (Identity <<< fn)
 -- | `runFreeM` runs a compuation of type `Free f a` in any `Monad` which supports tail recursion.
 -- | See the `MonadRec` type class for more details.
 runFreeM :: forall f m a. (Functor f, MonadRec m) => (f (Free f a) -> m (Free f a)) -> Free f a -> m a
-runFreeM fn = tailRecM \f -> 
+runFreeM fn = tailRecM \f ->
   case resume f of
     Left fs -> Left <$> fn fs
     Right a -> return (Right a)

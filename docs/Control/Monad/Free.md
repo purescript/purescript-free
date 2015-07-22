@@ -98,6 +98,14 @@ mapF :: forall f g a. (Functor f, Functor g) => Natural f g -> Free f a -> Free 
 
 Use a natural transformation to change the generating functor of a `Free` monad.
 
+#### `bindF`
+
+``` purescript
+bindF :: forall f g a. (Functor f, Functor g) => Free f a -> Natural f (Free g) -> Free g a
+```
+
+Use a natural transformation to interpret one `Free` monad as another.
+
 #### `injC`
 
 ``` purescript
