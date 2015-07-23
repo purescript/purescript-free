@@ -5,6 +5,7 @@ import Prelude
 import Control.Monad.Eff
 import Control.Monad.Eff.Console
 import Control.Monad.Trampoline
+import Control.Monad.Free
 import Data.Array (range)
 import Data.Foldable (foldl)
 
@@ -24,14 +25,16 @@ foreign import now :: forall eff. Eff eff Int
 
 runner :: forall eff. Int -> Eff (console :: CONSOLE | eff) Unit
 runner n = do
+  log $ "running with: " ++ show n
+
   t1 <- now
-  pure $ runTrampoline $ leftBind n
+  pure $ runTrampoline $ bindF (mapF id (leftBind n)) liftF
   t2 <- now
 
   log $ "leftBind: " ++ show (t2 - t1)
 
   t3 <- now
-  pure $ runTrampoline $ rightBind n
+  pure $ runTrampoline $ bindF (mapF id (rightBind n)) liftF
   t4 <- now
 
   log $ "rightBind: " ++ show (t4 - t3)

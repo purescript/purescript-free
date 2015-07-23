@@ -104,28 +104,20 @@ pureFC :: forall f a. (Applicative f) => a -> FreeC f a
 pureFC = liftFC <<< pure
 
 -- | Use a natural transformation to change the generating functor of a `Free` monad.
--- |
--- | _Note:_ This function is not stack safe.
 mapF :: forall f g a. (Functor f, Functor g) => Natural f g -> Free f a -> Free g a
 mapF t fa = either (\s -> Free <<< t $ mapF t <$> s) Pure (resume fa)
 
 -- | Use a natural transformation to change the generating type constructor of
 -- | a `FreeC` monad to another functor.
--- |
--- | _Note:_ This function is not stack safe.
 mapFC :: forall f g a. (Functor g) => Natural f g -> FreeC f a -> Free g a
 mapFC t = mapF (liftCoyonedaTF t)
 
 -- | Use a natural transformation to interpret one `Free` monad as another.
--- |
--- | _Note:_ This function is not stack safe.
 bindF :: forall f g a. (Functor f, Functor g) => Free f a -> Natural f (Free g) -> Free g a
 bindF fa t = either (\m -> t m >>= \fa' -> bindF fa' t) Pure (resume fa)
 
 -- | Use a natural transformation to interpret a `FreeC` monad as a different
 -- | `Free` monad.
--- |
--- | _Note:_ This function is not stack safe.
 bindFC :: forall f g a. (Functor g) => FreeC f a -> Natural f (Free g) -> Free g a
 bindFC fa t = bindF fa (liftCoyonedaTF t)
 
