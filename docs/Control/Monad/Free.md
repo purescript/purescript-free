@@ -106,6 +106,15 @@ bindF :: forall f g a. (Functor f, Functor g) => Free f a -> Natural f (Free g) 
 
 Use a natural transformation to interpret one `Free` monad as another.
 
+#### `bindFC`
+
+``` purescript
+bindFC :: forall f g a. (Functor g) => FreeC f a -> Natural f (Free g) -> Free g a
+```
+
+Use a natural transformation to interpret a `FreeC` monad as a different
+`Free` monad.
+
 #### `injC`
 
 ``` purescript

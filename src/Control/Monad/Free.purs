@@ -5,7 +5,7 @@ module Control.Monad.Free
   , liftF, liftFC
   , pureF, pureFC
   , mapF, injC
-  , bindF
+  , bindF, bindFC
   , runFree
   , runFreeM
   , runFreeC
@@ -98,6 +98,11 @@ mapF t fa = either (\s -> Free <<< t $ mapF t <$> s) Pure (resume fa)
 -- | Use a natural transformation to interpret one `Free` monad as another.
 bindF :: forall f g a. (Functor f, Functor g) => Free f a -> Natural f (Free g) -> Free g a
 bindF fa t = either (\m -> t m >>= \fa' -> bindF fa' t) Pure (resume fa)
+
+-- | Use a natural transformation to interpret a `FreeC` monad as a different
+-- | `Free` monad.
+bindFC :: forall f g a. (Functor g) => FreeC f a -> Natural f (Free g) -> Free g a
+bindFC fa t = either (\m -> liftCoyonedaTF t m >>= \fa' -> bindFC fa' t) Pure (resume fa)
 
 -- | Embed computations in one `Free` monad as computations in the `Free` monad for
 -- | a coproduct type constructor.

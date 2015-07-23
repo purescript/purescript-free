@@ -46,15 +46,8 @@ farewell = liftFC $ Farewell unit
 -- | us to map one action in `InitialF` to multiple actions in `TeletypeF` (see
 -- | the `Greet` case - we're expanding one `InitialF` action into 3 `TeletypeF`
 -- | actions).
--- |
--- | As `Initial` is using `FreeC` (`Free (Coyoneda Initial)`) to avoid having
--- | to write a `Functor` instance for `Initial`, we're using `liftCoyonedaTF`
--- | to unwrap the `Coyoneda` when running the transformation.
--- |
--- | If `InitialF` had a `Functor` instance and we defined `Initial` as
--- | `Free InitialF`, the implementation would just be `bindF initial go`.
 runInitial :: forall a. Initial a -> Teletype a
-runInitial initial = bindF initial (liftCoyonedaTF go)
+runInitial initial = bindFC initial go
   where
   go :: Natural InitialF Teletype
   go (Greet k) = do
