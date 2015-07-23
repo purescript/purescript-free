@@ -116,6 +116,40 @@ mapF :: forall f g a. (Functor f, Functor g) => Natural f g -> Free f a -> Free 
 
 Use a natural transformation to change the generating functor of a `Free` monad.
 
+_Note:_ This function is not stack safe.
+
+#### `mapFC`
+
+``` purescript
+mapFC :: forall f g a. (Functor g) => Natural f g -> FreeC f a -> Free g a
+```
+
+Use a natural transformation to change the generating type constructor of
+a `FreeC` monad to another functor.
+
+_Note:_ This function is not stack safe.
+
+#### `bindF`
+
+``` purescript
+bindF :: forall f g a. (Functor f, Functor g) => Free f a -> Natural f (Free g) -> Free g a
+```
+
+Use a natural transformation to interpret one `Free` monad as another.
+
+_Note:_ This function is not stack safe.
+
+#### `bindFC`
+
+``` purescript
+bindFC :: forall f g a. (Functor g) => FreeC f a -> Natural f (Free g) -> Free g a
+```
+
+Use a natural transformation to interpret a `FreeC` monad as a different
+`Free` monad.
+
+_Note:_ This function is not stack safe.
+
 #### `injC`
 
 ``` purescript
