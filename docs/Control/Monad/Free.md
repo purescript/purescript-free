@@ -65,6 +65,15 @@ liftF :: forall f m a. (Functor f, Monad m, MonadFree f m) => f a -> m a
 Lift an action described by the generating functor `f` into the monad `m`
 (usually `Free f`).
 
+#### `liftFI`
+
+``` purescript
+liftFI :: forall f g a. (Inject f g, Functor g) => f a -> Free g a
+```
+
+Lift an action described by the generating type constructor `f` into
+`Free g` using `Inject` to go from `f` to `g`.
+
 #### `pureF`
 
 ``` purescript
@@ -81,6 +90,15 @@ liftFC :: forall f a. f a -> FreeC f a
 
 Lift an action described by the generating type constructor `f` into the monad
 `FreeC f`.
+
+#### `liftFCI`
+
+``` purescript
+liftFCI :: forall f g a. (Inject f g) => f a -> FreeC g a
+```
+
+Lift an action described by the generating type constructor `f` into
+`FreeC g` using `Inject` to go from `f` to `g`.
 
 #### `pureFC`
 
