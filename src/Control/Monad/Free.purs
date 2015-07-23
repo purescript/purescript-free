@@ -2,7 +2,7 @@ module Control.Monad.Free
   ( Free(..), GosubF()
   , FreeC(..)
   , MonadFree, wrap
-  , liftF, liftFC
+  , liftF, liftFI, liftFC, liftFCI
   , pureF, pureFC
   , mapF, injC
   , runFree
@@ -23,6 +23,7 @@ import Data.Identity
 import Data.Coyoneda
 import Data.Either
 import Data.Function
+import Data.Maybe
 import Data.Inject (Inject, inj)
 
 newtype GosubF f a i = GosubF { a :: Unit -> Free f i, f :: i -> Free f a }
@@ -75,7 +76,12 @@ instance monadFreeFree :: (Functor f) => MonadFree f (Free f) where
 -- | Lift an action described by the generating functor `f` into the monad `m`
 -- | (usually `Free f`).
 liftF :: forall f m a. (Functor f, Monad m, MonadFree f m) => f a -> m a
-liftF = wrap <<< (<$>) return
+liftF = wrap <<< map pure
+
+-- | Lift an action described by the generating type constructor `f` into
+-- | `Free g` using `Inject` to go from `f` to `g`.
+liftFI :: forall f g a. (Inject f g, Functor g) => f a -> Free g a
+liftFI fa = liftF (inj fa :: g a)
 
 -- | An implementation of `pure` for the `Free` monad.
 pureF :: forall f a. (Applicative f) => a -> Free f a
@@ -85,6 +91,11 @@ pureF = Free <<< pure <<< Pure
 -- | `FreeC f`.
 liftFC :: forall f a. f a -> FreeC f a
 liftFC = liftF <<< liftCoyoneda
+
+-- | Lift an action described by the generating type constructor `f` into
+-- | `FreeC g` using `Inject` to go from `f` to `g`.
+liftFCI :: forall f g a. (Inject f g) => f a -> FreeC g a
+liftFCI fa = liftFC (inj fa :: g a)
 
 -- | An implementation of `pure` for the `FreeC` monad.
 pureFC :: forall f a. (Applicative f) => a -> FreeC f a
@@ -126,7 +137,7 @@ runFree fn = runIdentity <<< runFreeM (Identity <<< fn)
 -- | `runFreeM` runs a compuation of type `Free f a` in any `Monad` which supports tail recursion.
 -- | See the `MonadRec` type class for more details.
 runFreeM :: forall f m a. (Functor f, MonadRec m) => (f (Free f a) -> m (Free f a)) -> Free f a -> m a
-runFreeM fn = tailRecM \f -> 
+runFreeM fn = tailRecM \f ->
   case resume f of
     Left fs -> Left <$> fn fs
     Right a -> return (Right a)
@@ -140,4 +151,3 @@ runFreeC nat = runIdentity <<< runFreeCM (Identity <<< nat)
 -- | hence we have no requirement that `f` be a `Functor`.
 runFreeCM :: forall f m a. (MonadRec m) => Natural f m -> FreeC f a -> m a
 runFreeCM nat = runFreeM (liftCoyonedaTF nat)
-
