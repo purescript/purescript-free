@@ -85,10 +85,6 @@ liftF = wrap <<< map pure
 liftFI :: forall f g a. (Inject f g, Functor g) => f a -> Free g a
 liftFI fa = liftF (inj fa :: g a)
 
--- | An implementation of `pure` for the `Free` monad.
-pureF :: forall f a. (Applicative f) => a -> Free f a
-pureF = Free <<< pure <<< Pure
-
 -- | Lift an action described by the generating type constructor `f` into the monad
 -- | `FreeC f`.
 liftFC :: forall f a. f a -> FreeC f a
@@ -98,6 +94,10 @@ liftFC = liftF <<< liftCoyoneda
 -- | `FreeC g` using `Inject` to go from `f` to `g`.
 liftFCI :: forall f g a. (Inject f g) => f a -> FreeC g a
 liftFCI fa = liftFC (inj fa :: g a)
+
+-- | An implementation of `pure` for the `Free` monad.
+pureF :: forall f a. (Applicative f) => a -> Free f a
+pureF = Free <<< pure <<< Pure
 
 -- | An implementation of `pure` for the `FreeC` monad.
 pureFC :: forall f a. (Applicative f) => a -> FreeC f a
