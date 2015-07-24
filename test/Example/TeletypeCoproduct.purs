@@ -6,7 +6,7 @@ import Control.Alt ((<|>))
 import Control.Apply ((*>))
 import Control.Monad.Eff (Eff())
 import Control.Monad.Eff.Console
-import Control.Monad.Free (FreeC(), liftFC, injC, runFreeCM)
+import Control.Monad.Free (FreeC(), liftFC, injFC, runFreeCM)
 import Data.Coyoneda (Natural())
 import Data.Functor.Coproduct (Coproduct())
 import Data.Inject (prj)
@@ -38,13 +38,13 @@ type TF = Coproduct Teletype1F (Coproduct Teletype2F Teletype3F)
 type T a = FreeC TF a
 
 r :: T Unit
-r = injC $ print1 "1"
+r = injFC $ print1 "1"
 
 s :: T Unit
-s = injC $ print2 "2"
+s = injFC $ print2 "2"
 
 t :: T Unit
-t = injC $ print3 "3"
+t = injFC $ print3 "3"
 
 u :: T Unit
 u =  r *> s *> t

@@ -5,8 +5,8 @@ module Control.Monad.Free
   , liftF, liftFI, liftFC, liftFCI
   , pureF, pureFC
   , mapF, mapFC
-  , injC
   , bindF, bindFC
+  , injF, injFC
   , runFree
   , runFreeM
   , runFreeC
@@ -127,8 +127,17 @@ bindFC fa t = bindF fa (liftCoyonedaTF t)
 -- | This construction allows us to write computations which are polymorphic in the
 -- | particular `Free` monad we use, allowing us to extend the functionality of
 -- | our monad later.
-injC :: forall f g a. (Inject f g) => FreeC f a -> FreeC g a
-injC = mapF (liftCoyonedaT inj)
+injF :: forall f g a. (Functor f, Functor g, Inject f g) => Free f a -> Free g a
+injF = mapF inj
+
+-- | Embed computations in one `FreeC` monad as computations in the `FreeC` monad for
+-- | a coproduct type constructor.
+-- |
+-- | This construction allows us to write computations which are polymorphic in the
+-- | particular `Free` monad we use, allowing us to extend the functionality of
+-- | our monad later.
+injFC :: forall f g a. (Inject f g) => FreeC f a -> FreeC g a
+injFC = mapF (liftCoyonedaT inj)
 
 resume :: forall f a. (Functor f) => Free f a -> Either (f (Free f a)) a
 resume f = case f of
