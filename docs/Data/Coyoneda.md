@@ -35,14 +35,6 @@ instance extendCoyoneda :: (Extend w) => Extend (Coyoneda w)
 instance comonadCoyoneda :: (Comonad w) => Comonad (Coyoneda w)
 ```
 
-#### `Natural`
-
-``` purescript
-type Natural f g = forall a. f a -> g a
-```
-
-A natural transformation
-
 #### `coyoneda`
 
 ``` purescript
@@ -65,18 +57,18 @@ Lift a value described by the type constructor `f` to `Coyoneda f`.
 lowerCoyoneda :: forall f a. (Functor f) => Coyoneda f a -> f a
 ```
 
-Lower a value of type `Yoneda f a` to the `Functor` `f`. 
+Lower a value of type `Yoneda f a` to the `Functor` `f`.
 
 #### `liftCoyonedaT`
 
 ``` purescript
-liftCoyonedaT :: forall f g. Natural f g -> Natural (Coyoneda f) (Coyoneda g)
+liftCoyonedaT :: forall f g. NaturalTransformation f g -> NaturalTransformation (Coyoneda f) (Coyoneda g)
 ```
 
 #### `liftCoyonedaTF`
 
 ``` purescript
-liftCoyonedaTF :: forall f g. (Functor g) => Natural f g -> Natural (Coyoneda f) g
+liftCoyonedaTF :: forall f g. (Functor g) => NaturalTransformation f g -> NaturalTransformation (Coyoneda f) g
 ```
 
 

@@ -12,7 +12,7 @@ type Trampoline = Free Lazy
 
 The `Trampoline` monad
 
-A computation of type `Trampoline a` consists of zero or more lazy 
+A computation of type `Trampoline a` consists of zero or more lazy
 suspensions before a value is returned.
 
 #### `done`
