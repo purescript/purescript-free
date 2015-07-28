@@ -5,24 +5,25 @@ import Prelude
 import Control.Monad.Eff
 import Control.Monad.Eff.Console
 import Control.Monad.Free
-import Data.Coyoneda
+
+import Data.NaturalTransformation
 
 data TeletypeF a = PutStrLn String a | GetLine (String -> a)
 
-type Teletype a = FreeC TeletypeF a
+type Teletype a = Free TeletypeF a
 
 putStrLn :: String -> Teletype Unit
-putStrLn s = liftFC $ PutStrLn s unit
+putStrLn s = liftF (PutStrLn s unit)
 
 getLine :: Teletype String
-getLine = liftFC $ GetLine id
+getLine = liftF (GetLine id)
 
-teletypeN :: forall e. Natural TeletypeF (Eff (console :: CONSOLE))
+teletypeN :: forall e. NaturalTransformation TeletypeF (Eff (console :: CONSOLE))
 teletypeN (PutStrLn s a) = const a <$> log s
-teletypeN (GetLine k) = return $ k "fake input"
+teletypeN (GetLine k) = return (k "fake input")
 
 run :: forall a. Teletype a -> Eff (console :: CONSOLE) a
-run = runFreeCM teletypeN
+run = foldMapF teletypeN
 
 echo = do
   a <- getLine

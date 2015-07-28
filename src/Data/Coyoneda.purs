@@ -1,7 +1,6 @@
 module Data.Coyoneda
   ( Coyoneda(..)
   , CoyonedaF(..)
-  , Natural(..)
   , coyoneda
   , liftCoyoneda
   , lowerCoyoneda
@@ -12,6 +11,7 @@ module Data.Coyoneda
 import Prelude
 
 import Data.Exists
+import Data.NaturalTransformation (NaturalTransformation())
 
 import Control.Comonad
 import Control.Extend
@@ -27,9 +27,6 @@ newtype CoyonedaF f a i = CoyonedaF { k :: i -> a, fi :: f i }
 -- | `Coyoneda f` is a `Functor` for any type constructor `f`. In fact,
 -- | it is the _free_ `Functor` for `f`.
 newtype Coyoneda f a = Coyoneda (Exists (CoyonedaF f a))
-
--- | A natural transformation
-type Natural f g = forall a. f a -> g a
 
 instance functorCoyoneda :: Functor (Coyoneda f) where
   map f (Coyoneda e) = runExists (\(CoyonedaF v) -> coyoneda (f <<< v.k) v.fi) e
@@ -62,12 +59,12 @@ coyoneda k fi = Coyoneda $ mkExists $ CoyonedaF { k: k, fi: fi }
 liftCoyoneda :: forall f a. f a -> Coyoneda f a
 liftCoyoneda fa = Coyoneda $ mkExists $ CoyonedaF { k: id, fi: fa }
 
--- | Lower a value of type `Yoneda f a` to the `Functor` `f`. 
+-- | Lower a value of type `Yoneda f a` to the `Functor` `f`.
 lowerCoyoneda :: forall f a. (Functor f) => Coyoneda f a -> f a
 lowerCoyoneda (Coyoneda e) = runExists (\(CoyonedaF v) -> v.k <$> v.fi) e
 
-liftCoyonedaT :: forall f g. Natural f g -> Natural (Coyoneda f) (Coyoneda g)
+liftCoyonedaT :: forall f g. NaturalTransformation f g -> NaturalTransformation (Coyoneda f) (Coyoneda g)
 liftCoyonedaT nat (Coyoneda e) = runExists (\(CoyonedaF v) -> coyoneda v.k (nat v.fi)) e
 
-liftCoyonedaTF :: forall f g. (Functor g) => Natural f g -> Natural (Coyoneda f) g
+liftCoyonedaTF :: forall f g. (Functor g) => NaturalTransformation f g -> NaturalTransformation (Coyoneda f) g
 liftCoyonedaTF nat = lowerCoyoneda <<< liftCoyonedaT nat

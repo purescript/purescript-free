@@ -1,125 +1,79 @@
 module Control.Monad.Free
-  ( Free(..), GosubF()
-  , FreeC(..)
-  , MonadFree, wrap
-  , liftF, liftFI, liftFC, liftFCI
-  , pureF, pureFC
-  , mapF, mapFC
-  , bindF, bindFC
-  , injF, injFC
+  ( Free()
+  , suspendF
+  , liftF
+  , liftFI
+  , mapF
+  , injF
+  , foldMapF
   , runFree
   , runFreeM
-  , runFreeC
-  , runFreeCM
   ) where
 
-import Prelude
+import Prelude hiding (append)
 
-import Data.Exists
+import Control.Monad.Rec.Class (MonadRec, tailRecM)
+import Control.Monad.Trans (MonadTrans)
 
-import Control.Monad.Trans
-import Control.Monad.Eff
-import Control.Monad.Rec.Class
-
-import Data.Identity
-import Data.Coyoneda
-import Data.Either
-import Data.Function
-import Data.Maybe
+import Data.Either (Either(..), either)
+import Data.Identity (Identity(..), runIdentity)
 import Data.Inject (Inject, inj)
+import Data.Maybe (Maybe(..))
+import Data.NaturalTransformation (NaturalTransformation())
+import Data.Tuple (Tuple(..))
 
-newtype GosubF f a i = GosubF { a :: Unit -> Free f i, f :: i -> Free f a }
+import Unsafe.Coerce (unsafeCoerce)
 
-gosub :: forall f a i. (Unit -> Free f i) -> (i -> Free f a) -> Free f a
-gosub a f = Gosub $ mkExists $ GosubF { a: a, f: f}
-
--- | The free `Monad` for a `Functor`.
+-- | The free monad for a type constructor `f`.
 -- |
--- | The implementation defers the evaluation of monadic binds so that it
--- | is safe to use monadic tail recursion, for example.
-data Free f a = Pure a
-              | Free (f (Free f a))
-              | Gosub (Exists (GosubF f a))
+-- | Implemented in the spirit of [Relection without Remorse](http://okmij.org/ftp/Haskell/zseq.pdf),
+-- | the free monad is represented using a sequential data structure in
+-- | order to overcome the quadratic complexity of left-associated binds
+-- | and traversal through the free monad structure.
+data Free f a = Free (FreeView f Val Val) (List (ExpF f))
 
--- | The free `Monad` for an arbitrary type constructor.
-type FreeC f = Free (Coyoneda f)
+newtype ExpF f = ExpF (Val -> Free f Val)
 
--- | The `MonadFree` class provides the `wrap` function, which lifts
--- | actions described by a generating functor into a monad.
--- |
--- | The canonical instance of `MonadFree f` is `Free f`.
-class MonadFree f m where
-  wrap :: forall a. f (m a) -> m a
+data FreeView f a b = Return a | Bind (f b) (b -> Free f a)
 
-instance functorFree :: (Functor f) => Functor (Free f) where
-  map f (Pure a) = Pure (f a)
-  map f g = liftA1 f g
+data Val
 
-instance applyFree :: (Functor f) => Apply (Free f) where
+instance freeFunctor :: Functor (Free f) where
+  map k f = f >>= return <<< k
+
+instance freeBind :: Bind (Free f) where
+  bind (Free v s) k = Free v (snoc s (ExpF (unsafeCoerceBind k)))
+
+instance freeApplicative :: Applicative (Free f) where
+  pure = fromView <<< Return
+
+instance freeApply :: Apply (Free f) where
   apply = ap
 
-instance applicativeFree :: (Functor f) => Applicative (Free f) where
-  pure = Pure
+instance freeMonad :: Monad (Free f)
 
-instance bindFree :: (Functor f) => Bind (Free f) where
-  bind (Gosub g) k = runExists (\(GosubF v) -> gosub v.a (\x -> gosub (\unit -> v.f x) k)) g
-  bind a         k = gosub (\unit -> a) k
+instance freeMonadTrans :: MonadTrans Free where
+  lift = liftF
 
-instance monadFree :: (Functor f) => Monad (Free f)
+instance freeMonadRec :: MonadRec (Free f) where
+  tailRecM k a = k a >>= either (tailRecM k) pure
 
-instance monadTransFree :: MonadTrans Free where
-  lift f = Free $ do
-    a <- f
-    return (Pure a)
-
-instance monadFreeFree :: (Functor f) => MonadFree f (Free f) where
-  wrap = Free
-
--- | Lift an action described by the generating functor `f` into the monad `m`
--- | (usually `Free f`).
-liftF :: forall f m a. (Functor f, Monad m, MonadFree f m) => f a -> m a
-liftF = wrap <<< map pure
+-- | Lift an impure value described by the generating type constructor `f` into the free monad.
+liftF :: forall f a. f a -> Free f a
+liftF f = fromView (Bind (unsafeCoerceF f) (pure <<< unsafeCoerceVal))
 
 -- | Lift an action described by the generating type constructor `f` into
 -- | `Free g` using `Inject` to go from `f` to `g`.
-liftFI :: forall f g a. (Inject f g, Functor g) => f a -> Free g a
+liftFI :: forall f g a. (Inject f g) => f a -> Free g a
 liftFI fa = liftF (inj fa :: g a)
 
--- | Lift an action described by the generating type constructor `f` into the monad
--- | `FreeC f`.
-liftFC :: forall f a. f a -> FreeC f a
-liftFC = liftF <<< liftCoyoneda
+-- | Suspend a value given the applicative functor `f` into the free monad.
+suspendF :: forall f a. (Applicative f) => Free f a -> Free f a
+suspendF f = fromView (Bind (unsafeCoerceF (pure f :: f (Free f a))) (id <<< unsafeCoerceVal))
 
--- | Lift an action described by the generating type constructor `f` into
--- | `FreeC g` using `Inject` to go from `f` to `g`.
-liftFCI :: forall f g a. (Inject f g) => f a -> FreeC g a
-liftFCI fa = liftFC (inj fa :: g a)
-
--- | An implementation of `pure` for the `Free` monad.
-pureF :: forall f a. (Applicative f) => a -> Free f a
-pureF = Free <<< pure <<< Pure
-
--- | An implementation of `pure` for the `FreeC` monad.
-pureFC :: forall f a. (Applicative f) => a -> FreeC f a
-pureFC = liftFC <<< pure
-
--- | Use a natural transformation to change the generating functor of a `Free` monad.
-mapF :: forall f g a. (Functor f, Functor g) => Natural f g -> Free f a -> Free g a
-mapF t fa = either (\s -> Free <<< t $ mapF t <$> s) Pure (resume fa)
-
--- | Use a natural transformation to change the generating type constructor of
--- | a `FreeC` monad to another functor.
-mapFC :: forall f g a. (Functor g) => Natural f g -> FreeC f a -> Free g a
-mapFC t = mapF (liftCoyonedaTF t)
-
--- | Use a natural transformation to interpret one `Free` monad as another.
-bindF :: forall f g a. (Functor f, Functor g) => Free f a -> Natural f (Free g) -> Free g a
-bindF fa t = either (\m -> t m >>= \fa' -> bindF fa' t) Pure (resume fa)
-
--- | Use a natural transformation to interpret a `FreeC` monad as a different
--- | `Free` monad.
-bindFC :: forall f g a. (Functor g) => FreeC f a -> Natural f (Free g) -> Free g a
-bindFC fa t = bindF fa (liftCoyonedaTF t)
+-- | Use a natural transformation to change the generating type constructor of a free monad.
+mapF :: forall f g a. NaturalTransformation f g -> Free f a -> Free g a
+mapF k = foldMapF (liftF <<< k)
 
 -- | Embed computations in one `Free` monad as computations in the `Free` monad for
 -- | a coproduct type constructor.
@@ -127,52 +81,78 @@ bindFC fa t = bindF fa (liftCoyonedaTF t)
 -- | This construction allows us to write computations which are polymorphic in the
 -- | particular `Free` monad we use, allowing us to extend the functionality of
 -- | our monad later.
-injF :: forall f g a. (Functor f, Functor g, Inject f g) => Free f a -> Free g a
+injF :: forall f g a. (Inject f g) => Free f a -> Free g a
 injF = mapF inj
 
--- | Embed computations in one `FreeC` monad as computations in the `FreeC` monad for
--- | a coproduct type constructor.
--- |
--- | This construction allows us to write computations which are polymorphic in the
--- | particular `Free` monad we use, allowing us to extend the functionality of
--- | our monad later.
-injFC :: forall f g a. (Inject f g) => FreeC f a -> FreeC g a
-injFC = mapF (liftCoyonedaT inj)
-
-resume :: forall f a. (Functor f) => Free f a -> Either (f (Free f a)) a
-resume f = case f of
-  Pure x -> Right x
-  Free x -> Left x
-  g -> case resumeGosub g of
-    Left l -> Left l
-    Right r -> resume r
+-- | Run a free monad with a natural transformation from the type constructor `f`
+-- | to the tail-recursive monad `m`.See the `MonadRec` type class for more details.
+foldMapF :: forall f m a. (MonadRec m) => NaturalTransformation f m -> Free f a -> m a
+foldMapF k = tailRecM go
   where
-  resumeGosub :: Free f a -> Either (f (Free f a)) (Free f a)
-  resumeGosub (Gosub g) =
-    runExists (\(GosubF v) -> case v.a unit of
-                                   Pure a -> Right (v.f a)
-                                   Free t -> Left ((\h -> h >>= v.f) <$> t)
-                                   Gosub h -> runExists (\(GosubF w) -> Right (w.a unit >>= (\z -> w.f z >>= v.f))) h) g
+  go :: Free f a -> m (Either (Free f a) a)
+  go f =
+    case toView f of
+         Return a -> Right <$> pure a
+         Bind g i -> (Left <<< i) <$> k g
 
--- | `runFree` runs a computation of type `Free f a`, using a function which unwraps a single layer of
--- | the functor `f` at a time.
+-- | Run a free monad with a function that unwraps a single layer of the functor `f` at a time,
 runFree :: forall f a. (Functor f) => (f (Free f a) -> Free f a) -> Free f a -> a
-runFree fn = runIdentity <<< runFreeM (Identity <<< fn)
+runFree k = runIdentity <<< runFreeM (Identity <<< k)
 
--- | `runFreeM` runs a compuation of type `Free f a` in any `Monad` which supports tail recursion.
+-- | Run a free monad with a function mapping a functor `f` to a tail-recursive monad `m`.
 -- | See the `MonadRec` type class for more details.
 runFreeM :: forall f m a. (Functor f, MonadRec m) => (f (Free f a) -> m (Free f a)) -> Free f a -> m a
-runFreeM fn = tailRecM \f ->
-  case resume f of
-    Left fs -> Left <$> fn fs
-    Right a -> return (Right a)
+runFreeM k = tailRecM go
+  where
+  go :: Free f a -> m (Either (Free f a) a)
+  go f =
+    case toView f of
+         Return a -> Right <$> pure a
+         Bind g i -> Left <$> k (i <$> g)
 
--- | `runFreeC` is the equivalent of `runFree` for type constructors transformed with `Coyoneda`,
--- | hence we have no requirement that `f` be a `Functor`.
-runFreeC :: forall f a. (forall a. f a -> a) -> FreeC f a -> a
-runFreeC nat = runIdentity <<< runFreeCM (Identity <<< nat)
+fromView :: forall f a. FreeView f a Val -> Free f a
+fromView f = Free (unsafeCoerceFreeView f) (empty unit)
 
--- | `runFreeCM` is the equivalent of `runFreeM` for type constructors transformed with `Coyoneda`,
--- | hence we have no requirement that `f` be a `Functor`.
-runFreeCM :: forall f m a. (MonadRec m) => Natural f m -> FreeC f a -> m a
-runFreeCM nat = runFreeM (liftCoyonedaTF nat)
+toView :: forall f a. Free f a -> FreeView f a Val
+toView (Free v s) =
+  case v of
+       Return a -> case (uncons s) of
+                        Nothing -> Return (unsafeCoerceVal a)
+                        Just (Tuple h t) -> toView (unsafeCoerceFree (concatF ((runExpF h) a) t))
+       Bind f k -> Bind f (\a -> unsafeCoerceFree (concatF (k a) s))
+  where
+  concatF :: Free f Val -> List (ExpF f) -> Free f Val
+  concatF (Free v l) r = Free v (append l r)
+
+  runExpF :: forall f. ExpF f -> (Val -> Free f Val)
+  runExpF (ExpF k) = k
+
+unsafeCoerceVal :: forall a. Val -> a
+unsafeCoerceVal = unsafeCoerce
+
+unsafeCoerceF :: forall f a. f a -> f Val
+unsafeCoerceF = unsafeCoerce
+
+unsafeCoerceFree :: forall f a. Free f Val -> Free f a
+unsafeCoerceFree = unsafeCoerce
+
+unsafeCoerceFreeView :: forall f a b. FreeView f a b -> FreeView f Val Val
+unsafeCoerceFreeView = unsafeCoerce
+
+unsafeCoerceBind :: forall f a b. (a -> Free f b)-> (Val -> Free f Val)
+unsafeCoerceBind = unsafeCoerce
+
+data List a
+
+foreign import append :: forall a. List a -> List a -> List a
+
+foreign import empty :: forall a. Unit -> List a
+
+foreign import null :: forall a. List a -> Boolean
+
+foreign import snoc :: forall a. List a -> a -> List a
+
+foreign import uncons' :: forall a. Maybe a -> (a -> Maybe a) -> (a -> List a -> Tuple a (List a)) -> List a -> Maybe (Tuple a (List a))
+
+uncons :: forall a. List a -> Maybe (Tuple a (List a))
+uncons = uncons' Nothing Just Tuple

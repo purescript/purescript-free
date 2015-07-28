@@ -28,13 +28,13 @@ runner n = do
   log $ "running with: " ++ show n
 
   t1 <- now
-  pure $ runTrampoline $ bindF (mapF id (leftBind n)) liftF
+  pure $ runTrampoline $ leftBind n
   t2 <- now
 
   log $ "leftBind: " ++ show (t2 - t1)
 
   t3 <- now
-  pure $ runTrampoline $ bindF (mapF id (rightBind n)) liftF
+  pure $ runTrampoline $ rightBind n
   t4 <- now
 
   log $ "rightBind: " ++ show (t4 - t3)
