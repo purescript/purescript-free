@@ -29,6 +29,7 @@ instance bindFree :: (Functor f) => Bind (Free f)
 instance monadFree :: (Functor f) => Monad (Free f)
 instance monadTransFree :: MonadTrans Free
 instance monadFreeFree :: (Functor f) => MonadFree f (Free f)
+instance monadRecFree :: (Functor f) => MonadRec (Free f)
 ```
 
 #### `FreeC`

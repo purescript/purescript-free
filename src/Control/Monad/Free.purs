@@ -75,6 +75,11 @@ instance monadTransFree :: MonadTrans Free where
 instance monadFreeFree :: (Functor f) => MonadFree f (Free f) where
   wrap = Free
 
+instance monadRecFree :: (Functor f) => MonadRec (Free f) where
+  tailRecM f u = f u >>= \o -> case o of
+                                    Left  a -> tailRecM f a
+                                    Right b -> pure b
+
 -- | Lift an action described by the generating functor `f` into the monad `m`
 -- | (usually `Free f`).
 liftF :: forall f m a. (Functor f, Monad m, MonadFree f m) => f a -> m a
