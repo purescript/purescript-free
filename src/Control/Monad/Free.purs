@@ -10,11 +10,12 @@ module Control.Monad.Free
   , runFreeM
   ) where
 
-import Prelude hiding (append)
+import Prelude
 
 import Control.Monad.Rec.Class (MonadRec, tailRecM)
 import Control.Monad.Trans (MonadTrans)
 
+import Data.CatList (CatList(), empty, snoc, uncons)
 import Data.Either (Either(..), either)
 import Data.Identity (Identity(..), runIdentity)
 import Data.Inject (Inject, inj)
@@ -30,7 +31,7 @@ import Unsafe.Coerce (unsafeCoerce)
 -- | the free monad is represented using a sequential data structure in
 -- | order to overcome the quadratic complexity of left-associated binds
 -- | and traversal through the free monad structure.
-data Free f a = Free (FreeView f Val Val) (List (ExpF f))
+data Free f a = Free (FreeView f Val Val) (CatList (ExpF f))
 
 newtype ExpF f = ExpF (Val -> Free f Val)
 
@@ -111,7 +112,7 @@ runFreeM k = tailRecM go
          Bind g i -> Left <$> k (i <$> g)
 
 fromView :: forall f a. FreeView f a Val -> Free f a
-fromView f = Free (unsafeCoerceFreeView f) (empty unit)
+fromView f = Free (unsafeCoerceFreeView f) empty
 
 toView :: forall f a. Free f a -> FreeView f a Val
 toView (Free v s) =
@@ -121,8 +122,8 @@ toView (Free v s) =
                         Just (Tuple h t) -> toView (unsafeCoerceFree (concatF ((runExpF h) a) t))
        Bind f k -> Bind f (\a -> unsafeCoerceFree (concatF (k a) s))
   where
-  concatF :: Free f Val -> List (ExpF f) -> Free f Val
-  concatF (Free v l) r = Free v (append l r)
+  concatF :: Free f Val -> CatList (ExpF f) -> Free f Val
+  concatF (Free v l) r = Free v (l <> r)
 
   runExpF :: forall f. ExpF f -> (Val -> Free f Val)
   runExpF (ExpF k) = k
@@ -141,18 +142,3 @@ unsafeCoerceFreeView = unsafeCoerce
 
 unsafeCoerceBind :: forall f a b. (a -> Free f b)-> (Val -> Free f Val)
 unsafeCoerceBind = unsafeCoerce
-
-data List a
-
-foreign import append :: forall a. List a -> List a -> List a
-
-foreign import empty :: forall a. Unit -> List a
-
-foreign import null :: forall a. List a -> Boolean
-
-foreign import snoc :: forall a. List a -> a -> List a
-
-foreign import uncons' :: forall a. Maybe a -> (a -> Maybe a) -> (a -> List a -> Tuple a (List a)) -> List a -> Maybe (Tuple a (List a))
-
-uncons :: forall a. List a -> Maybe (Tuple a (List a))
-uncons = uncons' Nothing Just Tuple
