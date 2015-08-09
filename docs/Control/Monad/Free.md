@@ -70,10 +70,10 @@ This construction allows us to write computations which are polymorphic in the
 particular `Free` monad we use, allowing us to extend the functionality of
 our monad later.
 
-#### `foldMapF`
+#### `foldFree`
 
 ``` purescript
-foldMapF :: forall f m a. (MonadRec m) => NaturalTransformation f m -> Free f a -> m a
+foldFree :: forall f m a. (MonadRec m) => NaturalTransformation f m -> Free f a -> m a
 ```
 
 Run a free monad with a natural transformation from the type constructor `f`

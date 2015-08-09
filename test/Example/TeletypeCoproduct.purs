@@ -6,7 +6,7 @@ import Control.Alt ((<|>))
 import Control.Apply ((*>))
 import Control.Monad.Eff (Eff())
 import Control.Monad.Eff.Console
-import Control.Monad.Free (Free(), liftF, foldMapF, injF)
+import Control.Monad.Free (Free(), liftF, foldFree, injF)
 
 import Data.Functor.Coproduct (Coproduct())
 import Data.Inject (prj)
@@ -65,6 +65,6 @@ tN fa = fromJust $ (teletype1N <$> prj fa) <|>
                    (teletype3N <$> prj fa)
 
 run :: forall a. T a -> Eff (console :: CONSOLE) a
-run = foldMapF tN
+run = foldFree tN
 
 main = run u

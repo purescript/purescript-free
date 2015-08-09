@@ -23,7 +23,7 @@ teletypeN (PutStrLn s a) = const a <$> log s
 teletypeN (GetLine k) = return (k "fake input")
 
 run :: forall a. Teletype a -> Eff (console :: CONSOLE) a
-run = foldMapF teletypeN
+run = foldFree teletypeN
 
 echo = do
   a <- getLine

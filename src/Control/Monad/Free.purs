@@ -5,7 +5,7 @@ module Control.Monad.Free
   , liftFI
   , mapF
   , injF
-  , foldMapF
+  , foldFree
   , runFree
   , runFreeM
   ) where
@@ -74,7 +74,7 @@ suspendF f = fromView (Bind (unsafeCoerceF (pure f :: f (Free f a))) (id <<< uns
 
 -- | Use a natural transformation to change the generating type constructor of a free monad.
 mapF :: forall f g a. NaturalTransformation f g -> Free f a -> Free g a
-mapF k = foldMapF (liftF <<< k)
+mapF k = foldFree (liftF <<< k)
 
 -- | Embed computations in one `Free` monad as computations in the `Free` monad for
 -- | a coproduct type constructor.
@@ -87,8 +87,8 @@ injF = mapF inj
 
 -- | Run a free monad with a natural transformation from the type constructor `f`
 -- | to the tail-recursive monad `m`.See the `MonadRec` type class for more details.
-foldMapF :: forall f m a. (MonadRec m) => NaturalTransformation f m -> Free f a -> m a
-foldMapF k = tailRecM go
+foldFree :: forall f m a. (MonadRec m) => NaturalTransformation f m -> Free f a -> m a
+foldFree k = tailRecM go
   where
   go :: Free f a -> m (Either (Free f a) a)
   go f =

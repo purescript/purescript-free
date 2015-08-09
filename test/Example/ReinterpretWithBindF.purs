@@ -24,7 +24,7 @@ getLine = liftF $ GetLine id
 
 -- | Interpreter for `Teletype`, producing an effectful output
 runTeletype :: forall a. Teletype a -> Eff (console :: CONSOLE) a
-runTeletype = foldMapF go
+runTeletype = foldFree go
   where
   go :: NaturalTransformation TeletypeF (Eff (console :: CONSOLE))
   go (PutStrLn s next) = log s $> next
@@ -48,7 +48,7 @@ farewell = liftF $ Farewell unit
 -- | the `Greet` case - we're expanding one `InitialF` action into 3 `TeletypeF`
 -- | actions).
 runInitial :: forall a. Initial a -> Teletype a
-runInitial initial = foldMapF go initial
+runInitial initial = foldFree go initial
   where
   go :: NaturalTransformation InitialF Teletype
   go (Greet k) = do
