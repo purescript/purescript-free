@@ -21,6 +21,7 @@
     "**/.*",
     "bower_components",
     "node_modules",
+    "benchmarks",
     "output",
     "test",
     "bower.json",

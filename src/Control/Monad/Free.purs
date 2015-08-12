@@ -101,7 +101,7 @@ injF :: forall f g a. (Inject f g) => Free f a -> Free g a
 injF = mapF inj
 
 -- | Run a free monad with a natural transformation from the type constructor `f`
--- | to the tail-recursive monad `m`.See the `MonadRec` type class for more details.
+-- | to the tail-recursive monad `m`. See the `MonadRec` type class for more details.
 foldFree :: forall f m a. (MonadRec m) => NaturalTransformation f m -> Free f a -> m a
 foldFree k = tailRecM go
   where
@@ -111,7 +111,7 @@ foldFree k = tailRecM go
          Return a -> Right <$> pure a
          Bind g i -> (Left <<< i) <$> k g
 
--- | Run a free monad with a function that unwraps a single layer of the functor `f` at a time,
+-- | Run a free monad with a function that unwraps a single layer of the functor `f` at a time.
 runFree :: forall f a. (Functor f) => (f (Free f a) -> Free f a) -> Free f a -> a
 runFree k = runIdentity <<< runFreeM (Identity <<< k)
 

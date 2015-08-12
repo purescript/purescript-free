@@ -77,7 +77,7 @@ foldFree :: forall f m a. (MonadRec m) => NaturalTransformation f m -> Free f a 
 ```
 
 Run a free monad with a natural transformation from the type constructor `f`
-to the tail-recursive monad `m`.See the `MonadRec` type class for more details.
+to the tail-recursive monad `m`. See the `MonadRec` type class for more details.
 
 #### `runFree`
 
@@ -85,7 +85,7 @@ to the tail-recursive monad `m`.See the `MonadRec` type class for more details.
 runFree :: forall f a. (Functor f) => (f (Free f a) -> Free f a) -> Free f a -> a
 ```
 
-Run a free monad with a function that unwraps a single layer of the functor `f` at a time,
+Run a free monad with a function that unwraps a single layer of the functor `f` at a time.
 
 #### `runFreeM`
 
