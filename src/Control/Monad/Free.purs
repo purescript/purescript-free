@@ -6,6 +6,7 @@ module Control.Monad.Free
   , mapF
   , injF
   , foldFree
+  , foldFree_
   , runFree
   , runFreeM
   ) where
@@ -19,7 +20,7 @@ import Data.CatList (CatList(), empty, snoc, uncons)
 import Data.Either (Either(..), either)
 import Data.Identity (Identity(..), runIdentity)
 import Data.Inject (Inject, inj)
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), maybe)
 import Data.NaturalTransformation (NaturalTransformation())
 import Data.Tuple (Tuple(..))
 
@@ -101,7 +102,7 @@ injF :: forall f g a. (Inject f g) => Free f a -> Free g a
 injF = mapF inj
 
 -- | Run a free monad with a natural transformation from the type constructor `f`
--- | to the tail-recursive monad `m`.See the `MonadRec` type class for more details.
+-- | to the tail-recursive monad `m`. See the `MonadRec` type class for more details.
 foldFree :: forall f m a. (MonadRec m) => NaturalTransformation f m -> Free f a -> m a
 foldFree k = tailRecM go
   where
@@ -110,6 +111,20 @@ foldFree k = tailRecM go
     case toView f of
          Return a -> Right <$> pure a
          Bind g i -> (Left <<< i) <$> k g
+
+-- | Run a free monad with a "partial natural transformation" from the type
+-- | constructor `f` to the tail-recursive monad `m`. See the `MonadRec` type
+-- | class for more details.
+-- |
+-- | When the transformation returns `Nothing` futher processing of the `Free`
+-- | structure will be terminated.
+foldFree_ :: forall f m a. (MonadRec m) => (forall a. f a -> m (Maybe a)) -> Free f a -> m (Maybe a)
+foldFree_ k = tailRecM go
+  where
+  go :: Free f a -> m (Either (Free f a) (Maybe a))
+  go f = case toView f of
+    Return a -> Right <$> pure (Just a)
+    Bind g i -> maybe (pure Nothing) (Left <<< i) <$> k g
 
 -- | Run a free monad with a function that unwraps a single layer of the functor `f` at a time,
 runFree :: forall f a. (Functor f) => (f (Free f a) -> Free f a) -> Free f a -> a
