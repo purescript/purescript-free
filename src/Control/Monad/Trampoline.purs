@@ -16,12 +16,12 @@ import Prelude
 import Control.Monad.Free
 
 import Data.Lazy
-import Data.Foldable 
+import Data.Foldable
 import Data.Traversable
 
 -- | The `Trampoline` monad
 -- |
--- | A computation of type `Trampoline a` consists of zero or more lazy 
+-- | A computation of type `Trampoline a` consists of zero or more lazy
 -- | suspensions before a value is returned.
 type Trampoline = Free Lazy
 
@@ -31,11 +31,11 @@ done = pure
 
 -- | Suspend a computation by one step.
 suspend :: forall a. Trampoline a -> Trampoline a
-suspend t = Free (defer (const t))
+suspend = suspendF
 
 -- | Use the `Trampoline` monad to represent a `Lazy` value.
 delay' :: forall a. Lazy a -> Trampoline a
-delay' a = Free (done <$> a)
+delay' = liftF
 
 -- | Use the `Trampoline` monad to represent the delayed evaluation of a value.
 delay :: forall a. (Unit -> a) -> Trampoline a

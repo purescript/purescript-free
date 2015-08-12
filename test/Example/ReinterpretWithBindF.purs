@@ -5,27 +5,28 @@ import Prelude
 import Control.Monad.Eff
 import Control.Monad.Eff.Console
 import Control.Monad.Free
-import Data.Coyoneda
+
 import Data.Functor (($>))
+import Data.NaturalTransformation
 
 -- | Target DSL that we will actually run
 data TeletypeF a
   = PutStrLn String a
   | GetLine (String -> a)
 
-type Teletype = FreeC TeletypeF
+type Teletype = Free TeletypeF
 
 putStrLn :: String -> Teletype Unit
-putStrLn s = liftFC $ PutStrLn s unit
+putStrLn s = liftF $ PutStrLn s unit
 
 getLine :: Teletype String
-getLine = liftFC $ GetLine id
+getLine = liftF $ GetLine id
 
 -- | Interpreter for `Teletype`, producing an effectful output
 runTeletype :: forall a. Teletype a -> Eff (console :: CONSOLE) a
-runTeletype = runFreeCM go
+runTeletype = foldFree go
   where
-  go :: Natural TeletypeF (Eff (console :: CONSOLE))
+  go :: NaturalTransformation TeletypeF (Eff (console :: CONSOLE))
   go (PutStrLn s next) = log s $> next
   go (GetLine k) = pure (k "fake input")
 
@@ -34,22 +35,22 @@ data InitialF a
   = Greet (String -> a)
   | Farewell a
 
-type Initial = FreeC InitialF
+type Initial = Free InitialF
 
 greet :: Initial String
-greet = liftFC $ Greet id
+greet = liftF $ Greet id
 
 farewell :: Initial Unit
-farewell = liftFC $ Farewell unit
+farewell = liftF $ Farewell unit
 
 -- | Interpreter for `Initial`, producing a `Teletype` output. `bindF` allows
 -- | us to map one action in `InitialF` to multiple actions in `TeletypeF` (see
 -- | the `Greet` case - we're expanding one `InitialF` action into 3 `TeletypeF`
 -- | actions).
 runInitial :: forall a. Initial a -> Teletype a
-runInitial initial = bindFC initial go
+runInitial initial = foldFree go initial
   where
-  go :: Natural InitialF Teletype
+  go :: NaturalTransformation InitialF Teletype
   go (Greet k) = do
     name <- getLine
     putStrLn $ "Hello " ++ name
