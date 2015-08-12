@@ -18,14 +18,9 @@
     "url": "git://github.com/purescript/purescript-free.git"
   },
   "ignore": [
-    "**/.*",
-    "bower_components",
-    "node_modules",
-    "benchmarks",
-    "output",
-    "test",
-    "bower.json",
-    "package.json"
+    "*",
+    "!src/**/*",
+    "!LICENSE"
   ],
   "dependencies": {
     "purescript-exists": "^0.2.0",
@@ -36,6 +31,7 @@
     "purescript-catenable-lists": "^0.1.0"
   },
   "devDependencies": {
-    "purescript-console": "^0.1.0"
+    "purescript-console": "^0.1.0",
+    "purescript-benchotron": "~2.1.0"
   }
 }
