@@ -1,9 +1,10 @@
 {
+  "name": "purescript-free",
   "private": true,
   "scripts": {
     "postinstall": "pulp dep install",
     "build": "pulp test && rimraf docs && pulp docs",
-    "benchmark": "./node_modules/.bin/pulp run -I \"benchmark\" --main \"Benchmark.Main\""
+    "benchmark": "pulp run -I \"benchmark\" --main \"Benchmark.Main\""
   },
   "files": [],
   "devDependencies": {
