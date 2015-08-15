@@ -4,26 +4,20 @@ import Prelude
 
 import Control.Monad.Eff.Console (log)
 
-import Test.Benchmark
+import qualified Test.Control.Monad.Free.Coproduct as C
+import qualified Test.Control.Monad.Free.Stratified as S
+import qualified Test.Control.Monad.Free.Teletype as T
 
 main = do
   log "Teletype"
-  --Example.Teletype.main
+  T.main
 
   log ""
 
-  log "TeletypeCoproduct"
-  --Example.TeletypeCoproduct.main
+  log "Coproduct"
+  C.main
 
   log ""
 
-  log "TestBind"
-  --Example.TestBind.main
-
-  log ""
-
-  log "ReinterpreterWithBindF"
-  --Example.ReinterpretWithBindF.main
-
-  log "Running benchmarks..."
-  runBenchmarks
+  log "Stratified"
+  S.main

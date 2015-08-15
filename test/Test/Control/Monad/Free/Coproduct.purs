@@ -1,4 +1,4 @@
-module Example.TeletypeCoproduct where
+module Test.Control.Monad.Free.Coproduct where
 
 import Prelude
 
@@ -51,13 +51,13 @@ u :: T Unit
 u =  r *> s *> t
 
 teletype1N :: forall e. NaturalTransformation Teletype1F (Eff (console :: CONSOLE | e))
-teletype1N (Print1 s a) = const a <$> log ("teletype1: " ++ s)
+teletype1N (Print1 x a) = const a <$> log ("teletype1: " ++ x)
 
 teletype2N :: forall e. NaturalTransformation Teletype2F (Eff (console :: CONSOLE | e))
-teletype2N (Print2 s a) = const a <$> log ("teletype2: " ++ s)
+teletype2N (Print2 x a) = const a <$> log ("teletype2: " ++ x)
 
 teletype3N :: forall e. NaturalTransformation Teletype3F (Eff (console :: CONSOLE | e))
-teletype3N (Print3 s a) = const a <$> log ("teletype3: " ++ s)
+teletype3N (Print3 x a) = const a <$> log ("teletype3: " ++ x)
 
 tN :: forall e. NaturalTransformation TF (Eff (console :: CONSOLE | e))
 tN fa = fromJust $ (teletype1N <$> prj fa) <|>

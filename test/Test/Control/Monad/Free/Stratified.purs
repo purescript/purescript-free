@@ -1,4 +1,4 @@
-module Example.ReinterpretWithBindF where
+module Test.Control.Monad.Free.Stratified where
 
 import Prelude
 
@@ -43,7 +43,7 @@ greet = liftF $ Greet id
 farewell :: Initial Unit
 farewell = liftF $ Farewell unit
 
--- | Interpreter for `Initial`, producing a `Teletype` output. `bindF` allows
+-- | Interpreter for `Initial`, producing a `Teletype` output. `foldFree` allows
 -- | us to map one action in `InitialF` to multiple actions in `TeletypeF` (see
 -- | the `Greet` case - we're expanding one `InitialF` action into 3 `TeletypeF`
 -- | actions).
