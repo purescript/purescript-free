@@ -1,4 +1,4 @@
-module Example.Teletype where
+module Test.Control.Monad.Free.Teletype where
 
 import Prelude
 

@@ -1,11 +1,15 @@
 {
+  "name": "purescript-free",
   "private": true,
   "scripts": {
     "postinstall": "pulp dep install",
-    "build": "pulp test && rimraf docs && pulp docs"
+    "build": "pulp test && rimraf docs && pulp docs",
+    "benchmark": "pulp run -I \"benchmark\" --main \"Benchmark.Main\""
   },
+  "files": [],
   "devDependencies": {
-    "pulp": "^4.0.2",
+    "benchmark": "^1.0.0",
+    "pulp": "^4.3.0",
     "rimraf": "^2.4.1"
   }
 }
