@@ -12,16 +12,18 @@ import Data.Foldable
 import Benchotron.Core
 import Benchotron.UI.Console
 
+import Test.QuickCheck.Gen (vectorOf)
+
 import qualified Benchmark.Trampoline0df59c5 as T
 
-leftBindSmallBenchmark :: forall eff. Benchmark eff
+leftBindSmallBenchmark :: Benchmark
 leftBindSmallBenchmark = mkBenchmark
   { slug: "left-bind-small"
   , title: "Left associated binds (small - " ++ show inputsPerSize ++ " inputs per size)"
   , sizes: [1, 2, 3, 4, 5, 10, 20, 30, 40, 50, 100, 250, 500, 1000]
   , sizeInterpretation: "Number of binds"
   , inputsPerSize: inputsPerSize
-  , gen: zeroArray
+  , gen: \n -> vectorOf n (pure 0.0)
   , functions: [ benchFn "Free" (runTrampoline <<< binds)
                , benchFn "Free v0.6.1" (T.runTrampoline <<< bindsT)
                ]
@@ -42,14 +44,14 @@ leftBindSmallBenchmark = mkBenchmark
   genT :: forall a. a -> T.Trampoline a
   genT = T.suspend <<< T.done
 
-rightBindSmallBenchmark :: forall eff. Benchmark eff
+rightBindSmallBenchmark :: Benchmark
 rightBindSmallBenchmark = mkBenchmark
   { slug: "right-bind-small"
   , title: "Right associated binds (small - " ++ show inputsPerSize ++ " inputs per size)"
   , sizes: [1, 2, 3, 4, 5, 10, 20, 30, 40, 50, 100, 250, 500, 1000]
   , sizeInterpretation: "Number of binds"
   , inputsPerSize: inputsPerSize
-  , gen: zeroArray
+  , gen: \n -> vectorOf n (pure 0.0)
   , functions: [ benchFn "Free" (runTrampoline <<< binds)
                , benchFn "Free v0.6.1" (T.runTrampoline <<< bindsT)
                ]
@@ -70,14 +72,14 @@ rightBindSmallBenchmark = mkBenchmark
   genT :: forall a. a -> T.Trampoline a
   genT = T.suspend <<< T.done
 
-leftBindLargeBenchmark :: forall eff. Benchmark eff
+leftBindLargeBenchmark :: Benchmark
 leftBindLargeBenchmark = mkBenchmark
   { slug: "left-bind-large"
   , title: "Left associated binds (large - " ++ show inputsPerSize ++ " input per size)"
   , sizes: [1, 5, 10, 15, 20, 25, 30 ] <#> (* 100000)
   , sizeInterpretation: "Number of binds"
   , inputsPerSize: inputsPerSize
-  , gen: zeroArray
+  , gen: \n -> vectorOf n (pure 0.0)
   , functions: [ benchFn "Free" (runTrampoline <<< binds)
                , benchFn "Free v0.6.1" (T.runTrampoline <<< bindsT)
                ]
@@ -98,14 +100,14 @@ leftBindLargeBenchmark = mkBenchmark
   genT :: forall a. a -> T.Trampoline a
   genT = T.suspend <<< T.done
 
-rightBindLargeBenchmark :: forall eff. Benchmark eff
+rightBindLargeBenchmark :: Benchmark
 rightBindLargeBenchmark = mkBenchmark
   { slug: "right-bind-large"
   , title: "Right associated binds (large - " ++ show inputsPerSize ++ " input per size)"
   , sizes: [1, 5, 10, 15, 20, 25, 30 ] <#> (* 100000)
   , sizeInterpretation: "Number of binds"
   , inputsPerSize: inputsPerSize
-  , gen: zeroArray
+  , gen: \n -> vectorOf n (pure 0.0)
   , functions: [ benchFn "Free" (runTrampoline <<< binds)
                , benchFn "Free v0.6.1" (T.runTrampoline <<< bindsT)
                ]
@@ -125,8 +127,6 @@ rightBindLargeBenchmark = mkBenchmark
 
   genT :: forall a. a -> T.Trampoline a
   genT = T.suspend <<< T.done
-
-foreign import zeroArray :: forall eff. Int -> Eff (BenchEffects eff) (Array Number)
 
 main = runSuite [ leftBindSmallBenchmark
                 , rightBindSmallBenchmark

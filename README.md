@@ -27,7 +27,7 @@ bower install purescript-free
 
 ## Benchmarks
 
-The following benchmarks compare the current implementation with the implementation at `v0.6.1` (0df59c5d459fed983131856886fc3a4b43234f1f), which used the `Gosub` technique to defer monadic binds.
+The following benchmarks compare the current implementation with the implementation at `v0.6.1` (purescript/purescript-free@0df59c5d459fed983131856886fc3a4b43234f1f), which used the `Gosub` technique to defer monadic binds.
 
 The benchmarks may be run as follows. Note that `pulp` must be on your path.
 
