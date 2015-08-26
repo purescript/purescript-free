@@ -24,12 +24,12 @@
   ],
   "dependencies": {
     "purescript-catenable-lists": "~0.1.0",
-    "purescript-unsafe-coerce": "~0.1.0",
+    "purescript-exists": "~0.2.0",
     "purescript-inject": "~0.3.0",
-    "purescript-transformers": "~0.6.1",
-    "purescript-exists": "~0.2.0"
+    "purescript-transformers": "^0.7.1",
+    "purescript-unsafe-coerce": "~0.1.0"
   },
   "devDependencies": {
-    "purescript-benchotron": "~3.0.1"
+    "purescript-console": "~0.1.1"
   }
 }
