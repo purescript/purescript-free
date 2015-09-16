@@ -23,13 +23,13 @@
     "!LICENSE"
   ],
   "dependencies": {
-    "purescript-catenable-lists": "~0.1.0",
-    "purescript-exists": "~0.2.0",
-    "purescript-inject": "~0.3.0",
-    "purescript-transformers": "^0.7.1",
-    "purescript-unsafe-coerce": "~0.1.0"
+    "purescript-catenable-lists": "^0.1.0",
+    "purescript-exists": "^0.2.0",
+    "purescript-inject": "^0.3.0",
+    "purescript-transformers": "^0.8.1",
+    "purescript-unsafe-coerce": "^0.1.0"
   },
   "devDependencies": {
-    "purescript-console": "~0.1.1"
+    "purescript-console": "^0.1.1"
   }
 }
