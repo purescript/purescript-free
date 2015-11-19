@@ -45,7 +45,7 @@ instance freeFunctor :: Functor (Free f) where
 instance freeBind :: Bind (Free f) where
   bind (Free v s) k = Free v (snoc s (ExpF (unsafeCoerceBind k)))
     where
-    unsafeCoerceBind :: forall f a b. (a -> Free f b)-> (Val -> Free f Val)
+    unsafeCoerceBind :: forall a b. (a -> Free f b)-> (Val -> Free f Val)
     unsafeCoerceBind = unsafeCoerce
 
 instance freeApplicative :: Applicative (Free f) where
@@ -66,10 +66,10 @@ instance freeMonadRec :: MonadRec (Free f) where
 liftF :: forall f a. f a -> Free f a
 liftF f = fromView (Bind (unsafeCoerceF f) (pure <<< unsafeCoerceVal))
   where
-  unsafeCoerceF :: forall f a. f a -> f Val
+  unsafeCoerceF :: f a -> f Val
   unsafeCoerceF = unsafeCoerce
 
-  unsafeCoerceVal :: forall a. Val -> a
+  unsafeCoerceVal :: Val -> a
   unsafeCoerceVal = unsafeCoerce
 
 -- | Lift an action described by the generating type constructor `f` into
@@ -81,10 +81,10 @@ liftFI fa = liftF (inj fa :: g a)
 suspendF :: forall f a. (Applicative f) => Free f a -> Free f a
 suspendF f = fromView (Bind (unsafeCoerceF (pure f :: f (Free f a))) (id <<< unsafeCoerceVal))
   where
-  unsafeCoerceF :: forall f a. f a -> f Val
+  unsafeCoerceF :: f (Free f a) -> f Val
   unsafeCoerceF = unsafeCoerce
 
-  unsafeCoerceVal :: forall a. Val -> a
+  unsafeCoerceVal :: Val -> Free f a
   unsafeCoerceVal = unsafeCoerce
 
 -- | Use a natural transformation to change the generating type constructor of a free monad.
@@ -129,7 +129,7 @@ runFreeM k = tailRecM go
 fromView :: forall f a. FreeView f a Val -> Free f a
 fromView f = Free (unsafeCoerceFreeView f) empty
   where
-  unsafeCoerceFreeView :: forall f a. FreeView f a Val -> FreeView f Val Val
+  unsafeCoerceFreeView :: FreeView f a Val -> FreeView f Val Val
   unsafeCoerceFreeView = unsafeCoerce
 
 toView :: forall f a. Free f a -> FreeView f a Val
@@ -143,11 +143,11 @@ toView (Free v s) =
   concatF :: Free f Val -> CatList (ExpF f) -> Free f Val
   concatF (Free v l) r = Free v (l <> r)
 
-  runExpF :: forall f. ExpF f -> (Val -> Free f Val)
+  runExpF :: ExpF f -> (Val -> Free f Val)
   runExpF (ExpF k) = k
 
-  unsafeCoerceFree :: forall f a. Free f Val -> Free f a
+  unsafeCoerceFree :: Free f Val -> Free f a
   unsafeCoerceFree = unsafeCoerce
 
-  unsafeCoerceVal :: forall a. Val -> a
+  unsafeCoerceVal :: Val -> a
   unsafeCoerceVal = unsafeCoerce

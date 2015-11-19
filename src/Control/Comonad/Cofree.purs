@@ -9,18 +9,14 @@ module Control.Comonad.Cofree
 
 import Prelude
 
-import Control.Comonad
-import Control.Apply
-import Control.Alt
-import Control.MonadPlus
-import Control.Bind
-import Control.Extend
-import Control.Monad.Trampoline
-import Control.Monad.Free
+import Control.Comonad (Comonad)
+import Control.Alt ((<|>))
+import Control.MonadPlus (MonadPlus)
+import Control.Extend (Extend)
+import Control.Monad.Trampoline (Trampoline(), runTrampoline)
 
-import Data.Lazy
-import Data.Foldable 
-import Data.Traversable
+import Data.Foldable (Foldable, foldr, foldl, foldMap)
+import Data.Traversable (Traversable, traverse)
 
 -- | The `Cofree` `Comonad` for a functor.
 -- |

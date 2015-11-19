@@ -7,9 +7,9 @@ module Data.Yoneda
 
 import Prelude
 
-import Control.Comonad
-import Control.Extend
-import Control.Monad.Trans
+import Control.Comonad (Comonad, extract)
+import Control.Extend (Extend, (<<=))
+import Control.Monad.Trans (MonadTrans)
 
 -- | The Yoneda `Functor`
 -- |
@@ -48,6 +48,6 @@ runYoneda (Yoneda f) k = f k
 liftYoneda :: forall f a. (Functor f) => f a -> Yoneda f a
 liftYoneda m = Yoneda (\k -> k <$> m)
 
--- | Lower a value of type `Yoneda f a` to the type constructor `f`. 
+-- | Lower a value of type `Yoneda f a` to the type constructor `f`.
 lowerYoneda :: forall f a. Yoneda f a -> f a
 lowerYoneda (Yoneda k) = k id

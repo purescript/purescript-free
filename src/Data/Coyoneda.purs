@@ -10,12 +10,12 @@ module Data.Coyoneda
 
 import Prelude
 
-import Data.Exists
+import Data.Exists (Exists(), runExists, mkExists)
 import Data.NaturalTransformation (NaturalTransformation())
 
-import Control.Comonad
-import Control.Extend
-import Control.Monad.Trans
+import Control.Comonad (Comonad, extract)
+import Control.Extend (Extend, (<<=))
+import Control.Monad.Trans (MonadTrans)
 
 -- | `Coyoneda` is encoded as an existential type using `Data.Exists`.
 -- |

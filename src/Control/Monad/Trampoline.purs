@@ -13,11 +13,9 @@ module Control.Monad.Trampoline
 
 import Prelude
 
-import Control.Monad.Free
+import Control.Monad.Free (Free(), liftF, runFree, suspendF)
 
-import Data.Lazy
-import Data.Foldable
-import Data.Traversable
+import Data.Lazy (Lazy(), force, defer)
 
 -- | The `Trampoline` monad
 -- |
