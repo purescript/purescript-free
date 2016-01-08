@@ -12,8 +12,9 @@ module Control.Monad.Free
 
 import Prelude
 
+import Control.Monad.Eff.Class (MonadEff, liftEff)
 import Control.Monad.Rec.Class (MonadRec, tailRecM)
-import Control.Monad.Trans (MonadTrans)
+import Control.Monad.Trans (MonadTrans, lift)
 
 import Data.CatList (CatList(), empty, snoc, uncons)
 import Data.Either (Either(..), either)
@@ -61,6 +62,9 @@ instance freeMonadTrans :: MonadTrans Free where
 
 instance freeMonadRec :: MonadRec (Free f) where
   tailRecM k a = k a >>= either (tailRecM k) pure
+
+instance freeMonadEff :: (MonadEff eff f) => MonadEff eff (Free f) where
+  liftEff = lift <<< liftEff
 
 -- | Lift an impure value described by the generating type constructor `f` into the free monad.
 liftF :: forall f a. f a -> Free f a
