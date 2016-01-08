@@ -12,8 +12,9 @@ module Control.Monad.Free
 
 import Prelude
 
+import Control.Monad.Eff.Class (MonadEff, liftEff)
 import Control.Monad.Rec.Class (MonadRec, tailRecM)
-import Control.Monad.Trans (MonadTrans)
+import Control.Monad.Trans (MonadTrans, lift)
 
 import Data.CatList (CatList(), empty, snoc, uncons)
 import Data.Either (Either(..), either)
@@ -39,28 +40,31 @@ data FreeView f a b = Return a | Bind (f b) (b -> Free f a)
 
 data Val
 
-instance freeFunctor :: Functor (Free f) where
+instance functorFree :: Functor (Free f) where
   map k f = f >>= return <<< k
 
-instance freeBind :: Bind (Free f) where
+instance bindFree :: Bind (Free f) where
   bind (Free v s) k = Free v (snoc s (ExpF (unsafeCoerceBind k)))
     where
     unsafeCoerceBind :: forall a b. (a -> Free f b)-> (Val -> Free f Val)
     unsafeCoerceBind = unsafeCoerce
 
-instance freeApplicative :: Applicative (Free f) where
+instance applicativeFree :: Applicative (Free f) where
   pure = fromView <<< Return
 
-instance freeApply :: Apply (Free f) where
+instance applyFree :: Apply (Free f) where
   apply = ap
 
-instance freeMonad :: Monad (Free f)
+instance monadFree :: Monad (Free f)
 
-instance freeMonadTrans :: MonadTrans Free where
+instance monadTransFree :: MonadTrans Free where
   lift = liftF
 
-instance freeMonadRec :: MonadRec (Free f) where
+instance monadRecFree :: MonadRec (Free f) where
   tailRecM k a = k a >>= either (tailRecM k) pure
+
+instance monadEffFree :: (MonadEff eff f) => MonadEff eff (Free f) where
+  liftEff = lift <<< liftEff
 
 -- | Lift an impure value described by the generating type constructor `f` into the free monad.
 liftF :: forall f a. f a -> Free f a
