@@ -10,15 +10,15 @@ module Control.Monad.Free
   , runFreeM
   ) where
 
-import Prelude
+import Prelude (class Functor, class Applicative, class Monad, class Apply, class Bind, (<>), (<$>), pure, (<<<), id, (>>=), ap, return)
 
-import Control.Monad.Rec.Class (MonadRec, tailRecM)
-import Control.Monad.Trans (MonadTrans)
+import Control.Monad.Rec.Class (class MonadRec, tailRecM)
+import Control.Monad.Trans (class MonadTrans)
 
 import Data.CatList (CatList(), empty, snoc, uncons)
 import Data.Either (Either(..), either)
 import Data.Identity (Identity(..), runIdentity)
-import Data.Inject (Inject, inj)
+import Data.Inject (class Inject, inj)
 import Data.Maybe (Maybe(..))
 import Data.NaturalTransformation (NaturalTransformation())
 import Data.Tuple (Tuple(..))

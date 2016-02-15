@@ -8,14 +8,14 @@ module Data.Coyoneda
   , liftCoyonedaTF
   ) where
 
-import Prelude
+import Prelude (class Functor, class Monad, class Bind, class Applicative, class Apply, (<<<), (<$>), id, ($), (>>=), pure, (<*>))
 
 import Data.Exists (Exists(), runExists, mkExists)
 import Data.NaturalTransformation (NaturalTransformation())
 
-import Control.Comonad (Comonad, extract)
-import Control.Extend (Extend, (<<=))
-import Control.Monad.Trans (MonadTrans)
+import Control.Comonad (class Comonad, extract)
+import Control.Extend (class Extend, (<<=))
+import Control.Monad.Trans (class MonadTrans)
 
 -- | `Coyoneda` is encoded as an existential type using `Data.Exists`.
 -- |
