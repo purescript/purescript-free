@@ -3,15 +3,16 @@ module Test.Control.Monad.Free.Coproduct where
 import Prelude
 
 import Control.Alt ((<|>))
-import Control.Apply ((*>))
-import Control.Monad.Eff (Eff())
-import Control.Monad.Eff.Console
-import Control.Monad.Free (Free(), liftF, foldFree, injF)
+import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Console (CONSOLE, log)
+import Control.Monad.Free (Free, liftF, foldFree, injF)
 
-import Data.Functor.Coproduct (Coproduct())
+import Data.Functor.Coproduct (Coproduct)
 import Data.Inject (prj)
-import Data.Maybe.Unsafe (fromJust)
-import Data.NaturalTransformation (NaturalTransformation())
+import Data.Maybe (fromJust)
+import Data.NaturalTransformation (NaturalTransformation)
+
+import Partial.Unsafe (unsafePartial)
 
 data Teletype1F a = Print1 String a
 
@@ -50,21 +51,23 @@ t = injF (print3 "3")
 u :: T Unit
 u =  r *> s *> t
 
-teletype1N :: forall e. NaturalTransformation Teletype1F (Eff (console :: CONSOLE | e))
-teletype1N (Print1 x a) = const a <$> log ("teletype1: " ++ x)
+teletype1N :: forall eff. NaturalTransformation Teletype1F (Eff (console :: CONSOLE | eff))
+teletype1N (Print1 x a) = const a <$> log ("teletype1: " <> x)
 
-teletype2N :: forall e. NaturalTransformation Teletype2F (Eff (console :: CONSOLE | e))
-teletype2N (Print2 x a) = const a <$> log ("teletype2: " ++ x)
+teletype2N :: forall eff. NaturalTransformation Teletype2F (Eff (console :: CONSOLE | eff))
+teletype2N (Print2 x a) = const a <$> log ("teletype2: " <> x)
 
-teletype3N :: forall e. NaturalTransformation Teletype3F (Eff (console :: CONSOLE | e))
-teletype3N (Print3 x a) = const a <$> log ("teletype3: " ++ x)
+teletype3N :: forall eff. NaturalTransformation Teletype3F (Eff (console :: CONSOLE | eff))
+teletype3N (Print3 x a) = const a <$> log ("teletype3: " <> x)
 
-tN :: forall e. NaturalTransformation TF (Eff (console :: CONSOLE | e))
-tN fa = fromJust $ (teletype1N <$> prj fa) <|>
-                   (teletype2N <$> prj fa) <|>
-                   (teletype3N <$> prj fa)
+tN :: forall eff. NaturalTransformation TF (Eff (console :: CONSOLE | eff))
+tN fa = unsafePartial $
+  fromJust $ (teletype1N <$> prj fa) <|>
+             (teletype2N <$> prj fa) <|>
+             (teletype3N <$> prj fa)
 
-run :: forall a. T a -> Eff (console :: CONSOLE) a
+run :: forall eff. NaturalTransformation T (Eff (console :: CONSOLE | eff))
 run = foldFree tN
 
+main :: forall eff. Eff (console :: CONSOLE | eff) Unit
 main = run u

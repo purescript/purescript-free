@@ -19,7 +19,7 @@ import qualified Benchmark.Trampoline0df59c5 as T
 leftBindSmallBenchmark :: Benchmark
 leftBindSmallBenchmark = mkBenchmark
   { slug: "left-bind-small"
-  , title: "Left associated binds (small - " ++ show inputsPerSize ++ " inputs per size)"
+  , title: "Left associated binds (small - " <> show inputsPerSize <> " inputs per size)"
   , sizes: [1, 2, 3, 4, 5, 10, 20, 30, 40, 50, 100, 250, 500, 1000]
   , sizeInterpretation: "Number of binds"
   , inputsPerSize: inputsPerSize
@@ -47,7 +47,7 @@ leftBindSmallBenchmark = mkBenchmark
 rightBindSmallBenchmark :: Benchmark
 rightBindSmallBenchmark = mkBenchmark
   { slug: "right-bind-small"
-  , title: "Right associated binds (small - " ++ show inputsPerSize ++ " inputs per size)"
+  , title: "Right associated binds (small - " <> show inputsPerSize <> " inputs per size)"
   , sizes: [1, 2, 3, 4, 5, 10, 20, 30, 40, 50, 100, 250, 500, 1000]
   , sizeInterpretation: "Number of binds"
   , inputsPerSize: inputsPerSize
@@ -75,7 +75,7 @@ rightBindSmallBenchmark = mkBenchmark
 leftBindLargeBenchmark :: Benchmark
 leftBindLargeBenchmark = mkBenchmark
   { slug: "left-bind-large"
-  , title: "Left associated binds (large - " ++ show inputsPerSize ++ " input per size)"
+  , title: "Left associated binds (large - " <> show inputsPerSize <> " input per size)"
   , sizes: [1, 5, 10, 15, 20, 25, 30 ] <#> (* 100000)
   , sizeInterpretation: "Number of binds"
   , inputsPerSize: inputsPerSize
@@ -103,7 +103,7 @@ leftBindLargeBenchmark = mkBenchmark
 rightBindLargeBenchmark :: Benchmark
 rightBindLargeBenchmark = mkBenchmark
   { slug: "right-bind-large"
-  , title: "Right associated binds (large - " ++ show inputsPerSize ++ " input per size)"
+  , title: "Right associated binds (large - " <> show inputsPerSize <> " input per size)"
   , sizes: [1, 5, 10, 15, 20, 25, 30 ] <#> (* 100000)
   , sizeInterpretation: "Number of binds"
   , inputsPerSize: inputsPerSize

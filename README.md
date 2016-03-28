@@ -19,23 +19,11 @@ bower install purescript-free
 
 ## Documentation
 
-* [Control.Monad.Free](docs/Control/Monad/Free.md)
-* [Control.Comonad.Cofree](docs/Control/Comonad/Cofree.md)
-* [Data.Yoneda](docs/Data/Yoneda.md)
-* [Data.Coyoneda](docs/Data/Coyoneda.md)
-* [Control.Monad.Trampoline](docs/Control/Monad/Trampoline.md)
+Module documentation is [published on Pursuit](http://pursuit.purescript.org/packages/purescript-free).
 
 ## Benchmarks
 
 The following benchmarks compare the current implementation with the implementation at `v0.6.1` (purescript/purescript-free@0df59c5d459fed983131856886fc3a4b43234f1f), which used the `Gosub` technique to defer monadic binds.
-
-The benchmarks may be run as follows. Note that `pulp` must be on your path.
-
-```bash
-npm install
-
-npm run-script benchmark
-```
 
 ![left-bind-small](benchmark/left-bind-small.png)
 

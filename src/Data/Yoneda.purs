@@ -5,7 +5,7 @@ module Data.Yoneda
   , lowerYoneda
   ) where
 
-import Prelude (class Functor, class Monad, class Bind, class Applicative, class Apply, id, (<$>), (<<<), (>>=), pure, ($), (<*>))
+import Prelude
 
 import Control.Comonad (class Comonad, extract)
 import Control.Extend (class Extend, (<<=))

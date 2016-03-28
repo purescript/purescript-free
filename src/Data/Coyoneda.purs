@@ -8,10 +8,10 @@ module Data.Coyoneda
   , liftCoyonedaTF
   ) where
 
-import Prelude (class Functor, class Monad, class Bind, class Applicative, class Apply, (<<<), (<$>), id, ($), (>>=), pure, (<*>))
+import Prelude
 
-import Data.Exists (Exists(), runExists, mkExists)
-import Data.NaturalTransformation (NaturalTransformation())
+import Data.Exists (Exists, runExists, mkExists)
+import Data.NaturalTransformation (NaturalTransformation)
 
 import Control.Comonad (class Comonad, extract)
 import Control.Extend (class Extend, (<<=))
