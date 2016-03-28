@@ -7,16 +7,16 @@ module Control.Comonad.Cofree
   , tail
   ) where
 
-import Prelude
+import Prelude (class Monad, class Bind, class Applicative, class Apply, class Functor, (<$>), pure, ($), (<*>), id, (++), flip)
 
-import Control.Comonad (Comonad)
+import Control.Comonad (class Comonad)
 import Control.Alt ((<|>))
-import Control.MonadPlus (MonadPlus)
-import Control.Extend (Extend)
+import Control.MonadPlus (class MonadPlus)
+import Control.Extend (class Extend)
 import Control.Monad.Trampoline (Trampoline(), runTrampoline)
 
-import Data.Foldable (Foldable, foldr, foldl, foldMap)
-import Data.Traversable (Traversable, traverse)
+import Data.Foldable (class Foldable, foldr, foldl, foldMap)
+import Data.Traversable (class Traversable, traverse)
 
 -- | The `Cofree` `Comonad` for a functor.
 -- |

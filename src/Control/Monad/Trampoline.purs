@@ -11,7 +11,7 @@ module Control.Monad.Trampoline
   , runTrampoline
   ) where
 
-import Prelude
+import Prelude (Unit, (<<<), pure)
 
 import Control.Monad.Free (Free(), liftF, runFree, suspendF)
 
