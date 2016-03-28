@@ -3,7 +3,7 @@
 -- | monadic computations.
 
 module Control.Monad.Trampoline
-  ( Trampoline()
+  ( Trampoline
   , done
   , suspend
   , delay'
@@ -11,11 +11,11 @@ module Control.Monad.Trampoline
   , runTrampoline
   ) where
 
-import Prelude (Unit, (<<<), pure)
+import Prelude
 
-import Control.Monad.Free (Free(), liftF, runFree, suspendF)
+import Control.Monad.Free (Free, liftF, runFree, suspendF)
 
-import Data.Lazy (Lazy(), force, defer)
+import Data.Lazy (Lazy, force, defer)
 
 -- | The `Trampoline` monad
 -- |

@@ -1,5 +1,5 @@
 module Control.Monad.Free
-  ( Free()
+  ( Free
   , suspendF
   , liftF
   , liftFI
@@ -10,17 +10,17 @@ module Control.Monad.Free
   , runFreeM
   ) where
 
-import Prelude (class Functor, class Applicative, class Monad, class Apply, class Bind, (<>), (<$>), pure, (<<<), id, (>>=), ap, return)
+import Prelude
 
 import Control.Monad.Rec.Class (class MonadRec, tailRecM)
 import Control.Monad.Trans (class MonadTrans)
 
-import Data.CatList (CatList(), empty, snoc, uncons)
+import Data.CatList (CatList, empty, snoc, uncons)
 import Data.Either (Either(..), either)
 import Data.Identity (Identity(..), runIdentity)
 import Data.Inject (class Inject, inj)
 import Data.Maybe (Maybe(..))
-import Data.NaturalTransformation (NaturalTransformation())
+import Data.NaturalTransformation (NaturalTransformation)
 import Data.Tuple (Tuple(..))
 
 import Unsafe.Coerce (unsafeCoerce)
@@ -40,7 +40,7 @@ data FreeView f a b = Return a | Bind (f b) (b -> Free f a)
 data Val
 
 instance freeFunctor :: Functor (Free f) where
-  map k f = f >>= return <<< k
+  map k f = pure <<< k =<< f
 
 instance freeBind :: Bind (Free f) where
   bind (Free v s) k = Free v (snoc s (ExpF (unsafeCoerceBind k)))

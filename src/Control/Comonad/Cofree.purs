@@ -1,19 +1,19 @@
 -- | The _cofree comonad_ for a `Functor`.
 
 module Control.Comonad.Cofree
-  ( Cofree()
+  ( Cofree
   , mkCofree
   , head
   , tail
   ) where
 
-import Prelude (class Monad, class Bind, class Applicative, class Apply, class Functor, (<$>), pure, ($), (<*>), id, (++), flip)
+import Prelude
 
 import Control.Comonad (class Comonad)
 import Control.Alt ((<|>))
 import Control.MonadPlus (class MonadPlus)
 import Control.Extend (class Extend)
-import Control.Monad.Trampoline (Trampoline(), runTrampoline)
+import Control.Monad.Trampoline (Trampoline, runTrampoline)
 
 import Data.Foldable (class Foldable, foldr, foldl, foldMap)
 import Data.Traversable (class Traversable, traverse)
@@ -62,7 +62,7 @@ instance foldableCofree :: (Foldable f) => Foldable (Cofree f) where
       fa' = tail fa
 
   foldMap f = go where
-    go fa = f (head fa) ++ (foldMap go (tail fa))
+    go fa = f (head fa) <> (foldMap go (tail fa))
 
 instance traversableCofree :: (Traversable f) => Traversable (Cofree f) where
   traverse f = loop where

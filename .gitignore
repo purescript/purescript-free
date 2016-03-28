@@ -1,8 +1,6 @@
-.DS_Store
 /.*
 !/.gitignore
 !/.travis.yml
 /bower_components/
 /node_modules/
 /output/
-/tmp/
