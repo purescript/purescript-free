@@ -10,8 +10,7 @@ module Control.Comonad.Cofree
 import Prelude
 
 import Control.Comonad (class Comonad)
-import Control.Alt ((<|>))
-import Control.MonadPlus (class MonadPlus)
+import Control.Alternative (class Alternative, (<|>))
 import Control.Extend (class Extend)
 import Control.Monad.Trampoline (Trampoline, runTrampoline)
 
@@ -85,9 +84,9 @@ instance applyCofree :: (Apply f) => Apply (Cofree f) where
 instance applicativeCofree :: (Applicative f) => Applicative (Cofree f) where
   pure a = mkCofree a (pure $ pure a)
 
-instance bindCofree :: (MonadPlus f) => Bind (Cofree f) where
+instance bindCofree :: (Alternative f) => Bind (Cofree f) where
   bind fa f = loop fa where
     loop fa = let fh = f (head fa)
               in mkCofree (head fh) ((tail fh) <|> (loop <$> tail fa))
 
-instance monadCofree :: (MonadPlus f) => Monad (Cofree f)
+instance monadCofree :: (Alternative f) => Monad (Cofree f)
