@@ -10,7 +10,7 @@ module Control.Comonad.Cofree
 import Prelude
 
 import Control.Comonad (class Comonad)
-import Control.Alternative (class Alternative, (<|>))
+import Control.Alternative (class Alternative, (<|>), empty)
 import Control.Extend (class Extend)
 import Control.Monad.Trampoline (Trampoline, runTrampoline)
 
@@ -81,8 +81,8 @@ instance applyCofree :: (Apply f) => Apply (Cofree f) where
     h = (head f) (head x)
     t = (<*>) <$> (tail f) <*> (tail x)
 
-instance applicativeCofree :: (Applicative f) => Applicative (Cofree f) where
-  pure a = mkCofree a (pure $ pure a)
+instance applicativeCofree :: (Alternative f) => Applicative (Cofree f) where
+  pure a = mkCofree a empty
 
 instance bindCofree :: (Alternative f) => Bind (Cofree f) where
   bind fa f = loop fa where
