@@ -3,7 +3,7 @@ module Control.Monad.Free
   , suspendF
   , liftF
   , liftFI
-  , mapF
+  , hoistFree
   , injF
   , foldFree
   , runFree
@@ -20,7 +20,6 @@ import Data.Either (Either(..), either)
 import Data.Identity (Identity(..), runIdentity)
 import Data.Inject (class Inject, inj)
 import Data.Maybe (Maybe(..))
-import Data.NaturalTransformation (NaturalTransformation)
 import Data.Tuple (Tuple(..))
 
 import Unsafe.Coerce (unsafeCoerce)
@@ -45,7 +44,7 @@ instance freeFunctor :: Functor (Free f) where
 instance freeBind :: Bind (Free f) where
   bind (Free v s) k = Free v (snoc s (ExpF (unsafeCoerceBind k)))
     where
-    unsafeCoerceBind :: forall a b. (a -> Free f b)-> (Val -> Free f Val)
+    unsafeCoerceBind :: forall a b. (a -> Free f b) -> Val -> Free f Val
     unsafeCoerceBind = unsafeCoerce
 
 instance freeApplicative :: Applicative (Free f) where
@@ -62,69 +61,76 @@ instance freeMonadTrans :: MonadTrans Free where
 instance freeMonadRec :: MonadRec (Free f) where
   tailRecM k a = k a >>= either (tailRecM k) pure
 
--- | Lift an impure value described by the generating type constructor `f` into the free monad.
-liftF :: forall f a. f a -> Free f a
+-- | Lift an impure value described by the generating type constructor `f` into
+-- | the free monad.
+liftF :: forall f. f ~> Free f
 liftF f = fromView (Bind (unsafeCoerceF f) (pure <<< unsafeCoerceVal))
   where
-  unsafeCoerceF :: f a -> f Val
+  unsafeCoerceF :: forall a. f a -> f Val
   unsafeCoerceF = unsafeCoerce
 
-  unsafeCoerceVal :: Val -> a
+  unsafeCoerceVal :: forall a. Val -> a
   unsafeCoerceVal = unsafeCoerce
 
 -- | Lift an action described by the generating type constructor `f` into
 -- | `Free g` using `Inject` to go from `f` to `g`.
-liftFI :: forall f g a. (Inject f g) => f a -> Free g a
-liftFI fa = liftF (inj fa :: g a)
+liftFI :: forall f g. Inject f g => f ~> Free g
+liftFI fa = liftF (inj fa)
 
 -- | Suspend a value given the applicative functor `f` into the free monad.
-suspendF :: forall f a. (Applicative f) => Free f a -> Free f a
-suspendF f = fromView (Bind (unsafeCoerceF (pure f :: f (Free f a))) (id <<< unsafeCoerceVal))
+suspendF :: forall f. Applicative f => Free f ~> Free f
+suspendF f = fromView (Bind (unsafeCoerceF (pure f)) unsafeCoerceVal)
   where
-  unsafeCoerceF :: f (Free f a) -> f Val
+  unsafeCoerceF :: forall a. f (Free f a) -> f Val
   unsafeCoerceF = unsafeCoerce
 
-  unsafeCoerceVal :: Val -> Free f a
+  unsafeCoerceVal :: forall a. Val -> Free f a
   unsafeCoerceVal = unsafeCoerce
 
--- | Use a natural transformation to change the generating type constructor of a free monad.
-mapF :: forall f g a. NaturalTransformation f g -> Free f a -> Free g a
-mapF k = foldFree (liftF <<< k)
+-- | Use a natural transformation to change the generating type constructor of a
+-- | free monad.
+hoistFree :: forall f g. (f ~> g) -> Free f ~> Free g
+hoistFree k = foldFree (liftF <<< k)
 
--- | Embed computations in one `Free` monad as computations in the `Free` monad for
--- | a coproduct type constructor.
+-- | Embed computations in one `Free` monad as computations in the `Free` monad
+-- | for a coproduct type constructor.
 -- |
--- | This construction allows us to write computations which are polymorphic in the
--- | particular `Free` monad we use, allowing us to extend the functionality of
--- | our monad later.
-injF :: forall f g a. (Inject f g) => Free f a -> Free g a
-injF = mapF inj
+-- | This construction allows us to write computations which are polymorphic in
+-- | the particular `Free` monad we use, allowing us to extend the functionality
+-- | of our monad later.
+injF :: forall f g. Inject f g => Free f ~> Free g
+injF = hoistFree inj
 
 -- | Run a free monad with a natural transformation from the type constructor `f`
--- | to the tail-recursive monad `m`. See the `MonadRec` type class for more details.
-foldFree :: forall f m a. (MonadRec m) => NaturalTransformation f m -> Free f a -> m a
+-- | to the tail-recursive monad `m`. See the `MonadRec` type class for more
+-- | details.
+foldFree :: forall f m. MonadRec m => (f ~> m) -> Free f ~> m
 foldFree k = tailRecM go
   where
-  go :: Free f a -> m (Either (Free f a) a)
-  go f =
-    case toView f of
-         Return a -> Right <$> pure a
-         Bind g i -> (Left <<< i) <$> k g
+  go :: forall a. Free f a -> m (Either (Free f a) a)
+  go f = case toView f of
+    Return a -> Right <$> pure a
+    Bind g i -> (Left <<< i) <$> k g
 
--- | Run a free monad with a function that unwraps a single layer of the functor `f` at a time.
-runFree :: forall f a. (Functor f) => (f (Free f a) -> Free f a) -> Free f a -> a
+-- | Run a free monad with a function that unwraps a single layer of the functor
+-- | `f` at a time.
+runFree :: forall f a. Functor f => (f (Free f a) -> Free f a) -> Free f a -> a
 runFree k = runIdentity <<< runFreeM (Identity <<< k)
 
--- | Run a free monad with a function mapping a functor `f` to a tail-recursive monad `m`.
--- | See the `MonadRec` type class for more details.
-runFreeM :: forall f m a. (Functor f, MonadRec m) => (f (Free f a) -> m (Free f a)) -> Free f a -> m a
+-- | Run a free monad with a function mapping a functor `f` to a tail-recursive
+-- | monad `m`. See the `MonadRec` type class for more details.
+runFreeM
+  :: forall f m a
+   . (Functor f, MonadRec m)
+  => (f (Free f a) -> m (Free f a))
+  -> Free f a
+  -> m a
 runFreeM k = tailRecM go
   where
   go :: Free f a -> m (Either (Free f a) a)
-  go f =
-    case toView f of
-         Return a -> Right <$> pure a
-         Bind g i -> Left <$> k (i <$> g)
+  go f = case toView f of
+    Return a -> Right <$> pure a
+    Bind g i -> Left <$> k (i <$> g)
 
 fromView :: forall f a. FreeView f a Val -> Free f a
 fromView f = Free (unsafeCoerceFreeView f) empty
@@ -135,10 +141,14 @@ fromView f = Free (unsafeCoerceFreeView f) empty
 toView :: forall f a. Free f a -> FreeView f a Val
 toView (Free v s) =
   case v of
-       Return a -> case (uncons s) of
-                        Nothing -> Return (unsafeCoerceVal a)
-                        Just (Tuple h t) -> toView (unsafeCoerceFree (concatF ((runExpF h) a) t))
-       Bind f k -> Bind f (\a -> unsafeCoerceFree (concatF (k a) s))
+    Return a ->
+      case uncons s of
+        Nothing ->
+          Return (unsafeCoerceVal a)
+        Just (Tuple h t) ->
+          toView (unsafeCoerceFree (concatF ((runExpF h) a) t))
+    Bind f k ->
+      Bind f (\a -> unsafeCoerceFree (concatF (k a) s))
   where
   concatF :: Free f Val -> CatList (ExpF f) -> Free f Val
   concatF (Free v l) r = Free v (l <> r)
