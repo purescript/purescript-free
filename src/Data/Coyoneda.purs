@@ -1,17 +1,15 @@
 module Data.Coyoneda
   ( Coyoneda(..)
-  , CoyonedaF(..)
+  , CoyonedaF
   , coyoneda
   , liftCoyoneda
   , lowerCoyoneda
-  , liftCoyonedaT
-  , liftCoyonedaTF
+  , hoistCoyoneda
   ) where
 
 import Prelude
 
 import Data.Exists (Exists, runExists, mkExists)
-import Data.NaturalTransformation (NaturalTransformation)
 
 import Control.Comonad (class Comonad, extract)
 import Control.Extend (class Extend, (<<=))
@@ -31,40 +29,44 @@ newtype Coyoneda f a = Coyoneda (Exists (CoyonedaF f a))
 instance functorCoyoneda :: Functor (Coyoneda f) where
   map f (Coyoneda e) = runExists (\(CoyonedaF v) -> coyoneda (f <<< v.k) v.fi) e
 
-instance applyCoyoneda :: (Apply f) => Apply (Coyoneda f) where
+instance applyCoyoneda :: Apply f => Apply (Coyoneda f) where
   apply f g = liftCoyoneda $ lowerCoyoneda f <*> lowerCoyoneda g
 
-instance applicativeCoyoneda :: (Applicative f) => Applicative (Coyoneda f) where
+instance applicativeCoyoneda :: Applicative f => Applicative (Coyoneda f) where
   pure = liftCoyoneda <<< pure
 
-instance bindCoyoneda :: (Bind f) => Bind (Coyoneda f) where
-  bind (Coyoneda e) k = liftCoyoneda $ runExists (\(CoyonedaF v) -> v.fi >>= lowerCoyoneda <<< k <<< v.k) e
+instance bindCoyoneda :: Bind f => Bind (Coyoneda f) where
+  bind (Coyoneda e) k =
+    liftCoyoneda $
+      runExists (\(CoyonedaF v) -> v.fi >>= lowerCoyoneda <<< k <<< v.k) e
 
-instance monadCoyoneda :: (Monad f) => Monad (Coyoneda f)
+instance monadCoyoneda :: Monad f => Monad (Coyoneda f)
 
 instance monadTransCoyoneda :: MonadTrans Coyoneda where
   lift = liftCoyoneda
 
-instance extendCoyoneda :: (Extend w) => Extend (Coyoneda w) where
-  extend f (Coyoneda e) = runExists (\(CoyonedaF w) -> liftCoyoneda $ f <<< coyoneda w.k <<= w.fi) e
+instance extendCoyoneda :: Extend w => Extend (Coyoneda w) where
+  extend f (Coyoneda e) =
+    runExists (\(CoyonedaF w) -> liftCoyoneda $ f <<< coyoneda w.k <<= w.fi) e
 
-instance comonadCoyoneda :: (Comonad w) => Comonad (Coyoneda w) where
+instance comonadCoyoneda :: Comonad w => Comonad (Coyoneda w) where
   extract (Coyoneda e) = runExists (\(CoyonedaF w) -> w.k $ extract w.fi) e
 
--- | Construct a value of type `Coyoneda f a`.
+-- | Construct a value of type `Coyoneda f b` from a mapping function and a
+-- | value of type `f a`.
 coyoneda :: forall f a b. (a -> b) -> f a -> Coyoneda f b
 coyoneda k fi = Coyoneda $ mkExists $ CoyonedaF { k: k, fi: fi }
 
 -- | Lift a value described by the type constructor `f` to `Coyoneda f`.
-liftCoyoneda :: forall f a. f a -> Coyoneda f a
+liftCoyoneda :: forall f. f ~> Coyoneda f
 liftCoyoneda fa = Coyoneda $ mkExists $ CoyonedaF { k: id, fi: fa }
 
--- | Lower a value of type `Yoneda f a` to the `Functor` `f`.
-lowerCoyoneda :: forall f a. (Functor f) => Coyoneda f a -> f a
+-- | Lower a value of type `Coyoneda f a` to the `Functor` `f`.
+lowerCoyoneda :: forall f. Functor f => Coyoneda f ~> f
 lowerCoyoneda (Coyoneda e) = runExists (\(CoyonedaF v) -> v.k <$> v.fi) e
 
-liftCoyonedaT :: forall f g. NaturalTransformation f g -> NaturalTransformation (Coyoneda f) (Coyoneda g)
-liftCoyonedaT nat (Coyoneda e) = runExists (\(CoyonedaF v) -> coyoneda v.k (nat v.fi)) e
-
-liftCoyonedaTF :: forall f g. (Functor g) => NaturalTransformation f g -> NaturalTransformation (Coyoneda f) g
-liftCoyonedaTF nat = lowerCoyoneda <<< liftCoyonedaT nat
+-- | Use a natural transformation to change the generating type constructor of a
+-- | `Coyoneda`.
+hoistCoyoneda :: forall f g. (f ~> g) -> Coyoneda f ~> Coyoneda g
+hoistCoyoneda nat (Coyoneda e) =
+  runExists (\(CoyonedaF v) -> coyoneda v.k (nat v.fi)) e
