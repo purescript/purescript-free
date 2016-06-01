@@ -2,8 +2,8 @@
   "private": true,
   "scripts": {
     "clean": "rimraf output && rimraf .pulp-cache",
-    "build": "pulp build --censor-lib --strict",
-    "test": "pulp test"
+    "build": "psa \"src/**/*.purs\" \"bower_components/purescript-*/src/**/*.purs\" --censor-lib --strict",
+    "test": "psc \"src/**/*.purs\" \"bower_components/purescript-*/src/**/*.purs\" \"test/**/*.purs\" && psc-bundle \"output/**/*.js\" --module Test.Main --main Test.Main | node"
   },
   "devDependencies": {
     "pulp": "^8.2.0",
