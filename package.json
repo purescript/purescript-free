@@ -2,12 +2,12 @@
   "private": true,
   "scripts": {
     "clean": "rimraf output && rimraf .pulp-cache",
-    "build": "psa \"src/**/*.purs\" \"bower_components/purescript-*/src/**/*.purs\" --censor-lib --strict",
-    "test": "psc \"src/**/*.purs\" \"bower_components/purescript-*/src/**/*.purs\" \"test/**/*.purs\" && psc-bundle \"output/**/*.js\" --module Test.Main --main Test.Main | node"
+    "build": "pulp build --censor-lib --strict",
+    "test": "pulp test"
   },
   "devDependencies": {
-    "pulp": "^8.2.0",
-    "purescript-psa": "^0.3.8",
+    "pulp": "^9.0.1",
+    "purescript-psa": "^0.3.9",
     "rimraf": "^2.5.0"
   }
 }
