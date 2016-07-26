@@ -8,6 +8,7 @@ module Control.Monad.Free
   , foldFree
   , runFree
   , runFreeM
+  , resume
   ) where
 
 import Prelude
@@ -17,7 +18,6 @@ import Control.Monad.Trans (class MonadTrans)
 
 import Data.CatList (CatList, empty, snoc, uncons)
 import Data.Either (Either(..), either)
-import Data.Identity (Identity(..), runIdentity)
 import Data.Inject (class Inject, inj)
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
@@ -115,7 +115,12 @@ foldFree k = tailRecM go
 -- | Run a free monad with a function that unwraps a single layer of the functor
 -- | `f` at a time.
 runFree :: forall f a. Functor f => (f (Free f a) -> Free f a) -> Free f a -> a
-runFree k = runIdentity <<< runFreeM (Identity <<< k)
+runFree k = go
+  where
+  go :: Free f a -> a
+  go f = case toView f of
+    Return a -> a
+    Bind g i -> go (k (i <$> g))
 
 -- | Run a free monad with a function mapping a functor `f` to a tail-recursive
 -- | monad `m`. See the `MonadRec` type class for more details.
@@ -131,6 +136,16 @@ runFreeM k = tailRecM go
   go f = case toView f of
     Return a -> Right <$> pure a
     Bind g i -> Left <$> k (i <$> g)
+
+-- | Unwraps a single layer of the functor `f`.
+resume
+  :: forall f a
+   . (Functor f)
+  => Free f a
+  -> Either (f (Free f a)) a
+resume f = case toView f of
+  Return a → Right a
+  Bind g i → Left (i <$> g)
 
 fromView :: forall f a. FreeView f a Val -> Free f a
 fromView f = Free (unsafeCoerceFreeView f) empty
