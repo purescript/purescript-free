@@ -6,6 +6,7 @@ module Control.Monad.Free
   , hoistFree
   , injF
   , foldFree
+  , substFree
   , runFree
   , runFreeM
   , resume
@@ -111,6 +112,16 @@ foldFree k = tailRecM go
   go f = case toView f of
     Return a -> Right <$> pure a
     Bind g i -> (Left <<< i) <$> k g
+
+-- | Like `foldFree`, but for folding into some other Free monad without the
+-- | overhead that `MonadRec` incurs.
+substFree :: forall f g. (f ~> Free g) -> Free f ~> Free g
+substFree k = go
+  where
+  go :: Free f ~> Free g
+  go f = case toView f of
+    Return a -> pure a
+    Bind g i -> k g >>= go <$> i
 
 -- | Run a free monad with a function that unwraps a single layer of the functor
 -- | `f` at a time.
