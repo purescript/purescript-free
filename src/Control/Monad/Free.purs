@@ -90,7 +90,12 @@ suspendF f = fromView (Bind (unsafeCoerceF (pure f)) unsafeCoerceVal)
 -- | Use a natural transformation to change the generating type constructor of a
 -- | free monad.
 hoistFree :: forall f g. (f ~> g) -> Free f ~> Free g
-hoistFree k = foldFree (liftF <<< k)
+hoistFree k = go
+  where
+  go :: Free f ~> Free g
+  go f = case toView f of
+    Return a -> pure a
+    Bind g i -> fromView (Bind (k g) (go <$> i))
 
 -- | Embed computations in one `Free` monad as computations in the `Free` monad
 -- | for a coproduct type constructor.
