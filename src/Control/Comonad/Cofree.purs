@@ -2,7 +2,7 @@
 
 module Control.Comonad.Cofree
   ( Cofree
-  , mkCofree
+  , mkCofree, (:<)
   , head
   , tail
   ) where
@@ -30,6 +30,8 @@ data Cofree f a = Cofree a (Trampoline (f (Cofree f a)))
 -- | functor-full of "subtrees".
 mkCofree :: forall f a. a -> (f (Cofree f a)) -> Cofree f a
 mkCofree a t = Cofree a (pure t)
+
+infixr 5 mkCofree as :<
 
 -- | Returns the label for a tree.
 head :: forall f a. Cofree f a -> a
