@@ -5,6 +5,7 @@ module Control.Comonad.Cofree
   , mkCofree, (:<)
   , head
   , tail
+  , hoistCofree
   ) where
 
 import Prelude
@@ -46,6 +47,9 @@ _tail (Cofree _ t) = t
 
 _lift :: forall f a b. Functor f => (a -> b) -> Trampoline (f a) -> Trampoline (f b)
 _lift = map <<< map
+
+hoistCofree :: forall f g. Functor f => (f ~> g) -> Cofree f ~> Cofree g
+hoistCofree nat cf = head cf :< nat (hoistCofree nat <$> tail cf)
 
 instance functorCofree :: Functor f => Functor (Cofree f) where
   map f = loop where
