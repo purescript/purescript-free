@@ -14,11 +14,11 @@ module Control.Monad.Free
 
 import Prelude
 
-import Control.Monad.Rec.Class (class MonadRec, tailRecM)
-import Control.Monad.Trans (class MonadTrans)
+import Control.Monad.Rec.Class (class MonadRec, Step(..), tailRecM)
+import Control.Monad.Trans.Class (class MonadTrans)
 
 import Data.CatList (CatList, empty, snoc, uncons)
-import Data.Either (Either(..), either)
+import Data.Either (Either(..))
 import Data.Inject (class Inject, inj)
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
@@ -60,7 +60,9 @@ instance freeMonadTrans :: MonadTrans Free where
   lift = liftF
 
 instance freeMonadRec :: MonadRec (Free f) where
-  tailRecM k a = k a >>= either (tailRecM k) pure
+  tailRecM k a = k a >>= case _ of
+    Loop b -> tailRecM k b
+    Done r -> pure r
 
 -- | Lift an impure value described by the generating type constructor `f` into
 -- | the free monad.
@@ -108,10 +110,10 @@ injF = hoistFree inj
 foldFree :: forall f m. MonadRec m => (f ~> m) -> Free f ~> m
 foldFree k = tailRecM go
   where
-  go :: forall a. Free f a -> m (Either (Free f a) a)
+  go :: forall a. Free f a -> m (Step (Free f a) a)
   go f = case toView f of
-    Return a -> Right <$> pure a
-    Bind g i -> (Left <<< i) <$> k g
+    Return a -> Done <$> pure a
+    Bind g i -> (Loop <<< i) <$> k g
 
 -- | Like `foldFree`, but for folding into some other Free monad without the
 -- | overhead that `MonadRec` incurs.
@@ -143,10 +145,10 @@ runFreeM
   -> m a
 runFreeM k = tailRecM go
   where
-  go :: Free f a -> m (Either (Free f a) a)
+  go :: Free f a -> m (Step (Free f a) a)
   go f = case toView f of
-    Return a -> Right <$> pure a
-    Bind g i -> Left <$> k (i <$> g)
+    Return a -> Done <$> pure a
+    Bind g i -> Loop <$> k (i <$> g)
 
 -- | Unwraps a single layer of the functor `f`.
 resume

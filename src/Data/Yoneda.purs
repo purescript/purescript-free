@@ -10,7 +10,7 @@ import Prelude
 
 import Control.Comonad (class Comonad, extract)
 import Control.Extend (class Extend, (<<=))
-import Control.Monad.Trans (class MonadTrans)
+import Control.Monad.Trans.Class (class MonadTrans)
 
 -- | The Yoneda `Functor`
 -- |
