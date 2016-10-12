@@ -26,7 +26,7 @@
   "dependencies": {
     "purescript-catenable-lists": "^2.0.0",
     "purescript-exists": "^2.0.0",
-    "purescript-inject": "^2.0.0",
+    "purescript-inject": "^3.0.0",
     "purescript-transformers": "^2.0.0",
     "purescript-unsafe-coerce": "^2.0.0"
   },
