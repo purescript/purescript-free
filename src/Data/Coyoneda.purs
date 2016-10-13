@@ -13,7 +13,7 @@ import Data.Exists (Exists, runExists, mkExists)
 
 import Control.Comonad (class Comonad, extract)
 import Control.Extend (class Extend, (<<=))
-import Control.Monad.Trans (class MonadTrans)
+import Control.Monad.Trans.Class (class MonadTrans)
 
 -- | `Coyoneda` is encoded as an existential type using `Data.Exists`.
 -- |
