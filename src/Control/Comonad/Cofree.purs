@@ -13,8 +13,6 @@ import Prelude
 import Control.Comonad (class Comonad)
 import Control.Alternative (class Alternative, (<|>), empty)
 import Control.Extend (class Extend)
-import Control.Monad.Trampoline (Trampoline, runTrampoline)
-
 import Data.Foldable (class Foldable, foldr, foldl, foldMap)
 import Data.Traversable (class Traversable, traverse)
 
@@ -25,12 +23,12 @@ import Data.Traversable (class Traversable, traverse)
 -- |
 -- | The `Comonad` instance supports _redecoration_, recomputing
 -- | labels from the local context.
-data Cofree f a = Cofree a (Trampoline (f (Cofree f a)))
+data Cofree f a = Cofree a (Unit -> f (Cofree f a))
 
 -- | Create a value of type `Cofree f a` from a label and a
 -- | functor-full of "subtrees".
-mkCofree :: forall f a. a -> (f (Cofree f a)) -> Cofree f a
-mkCofree a t = Cofree a (pure t)
+mkCofree :: forall f a. a -> f (Cofree f a) -> Cofree f a
+mkCofree a t = Cofree a \_ -> t
 
 infixr 5 mkCofree as :<
 
@@ -40,16 +38,25 @@ head (Cofree h _) = h
 
 -- | Returns the "subtrees" of a tree.
 tail :: forall f a. Cofree f a -> f (Cofree f a)
-tail (Cofree _ t) = runTrampoline t
+tail (Cofree _ t) = t unit
 
-_tail :: forall f a. Cofree f a -> Trampoline (f (Cofree f a))
+_tail :: forall f a. Cofree f a -> Unit -> f (Cofree f a)
 _tail (Cofree _ t) = t
 
-_lift :: forall f a b. Functor f => (a -> b) -> Trampoline (f a) -> Trampoline (f b)
+_lift :: forall f a b. Functor f => (a -> b) -> (Unit -> f a) -> Unit -> f b
 _lift = map <<< map
 
 hoistCofree :: forall f g. Functor f => (f ~> g) -> Cofree f ~> Cofree g
 hoistCofree nat cf = head cf :< nat (hoistCofree nat <$> tail cf)
+
+unfoldCofree
+  :: forall f s a
+   . Functor f
+  => s
+  -> (s -> a)
+  -> (s -> f s)
+  -> Cofree f a
+unfoldCofree s e n = Cofree (e s) \u -> map (\s1 -> unfoldCofree s1 e n) (n s)
 
 instance functorCofree :: Functor f => Functor (Cofree f) where
   map f = loop where
