@@ -6,6 +6,7 @@ module Control.Comonad.Cofree
   , head
   , tail
   , hoistCofree
+  , unfoldCofree
   ) where
 
 import Prelude
