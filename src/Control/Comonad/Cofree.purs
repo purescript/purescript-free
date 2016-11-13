@@ -105,8 +105,8 @@ instance applicativeCofree :: Alternative f => Applicative (Cofree f) where
 instance bindCofree :: Alternative f => Bind (Cofree f) where
   bind fa f = loop fa
     where
-    loop fa =
-      let fh = f (head fa)
-      in mkCofree (head fh) ((tail fh) <|> (loop <$> tail fa))
+    loop fa' =
+      let fh = f (head fa')
+      in mkCofree (head fh) ((tail fh) <|> (loop <$> tail fa'))
 
 instance monadCofree :: Alternative f => Monad (Cofree f)
