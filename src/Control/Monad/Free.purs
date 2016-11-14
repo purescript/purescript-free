@@ -179,7 +179,7 @@ toView (Free v s) =
       Bind f (\a -> unsafeCoerceFree (concatF (k a) s))
   where
   concatF :: Free f Val -> CatList (ExpF f) -> Free f Val
-  concatF (Free v l) r = Free v (l <> r)
+  concatF (Free v' l) r = Free v' (l <> r)
 
   runExpF :: ExpF f -> (Val -> Free f Val)
   runExpF (ExpF k) = k
