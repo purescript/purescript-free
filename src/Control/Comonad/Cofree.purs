@@ -7,17 +7,19 @@ module Control.Comonad.Cofree
   , tail
   , hoistCofree
   , unfoldCofree
+  , explore
   ) where
 
 import Prelude
-
+import Control.Monad.Free (Free, runFreeM)
 import Control.Alternative (class Alternative, (<|>), empty)
-import Control.Comonad (class Comonad)
+import Control.Comonad (class Comonad, extract)
 import Control.Extend (class Extend)
-
+import Control.Monad.State (State, runState, state)
 import Data.Foldable (class Foldable, foldr, foldl, foldMap)
 import Data.Lazy (Lazy, force, defer)
 import Data.Traversable (class Traversable, traverse)
+import Data.Tuple (Tuple(..))
 
 -- | The `Cofree` `Comonad` for a functor.
 -- |
@@ -61,6 +63,25 @@ unfoldCofree
   -> Cofree f a
 unfoldCofree s e n =
   Cofree (e s) (defer \_ -> map (\s1 -> unfoldCofree s1 e n) (n s))
+
+-- | Explore a value in the cofree comonad by using an expression in a
+-- | corresponding free monad.
+-- |
+-- | The free monad should be built from a functor which pairs with the
+-- | functor underlying the cofree comonad.
+explore
+  :: forall f g a b
+   . (Functor f, Functor g)
+  => (forall x y. f (x -> y) -> g x -> y)
+  -> Free f (a -> b)
+  -> Cofree g a
+  -> b
+explore pair m w =
+    case runState (runFreeM step m) w of
+      Tuple f cof -> f (extract cof)
+  where
+    step :: f (Free f (a -> b)) -> State (Cofree g a) (Free f (a -> b))
+    step ff = state \cof -> pair (map Tuple ff) (tail cof)
 
 instance functorCofree :: Functor f => Functor (Cofree f) where
   map f = loop where
