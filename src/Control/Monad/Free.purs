@@ -19,8 +19,10 @@ import Control.Monad.Trans.Class (class MonadTrans)
 
 import Data.CatList (CatList, empty, snoc, uncons)
 import Data.Either (Either(..))
+import Data.Foldable (class Foldable, foldMap, foldl, foldr)
 import Data.Inject (class Inject, inj)
 import Data.Maybe (Maybe(..))
+import Data.Traversable (class Traversable, traverse)
 import Data.Tuple (Tuple(..))
 
 import Unsafe.Coerce (unsafeCoerce)
@@ -63,6 +65,31 @@ instance freeMonadRec :: MonadRec (Free f) where
   tailRecM k a = k a >>= case _ of
     Loop b -> tailRecM k b
     Done r -> pure r
+
+instance foldableFree :: (Functor f, Foldable f) => Foldable (Free f) where
+  foldMap f = go
+    where
+    go = resume >>> case _ of
+      Left fa -> foldMap go fa
+      Right a -> f a
+  foldl f = go
+    where
+    go r = resume >>> case _  of
+      Left fa -> foldl go r fa
+      Right a -> f r a
+  foldr f = go
+    where
+    go r = resume >>> case _ of
+      Left fa -> foldr (flip go) r fa
+      Right a -> f a r
+
+instance traversableFree :: Traversable f => Traversable (Free f) where
+  traverse f = go
+    where
+    go = resume >>> case _ of
+      Left fa -> join <<< liftF <$> traverse go fa
+      Right a -> pure <$> f a
+  sequence tma = traverse id tma
 
 -- | Lift an impure value described by the generating type constructor `f` into
 -- | the free monad.
