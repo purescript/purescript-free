@@ -41,6 +41,12 @@ data FreeView f a b = Return a | Bind (f b) (b -> Free f a)
 
 data Val
 
+instance eqFree :: (Functor f, Eq (f (Free f a)), Eq a) => Eq (Free f a) where
+  eq x y = resume x == resume y
+
+instance ordFree :: (Functor f, Ord (f (Free f a)), Ord a) => Ord (Free f a) where
+  compare x y = compare (resume x) (resume y)
+
 instance freeFunctor :: Functor (Free f) where
   map k f = pure <<< k =<< f
 

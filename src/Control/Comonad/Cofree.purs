@@ -83,6 +83,15 @@ explore pair m w =
     step :: f (Free f (a -> b)) -> State (Cofree g a) (Free f (a -> b))
     step ff = state \cof -> pair (map Tuple ff) (tail cof)
 
+instance eqCofree :: (Eq (f (Cofree f a)), Eq a) => Eq (Cofree f a) where
+  eq x y = head x == head y && tail x == tail y
+
+instance ordCofree :: (Ord (f (Cofree f a)), Ord a) => Ord (Cofree f a) where
+  compare x y =
+    case compare (head x) (head y) of
+      EQ -> compare (tail x) (tail y)
+      r -> r
+
 instance functorCofree :: Functor f => Functor (Cofree f) where
   map f = loop where
     loop fa = Cofree (f (head fa)) (_lift loop (_tail fa))
