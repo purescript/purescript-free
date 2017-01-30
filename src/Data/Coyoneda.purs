@@ -2,6 +2,7 @@ module Data.Coyoneda
   ( Coyoneda(..)
   , CoyonedaF
   , coyoneda
+  , unCoyoneda
   , liftCoyoneda
   , lowerCoyoneda
   , hoistCoyoneda
@@ -56,6 +57,11 @@ instance comonadCoyoneda :: Comonad w => Comonad (Coyoneda w) where
 -- | value of type `f a`.
 coyoneda :: forall f a b. (a -> b) -> f a -> Coyoneda f b
 coyoneda k fi = Coyoneda $ mkExists $ CoyonedaF { k: k, fi: fi }
+
+-- | Deconstruct a value of `Coyoneda a` to retrieve the mapping function and
+-- | original value.
+unCoyoneda :: forall f g a. (forall b. f b -> (b -> a) -> g a) -> Coyoneda f a -> g a
+unCoyoneda f (Coyoneda e) = runExists (\(CoyonedaF v) -> f v.fi v.k) e
 
 -- | Lift a value described by the type constructor `f` to `Coyoneda f`.
 liftCoyoneda :: forall f. f ~> Coyoneda f
