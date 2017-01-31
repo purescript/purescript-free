@@ -60,16 +60,16 @@ coyoneda k fi = Coyoneda $ mkExists $ CoyonedaF k fi
 
 -- | Deconstruct a value of `Coyoneda a` to retrieve the mapping function and
 -- | original value.
-unCoyoneda :: forall f g a. (forall b. f b -> (b -> a) -> g a) -> Coyoneda f a -> g a
-unCoyoneda f (Coyoneda e) = runExists (\(CoyonedaF k fi) -> f fi k) e
+unCoyoneda :: forall f g a. (forall b. (b -> a) -> f b -> g a) -> Coyoneda f a -> g a
+unCoyoneda f (Coyoneda e) = runExists (\(CoyonedaF k fi) -> f k fi) e
 
 -- | Lift a value described by the type constructor `f` to `Coyoneda f`.
 liftCoyoneda :: forall f. f ~> Coyoneda f
-liftCoyoneda fa = Coyoneda $ mkExists $ CoyonedaF id fa
+liftCoyoneda = coyoneda id
 
 -- | Lower a value of type `Coyoneda f a` to the `Functor` `f`.
 lowerCoyoneda :: forall f. Functor f => Coyoneda f ~> f
-lowerCoyoneda (Coyoneda e) = runExists (\(CoyonedaF k fi) -> k <$> fi) e
+lowerCoyoneda = unCoyoneda map
 
 -- | Use a natural transformation to change the generating type constructor of a
 -- | `Coyoneda`.
