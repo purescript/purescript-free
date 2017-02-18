@@ -8,7 +8,7 @@ Free monad, Cofree comonad, Yoneda and Coyoneda functors, and the Trampoline mon
 The Free monad implementation is represented using a sequential data structure.
 
 See the following reference for further information.
-* [Relection without Remorse](http://okmij.org/ftp/Haskell/zseq.pdf) (Ploeg and Kiselyov 2014)
+* [Reflection without Remorse](http://okmij.org/ftp/Haskell/zseq.pdf) (Ploeg and Kiselyov 2014)
 
 ## Installation
 
