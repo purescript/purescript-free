@@ -29,7 +29,7 @@ import Unsafe.Coerce (unsafeCoerce)
 
 -- | The free monad for a type constructor `f`.
 -- |
--- | Implemented in the spirit of [Relection without Remorse](http://okmij.org/ftp/Haskell/zseq.pdf),
+-- | Implemented in the spirit of [Reflection without Remorse](http://okmij.org/ftp/Haskell/zseq.pdf),
 -- | the free monad is represented using a sequential data structure in
 -- | order to overcome the quadratic complexity of left-associated binds
 -- | and traversal through the free monad structure.
