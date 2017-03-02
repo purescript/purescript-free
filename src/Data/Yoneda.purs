@@ -12,10 +12,25 @@ import Control.Comonad (class Comonad, extract)
 import Control.Extend (class Extend, (<<=))
 import Control.Monad.Trans.Class (class MonadTrans)
 
+import Data.Eq (class Eq1, eq1)
+import Data.Ord (class Ord1, compare1)
+
 -- | The Yoneda `Functor`
 -- |
 -- | `Yoneda f` is a `Functor` for any type constructor `f`.
 newtype Yoneda f a = Yoneda (forall b. (a -> b) -> f b)
+
+instance eqYoneda :: (Eq1 f, Eq a) => Eq (Yoneda f a) where
+  eq x y = lowerYoneda x `eq1` lowerYoneda y
+
+instance eq1Yoneda :: Eq1 f => Eq1 (Yoneda f) where
+  eq1 = eq
+
+instance ordYoneda :: (Ord1 f, Ord a) => Ord (Yoneda f a) where
+  compare x y = lowerYoneda x `compare1` lowerYoneda y
+
+instance ord1Yoneda :: Ord1 f => Ord1 (Yoneda f) where
+  compare1 = compare
 
 instance functorYoneda :: Functor (Yoneda f) where
   map f m = Yoneda (\k -> runYoneda m (k <<< f))
