@@ -158,6 +158,22 @@ substFree k = go
     Return a -> pure a
     Bind g i -> k g >>= go <$> i
 
+-- | Create `Free f` by layer, alternatively you can use a `do`
+-- | block with `liftF`:
+-- | ```purescript
+-- | f :> f unit
+-- | ```
+-- | or
+-- | ```purescript
+-- | do
+-- |    liftF f unit
+-- |    liftF f unit
+-- | ```
+mkFree :: forall f a b. (a -> f (Free f b)) -> a -> Free f b
+mkFree f r = join (liftF (f r))
+
+infixr 6 mkFree as :>
+
 -- | Run a free monad with a function that unwraps a single layer of the functor
 -- | `f` at a time.
 runFree :: forall f a. Functor f => (f (Free f a) -> Free f a) -> Free f a -> a
