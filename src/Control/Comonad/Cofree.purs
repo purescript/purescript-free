@@ -73,7 +73,8 @@ unfoldCofree s e n =
 -- | functor underlying the cofree comonad.
 explore
   :: forall f g a b
-   . (Functor f, Functor g)
+   . Functor f
+  => Functor g
   => (forall x y. f (x -> y) -> g x -> y)
   -> Free f (a -> b)
   -> Cofree g a
@@ -87,7 +88,9 @@ explore pair m w =
 
 exploreM
   :: forall f g a b m
-   . (Functor f, Functor g, MonadRec m)
+   . Functor f
+  => Functor g
+  => MonadRec m
   => (forall x y. f (x -> y) -> g x -> m y)
   -> Free f (a -> b)
   -> Cofree g a

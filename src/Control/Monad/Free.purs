@@ -2,9 +2,7 @@ module Control.Monad.Free
   ( Free
   , suspendF
   , liftF
-  , liftFI
   , hoistFree
-  , injF
   , foldFree
   , substFree
   , runFree
@@ -20,7 +18,6 @@ import Control.Monad.Trans.Class (class MonadTrans)
 import Data.CatList (CatList, empty, snoc, uncons)
 import Data.Either (Either(..))
 import Data.Foldable (class Foldable, foldMap, foldl, foldr)
-import Data.Inject (class Inject, inj)
 import Data.Maybe (Maybe(..))
 import Data.Traversable (class Traversable, traverse)
 import Data.Tuple (Tuple(..))
@@ -108,11 +105,6 @@ liftF f = fromView (Bind (unsafeCoerceF f) (pure <<< unsafeCoerceVal))
   unsafeCoerceVal :: forall a. Val -> a
   unsafeCoerceVal = unsafeCoerce
 
--- | Lift an action described by the generating type constructor `f` into
--- | `Free g` using `Inject` to go from `f` to `g`.
-liftFI :: forall f g. Inject f g => f ~> Free g
-liftFI fa = liftF (inj fa)
-
 -- | Suspend a value given the applicative functor `f` into the free monad.
 suspendF :: forall f. Applicative f => Free f ~> Free f
 suspendF f = fromView (Bind (unsafeCoerceF (pure f)) unsafeCoerceVal)
@@ -127,15 +119,6 @@ suspendF f = fromView (Bind (unsafeCoerceF (pure f)) unsafeCoerceVal)
 -- | free monad.
 hoistFree :: forall f g. (f ~> g) -> Free f ~> Free g
 hoistFree k = substFree (liftF <<< k)
-
--- | Embed computations in one `Free` monad as computations in the `Free` monad
--- | for a coproduct type constructor.
--- |
--- | This construction allows us to write computations which are polymorphic in
--- | the particular `Free` monad we use, allowing us to extend the functionality
--- | of our monad later.
-injF :: forall f g. Inject f g => Free f ~> Free g
-injF = hoistFree inj
 
 -- | Run a free monad with a natural transformation from the type constructor `f`
 -- | to the tail-recursive monad `m`. See the `MonadRec` type class for more
@@ -172,7 +155,8 @@ runFree k = go
 -- | monad `m`. See the `MonadRec` type class for more details.
 runFreeM
   :: forall f m a
-   . (Functor f, MonadRec m)
+   . Functor f
+  => MonadRec m
   => (f (Free f a) -> m (Free f a))
   -> Free f a
   -> m a

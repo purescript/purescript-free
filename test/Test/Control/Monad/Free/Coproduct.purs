@@ -2,17 +2,11 @@ module Test.Control.Monad.Free.Coproduct where
 
 import Prelude
 
-import Control.Alt ((<|>))
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
-import Control.Monad.Free (Free, liftF, foldFree, injF)
+import Control.Monad.Free (Free, liftF, hoistFree, foldFree)
 
-import Data.Functor.Coproduct (Coproduct)
-import Data.Inject (prj)
-import Data.Maybe (fromJust)
-import Data.NaturalTransformation (NaturalTransformation)
-
-import Partial.Unsafe (unsafePartial)
+import Data.Functor.Coproduct (Coproduct, coproduct, left, right)
 
 data Teletype1F a = Print1 String a
 
@@ -40,33 +34,30 @@ type TF = Coproduct Teletype1F (Coproduct Teletype2F Teletype3F)
 type T a = Free TF a
 
 r :: T Unit
-r = injF (print1 "1")
+r = hoistFree left (print1 "1")
 
 s :: T Unit
-s = injF (print2 "2")
+s = hoistFree (right <<< left) (print2 "2")
 
 t :: T Unit
-t = injF (print3 "3")
+t = hoistFree (right <<< right) (print3 "3")
 
 u :: T Unit
 u =  r *> s *> t
 
-teletype1N :: forall eff. NaturalTransformation Teletype1F (Eff (console :: CONSOLE | eff))
+teletype1N :: forall eff. Teletype1F ~> Eff (console :: CONSOLE | eff)
 teletype1N (Print1 x a) = const a <$> log ("teletype1: " <> x)
 
-teletype2N :: forall eff. NaturalTransformation Teletype2F (Eff (console :: CONSOLE | eff))
+teletype2N :: forall eff. Teletype2F ~> Eff (console :: CONSOLE | eff)
 teletype2N (Print2 x a) = const a <$> log ("teletype2: " <> x)
 
-teletype3N :: forall eff. NaturalTransformation Teletype3F (Eff (console :: CONSOLE | eff))
+teletype3N :: forall eff. Teletype3F ~> Eff (console :: CONSOLE | eff)
 teletype3N (Print3 x a) = const a <$> log ("teletype3: " <> x)
 
-tN :: forall eff. NaturalTransformation TF (Eff (console :: CONSOLE | eff))
-tN fa = unsafePartial $
-  fromJust $ (teletype1N <$> prj fa) <|>
-             (teletype2N <$> prj fa) <|>
-             (teletype3N <$> prj fa)
+tN :: forall eff. TF ~> Eff (console :: CONSOLE | eff)
+tN = coproduct teletype1N $ coproduct teletype2N teletype3N
 
-run :: forall eff. NaturalTransformation T (Eff (console :: CONSOLE | eff))
+run :: forall eff. T ~> Eff (console :: CONSOLE | eff)
 run = foldFree tN
 
 main :: forall eff. Eff (console :: CONSOLE | eff) Unit
