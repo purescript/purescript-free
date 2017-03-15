@@ -11,11 +11,12 @@ module Control.Comonad.Cofree
   ) where
 
 import Prelude
-import Control.Monad.Free (Free, runFreeM)
 import Control.Alternative (class Alternative, (<|>), empty)
 import Control.Comonad (class Comonad, extract)
 import Control.Extend (class Extend)
-import Control.Monad.State (State, runState, state)
+import Control.Monad.Free (Free, runFreeM)
+import Control.Monad.Rec.Class (class MonadRec)
+import Control.Monad.State (State, StateT(..), runState, runStateT, state)
 import Data.Foldable (class Foldable, foldr, foldl, foldMap)
 import Data.Lazy (Lazy, force, defer)
 import Data.Traversable (class Traversable, traverse)
@@ -82,6 +83,22 @@ explore pair m w =
   where
     step :: f (Free f (a -> b)) -> State (Cofree g a) (Free f (a -> b))
     step ff = state \cof -> pair (map Tuple ff) (tail cof)
+
+exploreM
+  :: forall f g a b m
+   . (Functor f, Functor g, MonadRec m)
+  => (forall x y. f (x -> y) -> g x -> m y)
+  -> Free f (a -> b)
+  -> Cofree g a
+  -> m b
+exploreM pair m w =
+  eval <$> runStateT (runFreeM step m) w
+  where
+    step :: f (Free f (a -> b)) -> StateT (Cofree g a) m (Free f (a -> b))
+    step ff = StateT \cof -> pair (map Tuple ff) (tail cof)
+
+    eval :: forall x y. Tuple (x -> y) (Cofree g x) -> y
+    eval (Tuple f cof) = f (extract cof)
 
 instance eqCofree :: (Eq (f (Cofree f a)), Eq a) => Eq (Cofree f a) where
   eq x y = head x == head y && tail x == tail y
