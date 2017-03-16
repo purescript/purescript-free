@@ -8,6 +8,7 @@ module Control.Comonad.Cofree
   , hoistCofree
   , unfoldCofree
   , explore
+  , exploreM
   ) where
 
 import Prelude
