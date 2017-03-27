@@ -61,12 +61,12 @@ hoistCofree nat cf = head cf :< nat (hoistCofree nat <$> tail cf)
 unfoldCofree
   :: forall f s a
    . Functor f
-  => s
-  -> (s -> a)
+  => (s -> a)
   -> (s -> f s)
+  -> s
   -> Cofree f a
-unfoldCofree s e n =
-  Cofree (e s) (defer \_ -> map (\s1 -> unfoldCofree s1 e n) (n s))
+unfoldCofree e n s =
+  Cofree (e s) (defer \_ -> unfoldCofree e n <$> n s)
 
 -- | Explore a value in the cofree comonad by using an expression in a
 -- | corresponding free monad.
