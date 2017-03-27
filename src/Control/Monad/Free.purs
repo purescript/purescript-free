@@ -17,8 +17,10 @@ import Control.Monad.Trans.Class (class MonadTrans)
 
 import Data.CatList (CatList, empty, snoc, uncons)
 import Data.Either (Either(..))
+import Data.Eq (class Eq1, eq1)
 import Data.Foldable (class Foldable, foldMap, foldl, foldr)
 import Data.Maybe (Maybe(..))
+import Data.Ord (class Ord1, compare1)
 import Data.Traversable (class Traversable, traverse)
 import Data.Tuple (Tuple(..))
 
@@ -38,11 +40,24 @@ data FreeView f a b = Return a | Bind (f b) (b -> Free f a)
 
 data Val
 
-instance eqFree :: (Functor f, Eq (f (Free f a)), Eq a) => Eq (Free f a) where
-  eq x y = resume x == resume y
+instance eqFree :: (Functor f, Eq1 f, Eq a) => Eq (Free f a) where
+  eq x y = case resume x, resume y of
+    Left fa, Left fb -> eq1 fa fb
+    Right a, Right b -> a == b
+    _, _ -> false
 
-instance ordFree :: (Functor f, Ord (f (Free f a)), Ord a) => Ord (Free f a) where
-  compare x y = compare (resume x) (resume y)
+instance eq1Free :: (Functor f, Eq1 f) => Eq1 (Free f) where
+  eq1 = eq
+
+instance ordFree :: (Functor f, Ord1 f, Ord a) => Ord (Free f a) where
+  compare x y = case resume x, resume y of
+    Left fa, Left fb -> compare1 fa fb
+    Left _, _ -> LT
+    _, Left _ -> GT
+    Right a, Right b -> compare a b
+
+instance ord1Free :: (Functor f, Ord1 f, Ord a) => Ord1 (Free f) where
+  compare1 = compare
 
 instance freeFunctor :: Functor (Free f) where
   map k f = pure <<< k =<< f

@@ -18,8 +18,10 @@ import Control.Extend (class Extend)
 import Control.Monad.Free (Free, runFreeM)
 import Control.Monad.Rec.Class (class MonadRec)
 import Control.Monad.State (State, StateT(..), runState, runStateT, state)
+import Data.Eq (class Eq1, eq1)
 import Data.Foldable (class Foldable, foldr, foldl, foldMap)
 import Data.Lazy (Lazy, force, defer)
+import Data.Ord (class Ord1, compare1)
 import Data.Traversable (class Traversable, traverse)
 import Data.Tuple (Tuple(..))
 
@@ -104,14 +106,20 @@ exploreM pair m w =
     eval :: forall x y. Tuple (x -> y) (Cofree g x) -> y
     eval (Tuple f cof) = f (extract cof)
 
-instance eqCofree :: (Eq (f (Cofree f a)), Eq a) => Eq (Cofree f a) where
-  eq x y = head x == head y && tail x == tail y
+instance eqCofree :: (Eq1 f, Eq a) => Eq (Cofree f a) where
+  eq x y = head x == head y && tail x `eq1` tail y
 
-instance ordCofree :: (Ord (f (Cofree f a)), Ord a) => Ord (Cofree f a) where
+instance eq1Cofree :: Eq1 f => Eq1 (Cofree f) where
+  eq1 = eq
+
+instance ordCofree :: (Ord1 f, Ord a) => Ord (Cofree f a) where
   compare x y =
     case compare (head x) (head y) of
-      EQ -> compare (tail x) (tail y)
+      EQ -> compare1 (tail x) (tail y)
       r -> r
+
+instance ord1Cofree :: Ord1 f => Ord1 (Cofree f) where
+  compare1 = compare
 
 instance functorCofree :: Functor f => Functor (Cofree f) where
   map f = loop where

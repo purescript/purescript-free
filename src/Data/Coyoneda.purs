@@ -10,11 +10,13 @@ module Data.Coyoneda
 
 import Prelude
 
-import Data.Exists (Exists, runExists, mkExists)
-
 import Control.Comonad (class Comonad, extract)
 import Control.Extend (class Extend, (<<=))
 import Control.Monad.Trans.Class (class MonadTrans)
+
+import Data.Eq (class Eq1, eq1)
+import Data.Exists (Exists, runExists, mkExists)
+import Data.Ord (class Ord1, compare1)
 
 -- | `Coyoneda` is encoded as an existential type using `Data.Exists`.
 -- |
@@ -26,6 +28,18 @@ data CoyonedaF f a i = CoyonedaF (i -> a) (f i)
 -- | `Coyoneda f` is a `Functor` for any type constructor `f`. In fact,
 -- | it is the _free_ `Functor` for `f`.
 newtype Coyoneda f a = Coyoneda (Exists (CoyonedaF f a))
+
+instance eqCoyoneda :: (Functor f, Eq1 f, Eq a) => Eq (Coyoneda f a) where
+  eq x y = lowerCoyoneda x `eq1` lowerCoyoneda y
+
+instance eq1Coyoneda :: (Functor f, Eq1 f) => Eq1 (Coyoneda f) where
+  eq1 = eq
+
+instance ordCoyoneda :: (Functor f, Ord1 f, Ord a) => Ord (Coyoneda f a) where
+  compare x y = lowerCoyoneda x `compare1` lowerCoyoneda y
+
+instance ord1Coyoneda :: (Functor f, Ord1 f) => Ord1 (Coyoneda f) where
+  compare1 = compare
 
 instance functorCoyoneda :: Functor (Coyoneda f) where
   map f (Coyoneda e) = runExists (\(CoyonedaF k fi) -> coyoneda (f <<< k) fi) e
