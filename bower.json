@@ -24,13 +24,13 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-catenable-lists": "^3.0.0",
-    "purescript-exists": "^2.0.0",
-    "purescript-inject": "^3.0.0",
-    "purescript-transformers": "^2.0.0",
-    "purescript-unsafe-coerce": "^2.0.0"
+    "purescript-catenable-lists": "^4.0.0",
+    "purescript-exists": "^3.0.0",
+    "purescript-transformers": "^3.0.0",
+    "purescript-unsafe-coerce": "^3.0.0"
   },
   "devDependencies": {
-    "purescript-console": "^2.0.0"
+    "purescript-console": "^3.0.0",
+    "purescript-functors": "^2.0.0"
   }
 }
