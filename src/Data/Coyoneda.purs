@@ -67,6 +67,12 @@ instance bindCoyoneda :: Bind f => Bind (Coyoneda f) where
     liftCoyoneda $
       runExists (\(CoyonedaF k fi) -> lowerCoyoneda <<< f <<< k =<< fi) e
 
+-- | When `f` is a Monad then it is a functor as well.  In this case
+-- | `liftCoyoneda` is not only a functor isomorphism but also a monad
+-- | isomorphism, i.e. the following law holds
+-- | ```purescript
+-- | liftCoyoneda fa >>= liftCoyoneda <<< g = liftCoyoneda $ fa >>= g
+-- | ```
 instance monadCoyoneda :: Monad f => Monad (Coyoneda f)
 
 instance monadTransCoyoneda :: MonadTrans Coyoneda where
@@ -76,6 +82,12 @@ instance extendCoyoneda :: Extend w => Extend (Coyoneda w) where
   extend f (Coyoneda e) =
     runExists (\(CoyonedaF k fi) -> liftCoyoneda $ f <<< coyoneda k <<= fi) e
 
+-- | As in the monad case: if `w` is a comonad, then it is a functor, thus
+-- | `liftCoyoneda` is an iso of functors, but moreover it is an iso of
+-- | comonads, i.e. the following law holds:
+-- | ```purescript
+-- | g <<= liftCoyoneda w = liftCoyoneda $ g <<< liftCoyoneda <<= w
+-- | ```
 instance comonadCoyoneda :: Comonad w => Comonad (Coyoneda w) where
   extract (Coyoneda e) = runExists (\(CoyonedaF k fi) -> k $ extract fi) e
 
