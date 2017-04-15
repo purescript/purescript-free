@@ -103,11 +103,11 @@ unCoyoneda f (Coyoneda e) = runExists (\(CoyonedaF k fi) -> f k fi) e
 
 -- | Lift a value described by the type constructor `f` to `Coyoneda f`.
 -- |
--- | Note that for any `f` `liftCoyoneda` has a right inverse
+-- | Note that for any functor `f` `liftCoyoneda` has a right inverse
 -- | `lowerCoyoneda`:
 -- | ```purescript
 -- | liftCoyoneda <<< lowerCoyoneda $ (Coyoneda e)
--- | = liftCoyoneda <<< unCoyoneda map $ (Coyonead e)
+-- | = liftCoyoneda <<< unCoyoneda map $ (Coyoneda e)
 -- | = liftCoyonead (runExists (\(CoyonedaF k fi) -> map k fi) e)
 -- | = liftCoyonead (Coyoneda e)
 -- | = coyoneda id (Coyoneda e)
