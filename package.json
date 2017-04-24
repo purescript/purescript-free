@@ -6,8 +6,8 @@
     "test": "pulp test"
   },
   "devDependencies": {
-    "pulp": "^10.0.4",
-    "purescript-psa": "^0.5.0-rc.1",
+    "pulp": "^11.0.x",
+    "purescript-psa": "^0.5.x",
     "rimraf": "^2.6.1"
   }
 }
