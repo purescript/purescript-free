@@ -8,6 +8,7 @@ module Control.Monad.Free
   , runFree
   , runFreeM
   , resume
+  , resume'
   ) where
 
 import Prelude
@@ -188,9 +189,18 @@ resume
    . Functor f
   => Free f a
   -> Either (f (Free f a)) a
-resume f = case toView f of
-  Return a -> Right a
-  Bind g i -> Left (i <$> g)
+resume = resume' (\g i -> Left (i <$> g)) Right
+
+-- | Unwraps a single layer of `f`, providing the continuation.
+resume'
+  :: forall f a r
+   . (forall b. f b -> (b -> Free f a) -> r)
+  -> (a -> r)
+  -> Free f a
+  -> r
+resume' k j f = case toView f of
+  Return a -> j a
+  Bind g i -> k g i
 
 fromView :: forall f a. FreeView f a Val -> Free f a
 fromView f = Free (unsafeCoerceFreeView f) empty
