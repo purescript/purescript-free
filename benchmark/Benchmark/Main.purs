@@ -2,19 +2,20 @@ module Benchmark.Main (main) where
 
 import Prelude
 
-import Control.Monad.Eff
-import Control.Monad.Free
-import Control.Monad.Trampoline
+import Control.Monad.Eff (Eff)
+import Control.Monad.Trampoline (Trampoline, done, runTrampoline, suspend)
 
-import Data.Array
-import Data.Foldable
 
-import Benchotron.Core
-import Benchotron.UI.Console
+import Data.Foldable (foldl)
+
+
+import Benchotron.Core (Benchmark, BenchEffects, benchFn, mkBenchmark)
+import Benchotron.UI.Console (runSuite)
+
 
 import Test.QuickCheck.Gen (vectorOf)
 
-import qualified Benchmark.Trampoline0df59c5 as T
+import Benchmark.Trampoline0df59c5 as T
 
 leftBindSmallBenchmark :: Benchmark
 leftBindSmallBenchmark = mkBenchmark
@@ -76,7 +77,7 @@ leftBindLargeBenchmark :: Benchmark
 leftBindLargeBenchmark = mkBenchmark
   { slug: "left-bind-large"
   , title: "Left associated binds (large - " <> show inputsPerSize <> " input per size)"
-  , sizes: [1, 5, 10, 15, 20, 25, 30 ] <#> (* 100000)
+  , sizes: [1, 5, 10, 15, 20, 25, 30 ] <#> (_ * 100000)
   , sizeInterpretation: "Number of binds"
   , inputsPerSize: inputsPerSize
   , gen: \n -> vectorOf n (pure 0.0)
@@ -104,7 +105,7 @@ rightBindLargeBenchmark :: Benchmark
 rightBindLargeBenchmark = mkBenchmark
   { slug: "right-bind-large"
   , title: "Right associated binds (large - " <> show inputsPerSize <> " input per size)"
-  , sizes: [1, 5, 10, 15, 20, 25, 30 ] <#> (* 100000)
+  , sizes: [1, 5, 10, 15, 20, 25, 30 ] <#> (_ * 100000)
   , sizeInterpretation: "Number of binds"
   , inputsPerSize: inputsPerSize
   , gen: \n -> vectorOf n (pure 0.0)
@@ -128,6 +129,8 @@ rightBindLargeBenchmark = mkBenchmark
   genT :: forall a. a -> T.Trampoline a
   genT = T.suspend <<< T.done
 
+
+main :: forall r. Eff (BenchEffects r) Unit
 main = runSuite [ leftBindSmallBenchmark
                 , rightBindSmallBenchmark
                 , leftBindLargeBenchmark

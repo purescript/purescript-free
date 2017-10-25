@@ -26,11 +26,14 @@
   "dependencies": {
     "purescript-catenable-lists": "^4.0.0",
     "purescript-exists": "^3.0.0",
-    "purescript-transformers": "^3.0.0",
     "purescript-unsafe-coerce": "^3.0.0"
   },
   "devDependencies": {
     "purescript-console": "^3.0.0",
+    "purescript-inject": "^4.0.0",
+    "purescript-transformers": "^3.4.0",
+    "purescript-benchotron": "^6.0.0",
+    "purescript-quickcheck": "^4.6.0",
     "purescript-functors": "^2.0.0"
   }
 }

@@ -13,11 +13,12 @@ module Benchmark.Trampoline0df59c5
 
 import Prelude
 
-import Benchmark.Free0df59c5
+import Benchmark.Free0df59c5 (Free(..), runFree)
 
-import Data.Lazy
-import Data.Foldable 
-import Data.Traversable
+import Data.Lazy (Lazy, defer, force)
+
+-- import Data.Foldable 
+-- import Data.Traversable
 
 -- | The `Trampoline` monad
 -- |
