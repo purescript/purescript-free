@@ -1,7 +1,7 @@
 -- | The _cofree comonad_ for a `Functor`.
 
 module Control.Comonad.Cofree
-  ( Cofree
+  ( Cofree(..)
   , mkCofree, (:<)
   , head
   , tail
