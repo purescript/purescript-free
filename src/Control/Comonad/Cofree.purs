@@ -58,7 +58,7 @@ tail :: forall f a. Cofree f a -> f (Cofree f a)
 tail (Cofree c) = snd (force c)
 
 hoistCofree :: forall f g. Functor f => (f ~> g) -> Cofree f ~> Cofree g
-hoistCofree nat cf = head cf :< nat (hoistCofree nat <$> tail cf)
+hoistCofree nat (Cofree c) = Cofree (map (nat <<< map (hoistCofree nat)) <$> c)
 
 unfoldCofree
   :: forall f s a
