@@ -2,7 +2,7 @@
 
 module Control.Comonad.Cofree
   ( Cofree
-  , liftC
+  , deferCofree
   , mkCofree, (:<)
   , head
   , tail
@@ -39,8 +39,8 @@ newtype Cofree f a = Cofree (Lazy (Tuple a (f (Cofree f a))))
 
 -- | Lazily creates a value of type `Cofree f a` from a label and a
 -- | functor-full of "subtrees".
-liftC :: forall f a. (Unit -> Tuple a (f (Cofree f a))) -> Cofree f a
-liftC = Cofree <<< defer
+deferCofree :: forall f a. (Unit -> Tuple a (f (Cofree f a))) -> Cofree f a
+deferCofree = Cofree <<< defer
 
 -- | Create a value of type `Cofree f a` from a label and a
 -- | functor-full of "subtrees".
@@ -60,6 +60,8 @@ tail (Cofree c) = snd (force c)
 hoistCofree :: forall f g. Functor f => (f ~> g) -> Cofree f ~> Cofree g
 hoistCofree nat (Cofree c) = Cofree (map (nat <<< map (hoistCofree nat)) <$> c)
 
+-- | This signature is deprecated and will be replaced by `buildCofree` in a
+-- | future release.
 unfoldCofree
   :: forall f s a
    . Functor f
@@ -67,9 +69,9 @@ unfoldCofree
   -> (s -> f s)
   -> s
   -> Cofree f a
-unfoldCofree e n s =
-  Cofree (defer \_ -> Tuple (e s) (unfoldCofree e n <$> n s))
+unfoldCofree e n = buildCofree (\s -> Tuple (e s) (n s))
 
+-- | Recursively unfolds a `Cofree` structure given a seed.
 buildCofree
   :: forall f s a
    . Functor f
