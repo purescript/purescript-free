@@ -10,13 +10,21 @@ module Data.Coyoneda
 
 import Prelude
 
+import Control.Alt (class Alt, alt)
+import Control.Alternative (class Alternative, class Plus, empty)
 import Control.Comonad (class Comonad, extract)
 import Control.Extend (class Extend, (<<=))
 import Control.Monad.Trans.Class (class MonadTrans)
-
+import Control.MonadPlus (class MonadPlus, class MonadZero)
+import Data.Distributive (class Distributive, collect)
 import Data.Eq (class Eq1, eq1)
 import Data.Exists (Exists, runExists, mkExists)
+import Data.Foldable (class Foldable, foldMap, foldl, foldr)
+import Data.Functor.Invariant (class Invariant, imapF)
 import Data.Ord (class Ord1, compare1)
+import Data.Semigroup.Foldable (class Foldable1, foldMap1)
+import Data.Semigroup.Traversable (class Traversable1, sequence1, traverse1)
+import Data.Traversable (class Traversable, traverse)
 
 -- | `Coyoneda` is encoded as an existential type using `Data.Exists`.
 -- |
@@ -56,11 +64,22 @@ instance ord1Coyoneda :: (Functor f, Ord1 f) => Ord1 (Coyoneda f) where
 instance functorCoyoneda :: Functor (Coyoneda f) where
   map f (Coyoneda e) = runExists (\(CoyonedaF k fi) -> coyoneda (f <<< k) fi) e
 
+instance invatiantCoyoneda :: Invariant (Coyoneda f) where
+  imap = imapF
+
 instance applyCoyoneda :: Apply f => Apply (Coyoneda f) where
   apply f g = liftCoyoneda $ lowerCoyoneda f <*> lowerCoyoneda g
 
 instance applicativeCoyoneda :: Applicative f => Applicative (Coyoneda f) where
   pure = liftCoyoneda <<< pure
+
+instance altCoyoneda :: Alt f => Alt (Coyoneda f) where
+  alt x y = liftCoyoneda $ alt (lowerCoyoneda x) (lowerCoyoneda y)
+
+instance plusCoyoneda :: Plus f => Plus (Coyoneda f) where
+  empty = liftCoyoneda empty
+
+instance alternativeCoyoneda :: Alternative f => Alternative (Coyoneda f)
 
 instance bindCoyoneda :: Bind f => Bind (Coyoneda f) where
   bind (Coyoneda e) f =
@@ -78,6 +97,10 @@ instance monadCoyoneda :: Monad f => Monad (Coyoneda f)
 instance monadTransCoyoneda :: MonadTrans Coyoneda where
   lift = liftCoyoneda
 
+instance monadZeroCoyoneda :: MonadZero f => MonadZero (Coyoneda f)
+
+instance monadPlusCoyoneda :: MonadPlus f => MonadPlus (Coyoneda f)
+
 instance extendCoyoneda :: Extend w => Extend (Coyoneda w) where
   extend f (Coyoneda e) =
     runExists (\(CoyonedaF k fi) -> liftCoyoneda $ f <<< coyoneda k <<= fi) e
@@ -91,6 +114,27 @@ instance extendCoyoneda :: Extend w => Extend (Coyoneda w) where
 instance comonadCoyoneda :: Comonad w => Comonad (Coyoneda w) where
   extract (Coyoneda e) = runExists (\(CoyonedaF k fi) -> k $ extract fi) e
 
+instance foldableCoyoneda :: Foldable f => Foldable (Coyoneda f) where
+  foldr f z = unCoyoneda \k -> foldr (f <<< k) z
+  foldl f z = unCoyoneda \k -> foldl (\x -> f x <<< k) z
+  foldMap f = unCoyoneda \k -> foldMap (f <<< k)
+
+instance traversableCoyoneda :: Traversable f => Traversable (Coyoneda f) where
+  traverse f = unCoyoneda \k -> map liftCoyoneda <<< traverse (f <<< k)
+  sequence = unCoyoneda \k -> map liftCoyoneda <<< traverse k
+
+instance foldable1Coyoneda :: Foldable1 f => Foldable1 (Coyoneda f) where
+  foldMap1 f = unCoyoneda \k -> foldMap1 (f <<< k)
+  fold1 = unCoyoneda \k -> foldMap1 k
+
+instance traversable1Coyoneda :: Traversable1 f => Traversable1 (Coyoneda f) where
+  traverse1 f = unCoyoneda \k -> map liftCoyoneda <<< traverse1 (f <<< k)
+  sequence1 = unCoyoneda \k -> map liftCoyoneda <<< sequence1 <<< map k
+
+instance distributiveCoyoneda :: Distributive f => Distributive (Coyoneda f) where
+  collect f = liftCoyoneda <<< collect (lowerCoyoneda <<< f)
+  distribute = liftCoyoneda <<< collect lowerCoyoneda
+
 -- | Construct a value of type `Coyoneda f b` from a mapping function and a
 -- | value of type `f a`.
 coyoneda :: forall f a b. (a -> b) -> f a -> Coyoneda f b
@@ -98,7 +142,7 @@ coyoneda k fi = Coyoneda $ mkExists $ CoyonedaF k fi
 
 -- | Deconstruct a value of `Coyoneda a` to retrieve the mapping function and
 -- | original value.
-unCoyoneda :: forall f g a. (forall b. (b -> a) -> f b -> g a) -> Coyoneda f a -> g a
+unCoyoneda :: forall f a r. (forall b. (b -> a) -> f b -> r) -> Coyoneda f a -> r
 unCoyoneda f (Coyoneda e) = runExists (\(CoyonedaF k fi) -> f k fi) e
 
 -- | Lift a value described by the type constructor `f` to `Coyoneda f`.
