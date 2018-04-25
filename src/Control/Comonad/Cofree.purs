@@ -153,7 +153,7 @@ instance foldableCofree :: Foldable f => Foldable (Cofree f) where
     go fa = f (head fa) <> (foldMap go (tail fa))
 
 instance traversableCofree :: Traversable f => Traversable (Cofree f) where
-  sequence = traverse id
+  sequence = traverse identity
   traverse f = loop
     where
     loop ta = mkCofree <$> f (head ta) <*> (traverse loop (tail ta))

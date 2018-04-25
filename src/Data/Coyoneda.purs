@@ -40,11 +40,11 @@ data CoyonedaF f a i = CoyonedaF (i -> a) (f i)
 -- | hoistCoyoneda nat`:
 -- | ```purescript
 -- | lowerCoyoneda <<< hoistCoyoneda nat <<< liftCoyoneda $ fi
--- | = lowerCoyoneda (hoistCoyoneda nat (Coyoneda $ mkExists $ CoyonedaF id fi))    (by definition of liftCoyoneda)
--- | = lowerCoyoneda (coyoneda id (nat fi))                                         (by definition of hoistCoyoneda)
--- | = unCoyoneda map (coyoneda id (nat fi))                                        (by definition of lowerCoyoneda)
--- | = unCoyoneda map (Coyoneda $ mkExists $ CoyonedaF  id (nat fi))                (by definition of coyoneda)
--- | = map id (nat fi)                                                              (by definition of unCoyoneda)
+-- | = lowerCoyoneda (hoistCoyoneda nat (Coyoneda $ mkExists $ CoyonedaF identity fi))    (by definition of liftCoyoneda)
+-- | = lowerCoyoneda (coyoneda identity (nat fi))                                         (by definition of hoistCoyoneda)
+-- | = unCoyoneda map (coyoneda identity (nat fi))                                        (by definition of lowerCoyoneda)
+-- | = unCoyoneda map (Coyoneda $ mkExists $ CoyonedaF  identity (nat fi))                (by definition of coyoneda)
+-- | = map identity (nat fi)                                                              (by definition of unCoyoneda)
 -- | = nat fi                                                                       (since g is a Functor)
 -- | ```
 newtype Coyoneda f a = Coyoneda (Exists (CoyonedaF f a))
@@ -154,15 +154,15 @@ unCoyoneda f (Coyoneda e) = runExists (\(CoyonedaF k fi) -> f k fi) e
 -- | = liftCoyoneda <<< unCoyoneda map $ (Coyoneda e)
 -- | = liftCoyonead (runExists (\(CoyonedaF k fi) -> map k fi) e)
 -- | = liftCoyonead (Coyoneda e)
--- | = coyoneda id (Coyoneda e)
+-- | = coyoneda identity (Coyoneda e)
 -- | = Coyoneda e
 -- | ```
 -- | Moreover if `f` is a `Functor` then `liftCoyoneda` is an isomorphism of
 -- | functors with inverse `lowerCoyoneda`:  we already showed that
--- | `lowerCoyoneda <<< hoistCoyoneda id = lowerCoyoneda` is its left inverse
+-- | `lowerCoyoneda <<< hoistCoyoneda identity = lowerCoyoneda` is its left inverse
 -- | whenever `f` is a functor.
 liftCoyoneda :: forall f. f ~> Coyoneda f
-liftCoyoneda = coyoneda id
+liftCoyoneda = coyoneda identity
 
 -- | Lower a value of type `Coyoneda f a` to the `Functor` `f`.
 lowerCoyoneda :: forall f. Functor f => Coyoneda f ~> f

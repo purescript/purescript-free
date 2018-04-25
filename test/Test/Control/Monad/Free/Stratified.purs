@@ -2,11 +2,9 @@ module Test.Control.Monad.Free.Stratified where
 
 import Prelude
 
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
 import Control.Monad.Free (Free, foldFree, liftF)
-
-import Data.NaturalTransformation (NaturalTransformation)
+import Effect (Effect)
+import Effect.Console (log)
 
 -- | Target DSL that we will actually run
 data TeletypeF a
@@ -19,13 +17,13 @@ putStrLn :: String -> Teletype Unit
 putStrLn s = liftF $ PutStrLn s unit
 
 getLine :: Teletype String
-getLine = liftF $ GetLine id
+getLine = liftF $ GetLine identity
 
 -- | Interpreter for `Teletype`, producing an effectful output
-runTeletype :: forall eff. NaturalTransformation Teletype (Eff (console :: CONSOLE | eff))
+runTeletype :: Teletype ~> Effect
 runTeletype = foldFree go
   where
-  go :: NaturalTransformation TeletypeF (Eff (console :: CONSOLE | eff))
+  go :: TeletypeF ~> Effect
   go (PutStrLn s next) = log s $> next
   go (GetLine k) = pure (k "fake input")
 
@@ -37,7 +35,7 @@ data InitialF a
 type Initial = Free InitialF
 
 greet :: Initial String
-greet = liftF $ Greet id
+greet = liftF $ Greet identity
 
 farewell :: Initial Unit
 farewell = liftF $ Farewell unit
@@ -46,10 +44,10 @@ farewell = liftF $ Farewell unit
 -- | us to map one action in `InitialF` to multiple actions in `TeletypeF` (see
 -- | the `Greet` case - we're expanding one `InitialF` action into 3 `TeletypeF`
 -- | actions).
-runInitial :: NaturalTransformation Initial Teletype
+runInitial :: Initial ~> Teletype
 runInitial initial = foldFree go initial
   where
-  go :: NaturalTransformation InitialF Teletype
+  go :: InitialF ~> Teletype
   go (Greet k) = do
     name <- getLine
     putStrLn $ "Hello " <> name
@@ -65,7 +63,7 @@ test = do
   pure name
 
 -- Run the thing
-main :: forall eff. Eff (console :: CONSOLE | eff) Unit
+main :: Effect Unit
 main = do
   a <- runTeletype (runInitial test)
   log $ "Input name while running: " <> a

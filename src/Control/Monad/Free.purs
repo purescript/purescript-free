@@ -109,7 +109,7 @@ instance traversableFree :: Traversable f => Traversable (Free f) where
     go = resume >>> case _ of
       Left fa -> join <<< liftF <$> traverse go fa
       Right a -> pure <$> f a
-  sequence tma = traverse id tma
+  sequence tma = traverse identity tma
 
 -- | Lift an impure value described by the generating type constructor `f` into
 -- | the free monad.

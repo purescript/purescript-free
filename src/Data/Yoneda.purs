@@ -36,13 +36,13 @@ instance functorYoneda :: Functor (Yoneda f) where
   map f m = Yoneda (\k -> runYoneda m (k <<< f))
 
 instance applyYoneda :: Apply f => Apply (Yoneda f) where
-  apply (Yoneda f) (Yoneda g) = Yoneda (\k -> f (compose k) <*> g id)
+  apply (Yoneda f) (Yoneda g) = Yoneda (\k -> f (compose k) <*> g identity)
 
 instance applicativeYoneda :: Applicative f => Applicative (Yoneda f) where
   pure = liftYoneda <<< pure
 
 instance bindYoneda :: Bind f => Bind (Yoneda f) where
-  bind (Yoneda f) g = Yoneda (\k -> f id >>= \a -> runYoneda (g a) k)
+  bind (Yoneda f) g = Yoneda (\k -> f identity >>= \a -> runYoneda (g a) k)
 
 instance monadYoneda :: Monad f => Monad (Yoneda f)
 
@@ -50,7 +50,7 @@ instance monadTransYoneda :: MonadTrans Yoneda where
   lift = liftYoneda
 
 instance extendYoneda :: Extend w => Extend (Yoneda w) where
-  extend f (Yoneda w) = Yoneda (\k -> k <<< f <<< liftYoneda <<= w id)
+  extend f (Yoneda w) = Yoneda (\k -> k <<< f <<< liftYoneda <<= w identity)
 
 instance comonadYoneda :: Comonad w => Comonad (Yoneda w) where
   extract = extract <<< lowerYoneda
@@ -65,7 +65,7 @@ liftYoneda m = Yoneda (\k -> k <$> m)
 
 -- | Lower a value of type `Yoneda f a` to the type constructor `f`.
 lowerYoneda :: forall f a. Yoneda f a -> f a
-lowerYoneda (Yoneda k) = k id
+lowerYoneda (Yoneda k) = k identity
 
 -- | Use a natural transformation to change the generating type constructor of a
 -- | `Yoneda`.
