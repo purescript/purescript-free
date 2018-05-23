@@ -2,11 +2,10 @@ module Test.Control.Monad.Free.Coproduct where
 
 import Prelude
 
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
 import Control.Monad.Free (Free, liftF, hoistFree, foldFree)
-
 import Data.Functor.Coproduct (Coproduct, coproduct, left, right)
+import Effect (Effect)
+import Effect.Console (log)
 
 data Teletype1F a = Print1 String a
 
@@ -45,20 +44,20 @@ t = hoistFree (right <<< right) (print3 "3")
 u :: T Unit
 u =  r *> s *> t
 
-teletype1N :: forall eff. Teletype1F ~> Eff (console :: CONSOLE | eff)
+teletype1N :: Teletype1F ~> Effect
 teletype1N (Print1 x a) = const a <$> log ("teletype1: " <> x)
 
-teletype2N :: forall eff. Teletype2F ~> Eff (console :: CONSOLE | eff)
+teletype2N :: Teletype2F ~> Effect
 teletype2N (Print2 x a) = const a <$> log ("teletype2: " <> x)
 
-teletype3N :: forall eff. Teletype3F ~> Eff (console :: CONSOLE | eff)
+teletype3N :: Teletype3F ~> Effect
 teletype3N (Print3 x a) = const a <$> log ("teletype3: " <> x)
 
-tN :: forall eff. TF ~> Eff (console :: CONSOLE | eff)
+tN :: TF ~> Effect
 tN = coproduct teletype1N $ coproduct teletype2N teletype3N
 
-run :: forall eff. T ~> Eff (console :: CONSOLE | eff)
+run :: T ~> Effect
 run = foldFree tN
 
-main :: forall eff. Eff (console :: CONSOLE | eff) Unit
+main :: Effect Unit
 main = run u
