@@ -10,7 +10,6 @@ import Control.Comonad.Cofree (Cofree, tail)
 import Control.Comonad.Env.Trans (EnvT(..))
 import Control.Comonad.Store.Trans (StoreT(..))
 import Control.Comonad.Traced.Trans (TracedT(..))
-import Data.Monoid (class Monoid)
 import Data.Tuple (Tuple(..))
 
 -- | Based on <http://hackage.haskell.org/package/free/docs/Control-Comonad-Cofree-Class.html>

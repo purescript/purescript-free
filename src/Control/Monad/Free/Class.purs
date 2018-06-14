@@ -11,7 +11,6 @@ import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
 import Control.Monad.Reader.Trans (ReaderT(..), runReaderT)
 import Control.Monad.State.Trans (StateT(..), runStateT)
 import Control.Monad.Writer.Trans (WriterT(..), runWriterT)
-import Data.Monoid (class Monoid)
 
 -- | Based on <http://hackage.haskell.org/package/free/docs/Control-Monad-Free-Class.html>
 class Monad m <= MonadFree f m | m -> f where
