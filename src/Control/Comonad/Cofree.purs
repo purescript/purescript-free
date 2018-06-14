@@ -2,11 +2,13 @@
 
 module Control.Comonad.Cofree
   ( Cofree
+  , deferCofree
   , mkCofree, (:<)
   , head
   , tail
   , hoistCofree
   , unfoldCofree
+  , buildCofree
   , explore
   , exploreM
   ) where
@@ -15,6 +17,7 @@ import Prelude
 import Control.Alternative (class Alternative, (<|>), empty)
 import Control.Comonad (class Comonad, extract)
 import Control.Extend (class Extend)
+import Control.Lazy as Z
 import Control.Monad.Free (Free, runFreeM)
 import Control.Monad.Rec.Class (class MonadRec)
 import Control.Monad.State (State, StateT(..), runState, runStateT, state)
@@ -23,7 +26,7 @@ import Data.Foldable (class Foldable, foldr, foldl, foldMap)
 import Data.Lazy (Lazy, force, defer)
 import Data.Ord (class Ord1, compare1)
 import Data.Traversable (class Traversable, traverse)
-import Data.Tuple (Tuple(..))
+import Data.Tuple (Tuple(..), fst, snd)
 
 -- | The `Cofree` `Comonad` for a functor.
 -- |
@@ -32,32 +35,33 @@ import Data.Tuple (Tuple(..))
 -- |
 -- | The `Comonad` instance supports _redecoration_, recomputing
 -- | labels from the local context.
-data Cofree f a = Cofree a (Lazy (f (Cofree f a)))
+newtype Cofree f a = Cofree (Lazy (Tuple a (f (Cofree f a))))
+
+-- | Lazily creates a value of type `Cofree f a` from a label and a
+-- | functor-full of "subtrees".
+deferCofree :: forall f a. (Unit -> Tuple a (f (Cofree f a))) -> Cofree f a
+deferCofree = Cofree <<< defer
 
 -- | Create a value of type `Cofree f a` from a label and a
 -- | functor-full of "subtrees".
 mkCofree :: forall f a. a -> f (Cofree f a) -> Cofree f a
-mkCofree a t = Cofree a (defer \_ -> t)
+mkCofree a t = Cofree (defer \_ -> Tuple a t)
 
 infixr 5 mkCofree as :<
 
 -- | Returns the label for a tree.
 head :: forall f a. Cofree f a -> a
-head (Cofree h _) = h
+head (Cofree c) = fst (force c)
 
 -- | Returns the "subtrees" of a tree.
 tail :: forall f a. Cofree f a -> f (Cofree f a)
-tail (Cofree _ t) = force t
-
-_tail :: forall f a. Cofree f a -> Lazy (f (Cofree f a))
-_tail (Cofree _ t) = t
-
-_lift :: forall f a b. Functor f => (a -> b) -> Lazy (f a) -> Lazy (f b)
-_lift = map <<< map
+tail (Cofree c) = snd (force c)
 
 hoistCofree :: forall f g. Functor f => (f ~> g) -> Cofree f ~> Cofree g
-hoistCofree nat cf = head cf :< nat (hoistCofree nat <$> tail cf)
+hoistCofree nat (Cofree c) = Cofree (map (nat <<< map (hoistCofree nat)) <$> c)
 
+-- | This signature is deprecated and will be replaced by `buildCofree` in a
+-- | future release.
 unfoldCofree
   :: forall f s a
    . Functor f
@@ -65,8 +69,17 @@ unfoldCofree
   -> (s -> f s)
   -> s
   -> Cofree f a
-unfoldCofree e n s =
-  Cofree (e s) (defer \_ -> unfoldCofree e n <$> n s)
+unfoldCofree e n = buildCofree (\s -> Tuple (e s) (n s))
+
+-- | Recursively unfolds a `Cofree` structure given a seed.
+buildCofree
+  :: forall f s a
+   . Functor f
+  => (s -> Tuple a (f s))
+  -> s
+  -> Cofree f a
+buildCofree k s =
+  Cofree (defer \_ -> map (buildCofree k) <$> k s)
 
 -- | Explore a value in the cofree comonad by using an expression in a
 -- | corresponding free monad.
@@ -122,8 +135,9 @@ instance ord1Cofree :: Ord1 f => Ord1 (Cofree f) where
   compare1 = compare
 
 instance functorCofree :: Functor f => Functor (Cofree f) where
-  map f = loop where
-    loop fa = Cofree (f (head fa)) (_lift loop (_tail fa))
+  map f = loop
+    where
+    loop (Cofree fa) = Cofree ((\(Tuple a b) -> Tuple (f a) (loop <$> b)) <$> fa)
 
 instance foldableCofree :: Foldable f => Foldable (Cofree f) where
   foldr f = flip go
@@ -139,7 +153,7 @@ instance foldableCofree :: Foldable f => Foldable (Cofree f) where
     go fa = f (head fa) <> (foldMap go (tail fa))
 
 instance traversableCofree :: Traversable f => Traversable (Cofree f) where
-  sequence = traverse id
+  sequence = traverse identity
   traverse f = loop
     where
     loop ta = mkCofree <$> f (head ta) <*> (traverse loop (tail ta))
@@ -147,7 +161,7 @@ instance traversableCofree :: Traversable f => Traversable (Cofree f) where
 instance extendCofree :: Functor f => Extend (Cofree f) where
   extend f = loop
     where
-    loop fa = Cofree (f fa) (_lift loop (_tail fa))
+    loop (Cofree fa) = Cofree ((\(Tuple a b) -> Tuple (f (Cofree fa)) (loop <$> b)) <$> fa)
 
 instance comonadCofree :: Functor f => Comonad (Cofree f) where
   extract = head
@@ -166,3 +180,6 @@ instance bindCofree :: Alternative f => Bind (Cofree f) where
       in mkCofree (head fh) ((tail fh) <|> (loop <$> tail fa'))
 
 instance monadCofree :: Alternative f => Monad (Cofree f)
+
+instance lazyCofree :: Z.Lazy (Cofree f a) where
+  defer k = Cofree (defer \_ -> let (Cofree t) = k unit in force t)

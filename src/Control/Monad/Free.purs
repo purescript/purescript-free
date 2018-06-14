@@ -1,6 +1,7 @@
 module Control.Monad.Free
   ( Free
   , suspendF
+  , wrap
   , liftF
   , hoistFree
   , foldFree
@@ -108,7 +109,7 @@ instance traversableFree :: Traversable f => Traversable (Free f) where
     go = resume >>> case _ of
       Left fa -> join <<< liftF <$> traverse go fa
       Right a -> pure <$> f a
-  sequence tma = traverse id tma
+  sequence tma = traverse identity tma
 
 -- | Lift an impure value described by the generating type constructor `f` into
 -- | the free monad.
@@ -121,15 +122,19 @@ liftF f = fromView (Bind (unsafeCoerceF f) (pure <<< unsafeCoerceVal))
   unsafeCoerceVal :: forall a. Val -> a
   unsafeCoerceVal = unsafeCoerce
 
--- | Suspend a value given the applicative functor `f` into the free monad.
-suspendF :: forall f. Applicative f => Free f ~> Free f
-suspendF f = fromView (Bind (unsafeCoerceF (pure f)) unsafeCoerceVal)
+-- | Add a layer.
+wrap :: forall f a. f (Free f a) -> Free f a
+wrap f = fromView (Bind (unsafeCoerceF f) unsafeCoerceVal)
   where
-  unsafeCoerceF :: forall a. f (Free f a) -> f Val
+  unsafeCoerceF :: forall b. f (Free f b) -> f Val
   unsafeCoerceF = unsafeCoerce
 
-  unsafeCoerceVal :: forall a. Val -> Free f a
+  unsafeCoerceVal :: forall b. Val -> Free f b
   unsafeCoerceVal = unsafeCoerce
+
+-- | Suspend a value given the applicative functor `f` into the free monad.
+suspendF :: forall f. Applicative f => Free f ~> Free f
+suspendF f = wrap (pure f)
 
 -- | Use a natural transformation to change the generating type constructor of a
 -- | free monad.
