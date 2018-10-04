@@ -14,6 +14,7 @@ module Control.Monad.Free
 
 import Prelude
 
+import Control.Apply (lift2)
 import Control.Monad.Rec.Class (class MonadRec, Step(..), tailRecM)
 import Control.Monad.Trans.Class (class MonadTrans)
 
@@ -22,6 +23,7 @@ import Data.Either (Either(..))
 import Data.Eq (class Eq1, eq1)
 import Data.Foldable (class Foldable, foldMap, foldl, foldr)
 import Data.Maybe (Maybe(..))
+import Data.Monoid (class Monoid, mempty)
 import Data.Ord (class Ord1, compare1)
 import Data.Traversable (class Traversable, traverse)
 import Data.Tuple (Tuple(..))
@@ -111,6 +113,13 @@ instance traversableFree :: Traversable f => Traversable (Free f) where
       Right a -> pure <$> f a
   sequence tma = traverse identity tma
 
+
+instance semigroupFree :: Semigroup a => Semigroup (Free f a) where
+  append = lift2 append
+
+instance monoidFree :: Monoid a => Monoid (Free f a) where
+  mempty = pure mempty
+  
 -- | Lift an impure value described by the generating type constructor `f` into
 -- | the free monad.
 liftF :: forall f. f ~> Free f
