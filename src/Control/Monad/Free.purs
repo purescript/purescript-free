@@ -112,7 +112,6 @@ instance traversableFree :: Traversable f => Traversable (Free f) where
       Right a -> pure <$> f a
   sequence tma = traverse identity tma
 
-
 instance semigroupFree :: Semigroup a => Semigroup (Free f a) where
   append = lift2 append
 
