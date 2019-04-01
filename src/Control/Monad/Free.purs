@@ -14,6 +14,7 @@ module Control.Monad.Free
 
 import Prelude
 
+import Control.Apply (lift2)
 import Control.Monad.Rec.Class (class MonadRec, Step(..), tailRecM)
 import Control.Monad.Trans.Class (class MonadTrans)
 
@@ -111,6 +112,12 @@ instance traversableFree :: Traversable f => Traversable (Free f) where
       Right a -> pure <$> f a
   sequence tma = traverse identity tma
 
+instance semigroupFree :: Semigroup a => Semigroup (Free f a) where
+  append = lift2 append
+
+instance monoidFree :: Monoid a => Monoid (Free f a) where
+  mempty = pure mempty
+  
 -- | Lift an impure value described by the generating type constructor `f` into
 -- | the free monad.
 liftF :: forall f. f ~> Free f
