@@ -152,8 +152,8 @@ unCoyoneda f (Coyoneda e) = runExists (\(CoyonedaF k fi) -> f k fi) e
 -- | ```purescript
 -- | liftCoyoneda <<< lowerCoyoneda $ (Coyoneda e)
 -- | = liftCoyoneda <<< unCoyoneda map $ (Coyoneda e)
--- | = liftCoyonead (runExists (\(CoyonedaF k fi) -> map k fi) e)
--- | = liftCoyonead (Coyoneda e)
+-- | = liftCoyoneda (runExists (\(CoyonedaF k fi) -> map k fi) e)
+-- | = liftCoyoneda (Coyoneda e)
 -- | = coyoneda identity (Coyoneda e)
 -- | = Coyoneda e
 -- | ```
