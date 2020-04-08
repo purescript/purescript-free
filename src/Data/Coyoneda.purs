@@ -45,7 +45,7 @@ data CoyonedaF f a i = CoyonedaF (i -> a) (f i)
 -- | = unCoyoneda map (coyoneda identity (nat fi))                                        (by definition of lowerCoyoneda)
 -- | = unCoyoneda map (Coyoneda $ mkExists $ CoyonedaF  identity (nat fi))                (by definition of coyoneda)
 -- | = map identity (nat fi)                                                              (by definition of unCoyoneda)
--- | = nat fi                                                                       (since g is a Functor)
+-- | = nat fi                                                                             (since g is a Functor)
 -- | ```
 newtype Coyoneda f a = Coyoneda (Exists (CoyonedaF f a))
 
@@ -137,12 +137,12 @@ instance distributiveCoyoneda :: Distributive f => Distributive (Coyoneda f) whe
 
 -- | Construct a value of type `Coyoneda f b` from a mapping function and a
 -- | value of type `f a`.
-coyoneda :: forall f a b. (a -> b) -> f a -> Coyoneda f b
+coyoneda :: forall f a i. (i -> a) -> f i -> Coyoneda f a
 coyoneda k fi = Coyoneda $ mkExists $ CoyonedaF k fi
 
 -- | Deconstruct a value of `Coyoneda a` to retrieve the mapping function and
 -- | original value.
-unCoyoneda :: forall f a r. (forall b. (b -> a) -> f b -> r) -> Coyoneda f a -> r
+unCoyoneda :: forall f a r. (forall i. (i -> a) -> f i -> r) -> Coyoneda f a -> r
 unCoyoneda f (Coyoneda e) = runExists (\(CoyonedaF k fi) -> f k fi) e
 
 -- | Lift a value described by the type constructor `f` to `Coyoneda f`.
@@ -152,8 +152,8 @@ unCoyoneda f (Coyoneda e) = runExists (\(CoyonedaF k fi) -> f k fi) e
 -- | ```purescript
 -- | liftCoyoneda <<< lowerCoyoneda $ (Coyoneda e)
 -- | = liftCoyoneda <<< unCoyoneda map $ (Coyoneda e)
--- | = liftCoyonead (runExists (\(CoyonedaF k fi) -> map k fi) e)
--- | = liftCoyonead (Coyoneda e)
+-- | = liftCoyoneda (runExists (\(CoyonedaF k fi) -> map k fi) e)
+-- | = liftCoyoneda (Coyoneda e)
 -- | = coyoneda identity (Coyoneda e)
 -- | = Coyoneda e
 -- | ```
