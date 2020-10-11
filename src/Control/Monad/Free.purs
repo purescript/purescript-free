@@ -35,8 +35,8 @@ roll f = Bind (unsafeCoerce f) (unsafeCoerce (Leaf \a -> a))
 suspend :: forall f a. Applicative f => Free f a -> Free f a
 suspend = roll <<< pure
 
-hoistFree :: forall f g. (f ~> g) -> Free f ~> Free g
-hoistFree nat = case _ of
+hoist :: forall f g. (f ~> g) -> Free f ~> Free g
+hoist nat = case _ of
   Pure a -> Pure a
   Bind f k -> Bind (nat f) (Hoist (unsafeCoerce nat) (unsafeCoerce k))
 
@@ -78,7 +78,7 @@ resume pure' bind' = case _ of
 
   go2 :: forall g x y. (UnsafeBoundF ~> g) -> FreeBinds UnsafeBoundF x y -> x -> Free g y
   go2 nat bs x = case bs of
-    Leaf k -> hoistFree nat (k x)
+    Leaf k -> hoist nat (k x)
     Node l r -> case uncons l r of
       FreeCons k bs' -> case k x of
         Pure a -> go2 nat bs' a
@@ -97,7 +97,7 @@ uncons = go1
 
   go2 :: forall g a' b' x'. (UnsafeBoundF ~> g) -> FreeBinds UnsafeBoundF a' x' -> FreeBinds g x' b' -> FreeCons g a' b'
   go2 nat l r = case l of
-    Leaf k -> FreeCons (hoistFree nat <$> unsafeCoerce k) (unsafeCoerce r)
+    Leaf k -> FreeCons (hoist nat <$> unsafeCoerce k) (unsafeCoerce r)
     Node l' r' -> go2 nat l' (Node (Hoist nat (unsafeCoerce r')) (unsafeCoerce r))
     Hoist nat' n -> go2 (nat <<< nat') n r
 
