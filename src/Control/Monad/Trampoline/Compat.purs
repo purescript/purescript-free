@@ -2,7 +2,7 @@
 -- | a monad transformer stack to avoid stack overflows in large
 -- | monadic computations.
 
-module Control.Monad.Trampoline
+module Control.Monad.Trampoline.Compat
   ( Trampoline
   , done
   , delay
@@ -11,8 +11,7 @@ module Control.Monad.Trampoline
 
 import Prelude
 
-import Control.Monad.Free (Free, liftF, runFree)
-
+import Control.Monad.Free.Compat (Free, liftF, runFree)
 
 -- | The `Trampoline` monad
 -- |

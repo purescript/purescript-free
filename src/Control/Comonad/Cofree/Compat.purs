@@ -1,6 +1,6 @@
 -- | The _cofree comonad_ for a `Functor`.
 
-module Control.Comonad.Cofree
+module Control.Comonad.Cofree.Compat
   ( Cofree
   , deferCofree
   , mkCofree, (:<)
@@ -18,7 +18,7 @@ import Control.Alternative (class Alternative, (<|>), empty)
 import Control.Comonad (class Comonad, extract)
 import Control.Extend (class Extend)
 import Control.Lazy as Z
-import Control.Monad.Free (Free, runFreeM)
+import Control.Monad.Free.Compat (Free, runFreeM)
 import Control.Monad.Rec.Class (class MonadRec)
 import Control.Monad.State (State, StateT(..), runState, runStateT, state)
 import Data.Eq (class Eq1, eq1)

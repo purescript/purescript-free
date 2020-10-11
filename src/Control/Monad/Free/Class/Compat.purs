@@ -1,4 +1,4 @@
-module Control.Monad.Free.Class
+module Control.Monad.Free.Class.Compat
   ( class MonadFree
   , wrapFree
   ) where
@@ -6,7 +6,7 @@ module Control.Monad.Free.Class
 import Prelude
 
 import Control.Monad.Except.Trans (ExceptT(..), runExceptT)
-import Control.Monad.Free (Free, liftF)
+import Control.Monad.Free.Compat (Free, liftF)
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
 import Control.Monad.Reader.Trans (ReaderT(..), runReaderT)
 import Control.Monad.State.Trans (StateT(..), runStateT)
