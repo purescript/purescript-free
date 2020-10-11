@@ -2,7 +2,7 @@ module Test.Control.Monad.Free.Stratified where
 
 import Prelude
 
-import Control.Monad.Free (Free, foldFree, liftF)
+import Control.Monad.Free (Free, interpret, lift)
 import Effect (Effect)
 import Effect.Console (log)
 
@@ -14,14 +14,14 @@ data TeletypeF a
 type Teletype = Free TeletypeF
 
 putStrLn :: String -> Teletype Unit
-putStrLn s = liftF $ PutStrLn s unit
+putStrLn s = lift $ PutStrLn s unit
 
 getLine :: Teletype String
-getLine = liftF $ GetLine identity
+getLine = lift $ GetLine identity
 
 -- | Interpreter for `Teletype`, producing an effectful output
 runTeletype :: Teletype ~> Effect
-runTeletype = foldFree go
+runTeletype = interpret go
   where
   go :: TeletypeF ~> Effect
   go (PutStrLn s next) = log s $> next
@@ -35,17 +35,17 @@ data InitialF a
 type Initial = Free InitialF
 
 greet :: Initial String
-greet = liftF $ Greet identity
+greet = lift $ Greet identity
 
 farewell :: Initial Unit
-farewell = liftF $ Farewell unit
+farewell = lift $ Farewell unit
 
 -- | Interpreter for `Initial`, producing a `Teletype` output. `foldFree` allows
 -- | us to map one action in `InitialF` to multiple actions in `TeletypeF` (see
 -- | the `Greet` case - we're expanding one `InitialF` action into 3 `TeletypeF`
 -- | actions).
 runInitial :: Initial ~> Teletype
-runInitial initial = foldFree go initial
+runInitial initial = interpret go initial
   where
   go :: InitialF ~> Teletype
   go (Greet k) = do
