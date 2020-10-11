@@ -1,4 +1,4 @@
-module Control.Comonad.Cofree.Class.Compat
+module Control.Comonad.Cofree.Class
   ( class ComonadCofree
   , unwrapCofree
   ) where
@@ -6,7 +6,7 @@ module Control.Comonad.Cofree.Class.Compat
 import Prelude
 
 import Control.Comonad (class Comonad)
-import Control.Comonad.Cofree.Compat (Cofree, tail)
+import Control.Comonad.Cofree (Cofree, tail)
 import Control.Comonad.Env.Trans (EnvT(..))
 import Control.Comonad.Store.Trans (StoreT(..))
 import Control.Comonad.Traced.Trans (TracedT(..))
