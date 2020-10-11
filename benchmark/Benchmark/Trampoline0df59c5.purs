@@ -1,3 +1,7 @@
+-- | A _trampoline_ monad, which can be used at the bottom of
+-- | a monad transformer stack to avoid stack overflows in large
+-- | monadic computations.
+
 module Benchmark.Trampoline0df59c5
   ( Trampoline()
   , done
