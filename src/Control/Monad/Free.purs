@@ -1,15 +1,10 @@
 module Control.Monad.Free
   ( Free
-  , FreeBinds
-  , FreeCons
-  , FreeView
   , lift
   , roll
   , suspend
   , hoist
   , resume
-  , uncons
-  , view
   , run
   , runRec
   , runPure
