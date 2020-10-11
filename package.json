@@ -3,11 +3,14 @@
   "scripts": {
     "clean": "rimraf output && rimraf .pulp-cache",
     "build": "pulp build -- --censor-lib --strict",
-    "test": "pulp test"
+    "build:benchmark": "pulp build --main 'Benchmark.Main' --include './benchmark' -- --censor-lib --strict",
+    "test": "pulp test",
+    "test:benchmark": "node -e \"require('./output/Benchmark.Main').main()\""
   },
   "devDependencies": {
+    "benchmark": "^2.1.4",
     "pulp": "^15.0.0",
-    "purescript-psa": "^0.6.x",
-    "rimraf": "^2.6.2"
+    "purescript-psa": "^0.8.x",
+    "rimraf": "^3.0.2"
   }
 }
