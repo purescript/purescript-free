@@ -15,6 +15,7 @@ script:
   - bower install --production
   - npm run -s build
   - bower install
+  - npm -s build:benchmarks
   - npm -s test
 after_success:
 - >-
