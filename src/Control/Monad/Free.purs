@@ -1,4 +1,22 @@
-module Control.Monad.Free where
+module Control.Monad.Free
+  ( Free
+  , FreeBinds
+  , FreeCons
+  , FreeView
+  , lift
+  , roll
+  , suspend
+  , hoist
+  , resume
+  , uncons
+  , view
+  , run
+  , runRec
+  , runPure
+  , interpret
+  , interpretRec
+  )
+  where
 
 import Prelude
 
@@ -56,12 +74,12 @@ instance bindFree :: Bind (Free f) where
 
 instance monadFree :: Monad (Free f)
 
-resume ::
-  forall f a r.
-  (a -> r) ->
-  (forall b. f b -> (b -> Free f a) -> r) ->
-  Free f a ->
-  r
+resume
+  :: forall f a r
+   . (a -> r)
+  -> (forall b. f b -> (b -> Free f a) -> r)
+  -> Free f a
+  -> r
 resume pure' bind' = case _ of
   Pure a -> pure' a
   Bind a bs -> bind' a (go1 bs)
