@@ -1,7 +1,7 @@
 -- | A _trampoline_ monad, which can be used at the bottom of
 -- | a monad transformer stack to avoid stack overflows in large
 -- | monadic computations.
-module Benchmark.Trampoline326759a
+module Benchmark.Trampolinef686f5f
   ( Trampoline
   , done
   , delay
@@ -10,7 +10,7 @@ module Benchmark.Trampoline326759a
 
 import Prelude
 
-import Benchmark.Free326759a (Free, liftF, runFree)
+import Benchmark.Freef686f5f (Free, liftF, runFree)
 
 -- | The `Trampoline` monad
 -- |

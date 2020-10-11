@@ -1,4 +1,4 @@
-module Benchmark.Free326759a
+module Benchmark.Freef686f5f
   ( Free
   , suspendF
   , wrap

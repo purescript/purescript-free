@@ -2,9 +2,9 @@ module Benchmark.Main (main) where
 
 import Prelude
 
-import Benchmark.Free326759a as Free326759a
+import Benchmark.Freef686f5f as Freef686f5f
 import Benchmark.Trampoline0df59c5 as Trampoline0df59c5
-import Benchmark.Trampoline326759a as Trampoline326759a
+import Benchmark.Trampolinef686f5f as Trampolinef686f5f
 import Benchotron.Core (Benchmark, benchFn, mkBenchmark)
 import Benchotron.UI.Console (runSuite)
 import Data.Foldable (foldl)
@@ -30,7 +30,7 @@ leftBindSmallBenchmark =
     , inputsPerSize: inputsPerSize
     , gen: \n -> vectorOf n (pure 0.0)
     , functions:
-        [ benchFn "Free v5.2.0" (Trampoline326759a.runTrampoline <<< binds)
+        [ benchFn "Free v5.2.0" (Trampolinef686f5f.runTrampoline <<< binds)
         , benchFn "Free v0.6.1" (Trampoline0df59c5.runTrampoline <<< bindsT)
         ]
     }
@@ -38,11 +38,11 @@ leftBindSmallBenchmark =
   inputsPerSize :: Int
   inputsPerSize = 100
 
-  binds :: Array Number -> Trampoline326759a.Trampoline Number
+  binds :: Array Number -> Trampolinef686f5f.Trampoline Number
   binds as = foldl (\b a -> b >>= const (gen a)) (gen 0.0) as
 
-  gen :: forall a. a -> Trampoline326759a.Trampoline a
-  gen = Free326759a.suspendF <<< Trampoline326759a.done
+  gen :: forall a. a -> Trampolinef686f5f.Trampoline a
+  gen = Freef686f5f.suspendF <<< Trampolinef686f5f.done
 
   bindsT :: Array Number -> Trampoline0df59c5.Trampoline Number
   bindsT as = foldl (\b a -> b >>= const (genT a)) (genT 0.0) as
@@ -60,7 +60,7 @@ rightBindSmallBenchmark =
   , inputsPerSize: inputsPerSize
   , gen: \n -> vectorOf n (pure 0.0)
   , functions:
-      [ benchFn "Free v5.2.0" (Trampoline326759a.runTrampoline <<< binds)
+      [ benchFn "Free v5.2.0" (Trampolinef686f5f.runTrampoline <<< binds)
       , benchFn "Free v0.6.1" (Trampoline0df59c5.runTrampoline <<< bindsT)
       ]
   }
@@ -68,11 +68,11 @@ rightBindSmallBenchmark =
   inputsPerSize :: Int
   inputsPerSize = 100
 
-  binds :: Array Number -> Trampoline326759a.Trampoline Number
+  binds :: Array Number -> Trampolinef686f5f.Trampoline Number
   binds as = foldl (\b a -> gen a >>= const b) (gen 0.0) as
 
-  gen :: forall a. a -> Trampoline326759a.Trampoline a
-  gen = Free326759a.suspendF <<< Trampoline326759a.done
+  gen :: forall a. a -> Trampolinef686f5f.Trampoline a
+  gen = Freef686f5f.suspendF <<< Trampolinef686f5f.done
 
   bindsT :: Array Number -> Trampoline0df59c5.Trampoline Number
   bindsT as = foldl (\b a -> genT a >>= const b) (genT 0.0) as
@@ -90,7 +90,7 @@ leftBindLargeBenchmark =
     , inputsPerSize: inputsPerSize
     , gen: \n -> vectorOf n (pure 0.0)
     , functions:
-        [ benchFn "Free v5.2.0" (Trampoline326759a.runTrampoline <<< binds)
+        [ benchFn "Free v5.2.0" (Trampolinef686f5f.runTrampoline <<< binds)
         -- Disabled due to stack overflow
         -- , benchFn "Free v0.6.1" (Trampoline0df59c5.runTrampoline <<< bindsT)
         ]
@@ -99,11 +99,11 @@ leftBindLargeBenchmark =
   inputsPerSize :: Int
   inputsPerSize = 1
 
-  binds :: Array Number -> Trampoline326759a.Trampoline Number
+  binds :: Array Number -> Trampolinef686f5f.Trampoline Number
   binds as = foldl (\b a -> b >>= const (gen a)) (gen 0.0) as
 
-  gen :: forall a. a -> Trampoline326759a.Trampoline a
-  gen = Free326759a.suspendF <<< Trampoline326759a.done
+  gen :: forall a. a -> Trampolinef686f5f.Trampoline a
+  gen = Freef686f5f.suspendF <<< Trampolinef686f5f.done
 
   bindsT :: Array Number -> Trampoline0df59c5.Trampoline Number
   bindsT as = foldl (\b a -> b >>= const (genT a)) (genT 0.0) as
@@ -121,7 +121,7 @@ rightBindLargeBenchmark =
     , inputsPerSize: inputsPerSize
     , gen: \n -> vectorOf n (pure 0.0)
     , functions:
-        [ benchFn "Free v5.2.0" (Trampoline326759a.runTrampoline <<< binds)
+        [ benchFn "Free v5.2.0" (Trampolinef686f5f.runTrampoline <<< binds)
         , benchFn "Free v0.6.1" (Trampoline0df59c5.runTrampoline <<< bindsT)
         ]
     }
@@ -129,11 +129,11 @@ rightBindLargeBenchmark =
   inputsPerSize :: Int
   inputsPerSize = 1
 
-  binds :: Array Number -> Trampoline326759a.Trampoline Number
+  binds :: Array Number -> Trampolinef686f5f.Trampoline Number
   binds as = foldl (\b a -> gen a >>= const b) (gen 0.0) as
 
-  gen :: forall a. a -> Trampoline326759a.Trampoline a
-  gen = Free326759a.suspendF <<< Trampoline326759a.done
+  gen :: forall a. a -> Trampolinef686f5f.Trampoline a
+  gen = Freef686f5f.suspendF <<< Trampolinef686f5f.done
 
   bindsT :: Array Number -> Trampoline0df59c5.Trampoline Number
   bindsT as = foldl (\b a -> genT a >>= const b) (genT 0.0) as
