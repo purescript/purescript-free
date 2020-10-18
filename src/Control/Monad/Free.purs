@@ -29,6 +29,7 @@ foreign import data UnsafeBoundValue :: Type
 
 foreign import data UnsafeBoundF :: Type -> Type
 
+-- | The free monad for a type constructor `f`.
 data Free f a
   = Pure a
   | Bind (f UnsafeBoundValue) (FreeBinds f UnsafeBoundValue a)
