@@ -143,6 +143,7 @@ hoist nat = case _ of
   Pure a -> Pure a
   Bind f k -> Bind (nat f) (Hoist (unsafeCoerce nat) (unsafeCoerce k))
 
+ -- | Unwraps a single layer of `f`, providing the continuation.
 resume
   :: forall f a r
    . (a -> r)
