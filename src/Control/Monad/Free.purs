@@ -7,7 +7,6 @@ module Control.Monad.Free
   , resume
   , run
   , runRec
-  , runPure
   , interpret
   , interpretRec
   )
@@ -174,8 +173,15 @@ resume pure' bind' = case _ of
     Hoist nat' bs' ->
       go2 (nat <<< nat') bs' x
 
-run :: forall f m a. Functor f => Monad m => (f (Free f a) -> m (Free f a)) -> Free f a -> m a
-run next = go where go = resume pure (\f k -> next (k <$> f) >>= go)
+-- | Run a free monad with a function that unwraps a single layer of the functor
+-- | `f` at a time.
+run :: forall f a. Functor f => (f (Free f a) -> Free f a) -> Free f a -> a
+run next = go
+  where
+  go :: Free f a -> a
+  go x = case unsafeCoerce (view x) :: FreeView f a UnsafeBoundValue of
+    PureView a -> a
+    BindView f k -> go (next (k <$> f))
 
 -- | Run a free monad with a function mapping a functor `f` to a tail-recursive
 -- | monad `m`. See the `MonadRec` type class for more details.
@@ -185,16 +191,6 @@ runRec next = tailRecM go <<< view
   go = runExists case _ of
     PureView a -> pure $ Done a
     BindView f k -> Loop <<< view <$> next (k <$> f)
-
--- | Run a free monad with a function that unwraps a single layer of the functor
--- | `f` at a time.
-runPure :: forall f a. Functor f => (f (Free f a) -> Free f a) -> Free f a -> a
-runPure next = go
-  where
-  go :: Free f a -> a
-  go x = case unsafeCoerce (view x) :: FreeView f a UnsafeBoundValue of
-    PureView a -> a
-    BindView f k -> go (next (k <$> f))
 
 -- | Run a free monad with a natural transformation from the type constructor `f`
 -- | to the monad `m`, which can be some other Free monad. If you need tail
