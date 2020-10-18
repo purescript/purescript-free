@@ -51,7 +51,7 @@ substFree = Free.interpret
 -- | Run a free monad with a function that unwraps a single layer of the functor
 -- | `f` at a time.
 runFree :: forall f a. Functor f => (f (Free f a) -> Free f a) -> Free f a -> a
-runFree = Free.runPure
+runFree = Free.run
 
 -- | Run a free monad with a function mapping a functor `f` to a tail-recursive
 -- | monad `m`. See the `MonadRec` type class for more details.
