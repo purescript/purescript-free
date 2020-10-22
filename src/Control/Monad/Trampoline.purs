@@ -11,7 +11,7 @@ module Control.Monad.Trampoline
 
 import Prelude
 
-import Control.Monad.Free (Free, lift, run)
+import Control.Monad.Free (Free, liftF, runFree)
 
 -- | The `Trampoline` monad
 -- |
@@ -25,8 +25,8 @@ done = pure
 
 -- | Use the `Trampoline` monad to represent the delayed evaluation of a value.
 delay :: forall a. (Unit -> a) -> Trampoline a
-delay = lift
+delay = liftF
 
 -- | Run a computation in the `Trampoline` monad.
 runTrampoline :: forall a. Trampoline a -> a
-runTrampoline = run (_ $ unit)
+runTrampoline = runFree (_ $ unit)

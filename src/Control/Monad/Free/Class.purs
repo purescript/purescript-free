@@ -6,7 +6,7 @@ module Control.Monad.Free.Class
 import Prelude
 
 import Control.Monad.Except.Trans (ExceptT(..), runExceptT)
-import Control.Monad.Free (Free, lift)
+import Control.Monad.Free (Free, liftF)
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
 import Control.Monad.Reader.Trans (ReaderT(..), runReaderT)
 import Control.Monad.State.Trans (StateT(..), runStateT)
@@ -17,7 +17,7 @@ class Monad m <= MonadFree f m | m -> f where
   wrapFree :: forall a. f (m a) -> m a
 
 instance monadFreeFree :: MonadFree f (Free f) where
-  wrapFree = join <<< lift
+  wrapFree = join <<< liftF
 
 instance monadFreeReaderT :: (Functor f, MonadFree f m) => MonadFree f (ReaderT r m) where
   wrapFree f = ReaderT \r -> wrapFree (map (\rt -> runReaderT rt r) f)

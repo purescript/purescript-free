@@ -2,7 +2,7 @@ module Test.Control.Monad.Free.Teletype where
 
 import Prelude
 
-import Control.Monad.Free (Free, interpret, lift)
+import Control.Monad.Free (Free, interpret, liftF)
 import Effect (Effect)
 import Effect.Console (log)
 
@@ -11,10 +11,10 @@ data TeletypeF a = PutStrLn String a | GetLine (String -> a)
 type Teletype a = Free TeletypeF a
 
 putStrLn :: String -> Teletype Unit
-putStrLn s = lift (PutStrLn s unit)
+putStrLn s = liftF (PutStrLn s unit)
 
 getLine :: Teletype String
-getLine = lift (GetLine identity)
+getLine = liftF (GetLine identity)
 
 teletypeN :: TeletypeF ~> Effect
 teletypeN (PutStrLn s a) = const a <$> log s
