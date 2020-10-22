@@ -45,7 +45,7 @@ leftBindSmallBenchmark =
   binds as = foldl (\b a -> b >>= const (gen a)) (gen 0.0) as
 
   gen :: forall a. a -> Trampoline.Trampoline a
-  gen = Free.suspend <<< Trampoline.done
+  gen = Free.suspendF <<< Trampoline.done
 
   binds_5_2_0 :: Array Number -> Trampolinef686f5f.Trampoline Number
   binds_5_2_0 as = foldl (\b a -> b >>= const (gen_5_2_0 a)) (gen_5_2_0 0.0) as
@@ -82,7 +82,7 @@ rightBindSmallBenchmark =
   binds as = foldl (\b a -> gen a >>= const b) (gen 0.0) as
 
   gen :: forall a. a -> Trampoline.Trampoline a
-  gen = Free.suspend <<< Trampoline.done
+  gen = Free.suspendF <<< Trampoline.done
 
   binds_5_2_0 :: Array Number -> Trampolinef686f5f.Trampoline Number
   binds_5_2_0 as = foldl (\b a -> gen_5_2_0 a >>= const b) (gen_5_2_0 0.0) as
@@ -120,7 +120,7 @@ leftBindLargeBenchmark =
   binds as = foldl (\b a -> b >>= const (gen a)) (gen 0.0) as
 
   gen :: forall a. a -> Trampoline.Trampoline a
-  gen = Free.suspend <<< Trampoline.done
+  gen = Free.suspendF <<< Trampoline.done
 
   binds_5_2_0 :: Array Number -> Trampolinef686f5f.Trampoline Number
   binds_5_2_0 as = foldl (\b a -> b >>= const (gen_5_2_0 a)) (gen_5_2_0 0.0) as
@@ -157,7 +157,7 @@ rightBindLargeBenchmark =
   binds as = foldl (\b a -> gen a >>= const b) (gen 0.0) as
 
   gen :: forall a. a -> Trampoline.Trampoline a
-  gen = Free.suspend <<< Trampoline.done
+  gen = Free.suspendF <<< Trampoline.done
 
   binds_5_2_0 :: Array Number -> Trampolinef686f5f.Trampoline Number
   binds_5_2_0 as = foldl (\b a -> gen_5_2_0 a >>= const b) (gen_5_2_0 0.0) as
