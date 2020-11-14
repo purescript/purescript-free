@@ -23,24 +23,24 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-catenable-lists": "^5.0.0",
-    "purescript-control": "^4.0.0",
-    "purescript-distributive": "^4.0.0",
-    "purescript-either": "^4.0.0",
-    "purescript-exists": "^4.0.0",
-    "purescript-foldable-traversable": "^4.0.0",
-    "purescript-invariant": "^4.0.0",
-    "purescript-lazy": "^4.0.0",
-    "purescript-maybe": "^4.0.0",
-    "purescript-prelude": "^4.0.0",
-    "purescript-tailrec": "^4.0.0",
-    "purescript-transformers": "^4.0.0",
-    "purescript-tuples": "^5.0.0",
-    "purescript-unsafe-coerce": "^4.0.0"
+    "purescript-catenable-lists": "master",
+    "purescript-control": "master",
+    "purescript-distributive": "master",
+    "purescript-either": "master",
+    "purescript-exists": "master",
+    "purescript-foldable-traversable": "master",
+    "purescript-invariant": "master",
+    "purescript-lazy": "master",
+    "purescript-maybe": "master",
+    "purescript-prelude": "master",
+    "purescript-tailrec": "master",
+    "purescript-transformers": "master",
+    "purescript-tuples": "master",
+    "purescript-unsafe-coerce": "master"
   },
   "devDependencies": {
-    "purescript-console": "^4.0.0",
-    "purescript-functors": "^3.0.0",
-    "purescript-benchotron": "^7.0.1"
+    "purescript-console": "master",
+    "purescript-functors": "master",
+    "purescript-benchotron": "master"
   }
 }
