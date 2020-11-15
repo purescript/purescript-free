@@ -40,7 +40,6 @@
   },
   "devDependencies": {
     "purescript-console": "master",
-    "purescript-functors": "master",
-    "purescript-benchotron": "master"
+    "purescript-functors": "master"
   }
 }
