@@ -22,7 +22,7 @@ import Data.Exists (Exists, runExists, mkExists)
 import Data.Foldable (class Foldable, foldMap, foldl, foldr)
 import Data.Functor.Invariant (class Invariant, imapF)
 import Data.Ord (class Ord1, compare1)
-import Data.Semigroup.Foldable (class Foldable1, foldMap1)
+import Data.Semigroup.Foldable (class Foldable1, foldMap1, foldr1Default, foldl1Default)
 import Data.Semigroup.Traversable (class Traversable1, sequence1, traverse1)
 import Data.Traversable (class Traversable, traverse)
 
@@ -126,6 +126,8 @@ instance traversableCoyoneda :: Traversable f => Traversable (Coyoneda f) where
 instance foldable1Coyoneda :: Foldable1 f => Foldable1 (Coyoneda f) where
   foldMap1 f = unCoyoneda \k -> foldMap1 (f <<< k)
   fold1 = unCoyoneda \k -> foldMap1 k
+  foldr1 = foldr1Default
+  foldl1 = foldl1Default
 
 instance traversable1Coyoneda :: Traversable1 f => Traversable1 (Coyoneda f) where
   traverse1 f = unCoyoneda \k -> map liftCoyoneda <<< traverse1 (f <<< k)
