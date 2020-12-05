@@ -1,7 +1,7 @@
 # purescript-free
 
 [![Latest release](http://img.shields.io/github/release/purescript/purescript-free.svg)](https://github.com/purescript/purescript-free/releases)
-[![Build status](https://travis-ci.org/purescript/purescript-free.svg?branch=master)](https://travis-ci.org/purescript/purescript-free)
+[![Build status](https://github.com/purescript/purescript-free/workflows/CI/badge.svg?branch=master)](https://github.com/purescript/purescript-free/actions?query=workflow%3ACI+branch%3Amaster)
 
 Free monad, Cofree comonad, Yoneda and Coyoneda functors, and the Trampoline monad implementations for PureScript.
 
@@ -13,7 +13,7 @@ See the following reference for further information.
 ## Installation
 
 ```
-bower install purescript-free
+spago install free
 ```
 
 ## Documentation
