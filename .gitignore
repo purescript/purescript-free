@@ -1,6 +1,6 @@
 /.*
 !/.gitignore
-!/.travis.yml
+!/.github/
 /bower_components/
 /node_modules/
 /output/
