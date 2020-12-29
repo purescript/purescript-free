@@ -125,7 +125,6 @@ instance traversableCoyoneda :: Traversable f => Traversable (Coyoneda f) where
 
 instance foldable1Coyoneda :: Foldable1 f => Foldable1 (Coyoneda f) where
   foldMap1 f = unCoyoneda \k -> foldMap1 (f <<< k)
-  fold1 = unCoyoneda \k -> foldMap1 k
   foldr1 = foldr1Default
   foldl1 = foldl1Default
 
