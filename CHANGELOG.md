@@ -5,12 +5,16 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
+- Updated code for PureScript 0.14 (#106 #110)
 
 New features:
 
 Bugfixes:
 
 Other improvements:
+- Migrated CI to GitHub Actions and updated installation instructions to use Spago (#108)
+- Added a CHANGELOG.md file and pull request template (#111 #112)
+- Updated benchmarks (#103)
 
 ## [v5.2.0](https://github.com/purescript/purescript-free/releases/tag/v5.2.0) - 2019-04-01
 
