@@ -5,7 +5,7 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
-- Updated code for PureScript 0.14 (#106 #110)
+- Added support for PureScript 0.14, and dropped support for all previous versions (#106, #110)
 
 New features:
 
@@ -13,16 +13,16 @@ Bugfixes:
 
 Other improvements:
 - Migrated CI to GitHub Actions and updated installation instructions to use Spago (#108)
-- Added a CHANGELOG.md file and pull request template (#111 #112)
+- Added a CHANGELOG.md file and pull request template (#111, #112)
 - Updated benchmarks (#103)
 
 ## [v5.2.0](https://github.com/purescript/purescript-free/releases/tag/v5.2.0) - 2019-04-01
 
-Added `Semigroup` and `Monoid` instances for `Free` (@safareli)
+- Added `Semigroup` and `Monoid` instances for `Free` (@safareli)
 
 ## [v5.1.0](https://github.com/purescript/purescript-free/releases/tag/v5.1.0) - 2018-06-14
 
-Add `MonadFree` and `ComonadCofree` classes.
+- Added `MonadFree` and `ComonadCofree` classes.
 
 ## [v5.0.0](https://github.com/purescript/purescript-free/releases/tag/v5.0.0) - 2018-05-23
 
@@ -36,17 +36,17 @@ Add `MonadFree` and `ComonadCofree` classes.
 
 ## [v4.2.0](https://github.com/purescript/purescript-free/releases/tag/v4.2.0) - 2017-12-11
 
-- Make `Cofree` lazier (@natefaubion)
-- Add `buildCofree` and deprecate `unfoldCofree` (@natefaubion)
-- Add `deferCofree` (@natefaubion)
+- Made `Cofree` lazier (@natefaubion)
+- Added `buildCofree` and deprecate `unfoldCofree` (@natefaubion)
+- Added `deferCofree` (@natefaubion)
 
 ## [v4.1.0](https://github.com/purescript/purescript-free/releases/tag/v4.1.0) - 2017-06-23
 
-Add `resume'` (@natefaubion)
+- Added `resume'` (@natefaubion)
 
 ## [v4.0.1](https://github.com/purescript/purescript-free/releases/tag/v4.0.1) - 2017-05-28
 
-`Coyoneda` docs (@coot)
+- Added `Coyoneda` docs (@coot)
 
 ## [v4.0.0](https://github.com/purescript/purescript-free/releases/tag/v4.0.0) - 2017-03-27
 
@@ -57,11 +57,11 @@ Add `resume'` (@natefaubion)
 
 ## [v3.5.1](https://github.com/purescript/purescript-free/releases/tag/v3.5.1) - 2017-03-16
 
-Export `exploreM`.
+- Export `exploreM`.
 
 ## [v3.5.0](https://github.com/purescript/purescript-free/releases/tag/v3.5.0) - 2017-03-16
 
-Add `exploreM` (@coot)
+- Added `exploreM` (@coot)
 
 ## [v3.4.0](https://github.com/purescript/purescript-free/releases/tag/v3.4.0) - 2017-01-31
 
@@ -168,7 +168,7 @@ This release works with versions 0.7.\* of the PureScript compiler. It will not 
 
 ## [v0.5.0-rc.1](https://github.com/purescript/purescript-free/releases/tag/v0.5.0-rc.1) - 2015-06-07
 
-Initial release candidate of the library intended for the 0.7 compiler.
+- Initial release candidate of the library intended for the 0.7 compiler.
 
 ## [v0.4.2](https://github.com/purescript/purescript-free/releases/tag/v0.4.2) - 2015-05-13
 
@@ -176,13 +176,13 @@ Initial release candidate of the library intended for the 0.7 compiler.
 
 ## [v0.4.1](https://github.com/purescript/purescript-free/releases/tag/v0.4.1) - 2015-03-19
 
-Update docs
+- Updateed docs
 
 ## [v0.4.0](https://github.com/purescript/purescript-free/releases/tag/v0.4.0) - 2015-03-02
 
-- Rename `go`, `goM`, etc. to `runFree`, `runFreeM` etc.
-- Remove `iterM`, `goEff` and `goEffC`.
-- Update `goM` to work in any target monad which is an instance of `MonadRec`, which solves the issue of `goM` causing a stack overflow for large inputs.
+- Renamed `go`, `goM`, etc. to `runFree`, `runFreeM` etc.
+- Removed `iterM`, `goEff` and `goEffC`.
+- Updated `goM` to work in any target monad which is an instance of `MonadRec`, which solves the issue of `goM` causing a stack overflow for large inputs.
 
 ## [v0.3.0](https://github.com/purescript/purescript-free/releases/tag/v0.3.0) - 2015-02-21
 
@@ -199,11 +199,11 @@ Update docs
 
 ## [v0.1.5](https://github.com/purescript/purescript-free/releases/tag/v0.1.5) - 2014-11-30
 
-Added `injC` and `mapF` for free monad composition (@ethul)
+- Added `injC` and `mapF` for free monad composition (@ethul)
 
 ## [v0.1.4](https://github.com/purescript/purescript-free/releases/tag/v0.1.4) - 2014-11-18
 
-Fixes for extracted `Identity`
+- Fixes for extracted `Identity`
 
 ## [v0.1.3](https://github.com/purescript/purescript-free/releases/tag/v0.1.3) - 2014-10-08
 
@@ -216,29 +216,32 @@ Fixes for extracted `Identity`
 
 ## [0.1.1](https://github.com/purescript/purescript-free/releases/tag/0.1.1) - 2014-10-01
 
-
+- Updated to compatible transformers version number
 
 ## [0.1.0](https://github.com/purescript/purescript-free/releases/tag/0.1.0) - 2014-09-03
 
-Relocating `Free` and `Trampoline` back to `purescript-free`, and adding `Yoneda` and `Coyoneda`.
+- Relocated `Free` and `Trampoline` back to `purescript-free`, and adding `Yoneda` and `Coyoneda`.
 
 ## [0.0.8](https://github.com/purescript/purescript-free/releases/tag/0.0.8) - 2014-06-01
 
-Specialization of `go` for `Eff` as discussed in issue #6
+- Specialized of `go` for `Eff` as discussed in issue #6
 
 ## [0.0.7](https://github.com/purescript/purescript-free/releases/tag/0.0.7) - 2014-05-15
 
-Thanks to @puffnfresh!
+- Trampolined version of `Free` (@puffnfresh)
 
 ## [0.0.6](https://github.com/purescript/purescript-free/releases/tag/0.0.6) - 2014-04-28
 
-
+- Bump dependencies
 
 ## [0.0.5](https://github.com/purescript/purescript-free/releases/tag/0.0.5) - 2014-04-28
 
-
+- Bump dependencies
 
 ## [0.0.4](https://github.com/purescript/purescript-free/releases/tag/0.0.4) - 2014-04-08
 
+- Updated classes for PureScript 0.5
 
+## [0.0.1](https://github.com/purescript/purescript-free/releases/tag/0.0.1) - 2014-04-01
 
+- Initial release
