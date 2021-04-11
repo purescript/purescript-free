@@ -59,7 +59,7 @@ instance ordFree :: (Functor f, Ord1 f, Ord a) => Ord (Free f a) where
     _, Left _ -> GT
     Right a, Right b -> compare a b
 
-instance ord1Free :: (Functor f, Ord1 f, Ord a) => Ord1 (Free f) where
+instance ord1Free :: (Functor f, Ord1 f) => Ord1 (Free f) where
   compare1 = compare
 
 instance freeFunctor :: Functor (Free f) where
