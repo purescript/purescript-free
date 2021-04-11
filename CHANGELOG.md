@@ -9,6 +9,7 @@ Breaking changes:
 New features:
 
 Bugfixes:
+- Removed unused constraint from `Ord1` instance (#114)
 
 Other improvements:
 
