@@ -10,6 +10,7 @@ New features:
 
 Bugfixes:
 - Removed unused constraint from `Ord1` instance (#114)
+- Fix warnings revealed by v0.14.1 PS release (#115 by @JordanMartinez)
 
 Other improvements:
 
