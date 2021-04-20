@@ -161,7 +161,7 @@ instance traversableCofree :: Traversable f => Traversable (Cofree f) where
 instance extendCofree :: Functor f => Extend (Cofree f) where
   extend f = loop
     where
-    loop (Cofree fa) = Cofree ((\(Tuple a b) -> Tuple (f (Cofree fa)) (loop <$> b)) <$> fa)
+    loop (Cofree fa) = Cofree ((\(Tuple _ b) -> Tuple (f (Cofree fa)) (loop <$> b)) <$> fa)
 
 instance comonadCofree :: Functor f => Comonad (Cofree f) where
   extract = head
