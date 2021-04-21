@@ -9,19 +9,21 @@ Breaking changes:
 New features:
 
 Bugfixes:
-- Removed unused constraint from `Ord1` instance (#114)
-- Fix warnings revealed by v0.14.1 PS release (#115 by @JordanMartinez)
 
 Other improvements:
+
+## [v6.0.1](https://github.com/purescript/purescript-free/releases/tag/v6.0.1) - 2021-04-20
+
+Bugfixes:
+- Removed unused constraint from `Ord1` instance (#114 by @rintcius)
+
+Other improvements:
+- Fixed warnings revealed by v0.14.1 PS release (#115 by @JordanMartinez)
 
 ## [v6.0.0](https://github.com/purescript/purescript-free/releases/tag/v6.0.0) - 2021-02-26
 
 Breaking changes:
-- Added support for PureScript 0.14, and dropped support for all previous versions (#106, #110)
-
-New features:
-
-Bugfixes:
+- Added support for PureScript 0.14 and dropped support for all previous versions (#106, #110)
 
 Other improvements:
 - Migrated CI to GitHub Actions and updated installation instructions to use Spago (#108)
