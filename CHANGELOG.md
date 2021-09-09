@@ -12,6 +12,11 @@ Bugfixes:
 
 Other improvements:
 
+## [v6.1.0](https://github.com/purescript/purescript-free/releases/tag/v6.101) - 2021-09-09
+
+New features:
+- Added semigroup and monoid instances for `Cofree` (#116 by @mikesol)
+
 ## [v6.0.1](https://github.com/purescript/purescript-free/releases/tag/v6.0.1) - 2021-04-20
 
 Bugfixes:
