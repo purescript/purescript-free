@@ -119,7 +119,7 @@ exploreM pair m w =
     eval :: forall x y. Tuple (x -> y) (Cofree g x) -> y
     eval (Tuple f cof) = f (extract cof)
 
-instance semigroupCofree :: (Functor f, Apply f, Semigroup a) => Semigroup (Cofree f a) where
+instance semigroupCofree :: (Apply f, Semigroup a) => Semigroup (Cofree f a) where
   append x y = deferCofree \_ -> Tuple (head x <> head y) (append <$> tail x <*> tail y)
 
 instance monoidCofree :: (Applicative f, Monoid a) => Monoid (Cofree f a) where
