@@ -58,7 +58,7 @@ tail :: forall f a. Cofree f a -> f (Cofree f a)
 tail (Cofree c) = snd (force c)
 
 hoistCofree :: forall f g. Functor f => (f ~> g) -> Cofree f ~> Cofree g
-hoistCofree nat (Cofree c) = Cofree (map (nat <<< map (hoistCofree nat)) <$> c)
+hoistCofree nat = recastCofree (compose nat <<< map)
 
 -- | Recasts a cofree comonad's functor from `f` to `g` by
 -- | passing a function in which `g` can annihilate `f`.
