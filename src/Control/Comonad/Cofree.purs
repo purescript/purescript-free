@@ -22,6 +22,7 @@ import Control.Monad.Free (Free, runFreeM)
 import Control.Monad.Rec.Class (class MonadRec)
 import Control.Monad.State (State, StateT(..), runState, runStateT, state)
 import Data.Eq (class Eq1, eq1)
+import Data.FunctorWithIndex (class FunctorWithIndex)
 import Data.Foldable (class Foldable, foldr, foldl, foldMap)
 import Data.Lazy (Lazy, force, defer)
 import Data.Ord (class Ord1, compare1)
@@ -144,6 +145,11 @@ instance functorCofree :: Functor f => Functor (Cofree f) where
   map f = loop
     where
     loop (Cofree fa) = Cofree ((\(Tuple a b) -> Tuple (f a) (loop <$> b)) <$> fa)
+
+instance functorWithIndexCofree :: Functor f => FunctorWithIndex Int (Cofree f) where
+  mapWithIndex f = loop 0
+    where
+    loop n (Cofree fa) = Cofree ((\(Tuple a b) -> Tuple (f n a) (loop (n + 1) <$> b)) <$> fa)
 
 instance foldableCofree :: Foldable f => Foldable (Cofree f) where
   foldr f = flip go
