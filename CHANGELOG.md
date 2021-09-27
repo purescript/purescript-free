@@ -8,6 +8,8 @@ Breaking changes:
 
 New features:
 
+- Added a `FunctorWithIndex` instance for `Cofree` (#118 by @mikesol)
+
 Bugfixes:
 
 Other improvements:
