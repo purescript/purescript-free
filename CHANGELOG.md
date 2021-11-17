@@ -13,6 +13,7 @@ New features:
 Bugfixes:
 
 Other improvements:
+- Split `LICENSE` into `LICENSE` and `LICENSE_THIRDPARTY` (#119 by @maxdeviant)
 
 ## [v6.1.0](https://github.com/purescript/purescript-free/releases/tag/v6.101) - 2021-09-09
 
