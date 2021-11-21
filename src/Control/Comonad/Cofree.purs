@@ -3,6 +3,7 @@
 module Control.Comonad.Cofree
   ( Cofree
   , deferCofree
+  , deferCofree2
   , mkCofree, (:<)
   , head
   , tail
@@ -41,6 +42,11 @@ newtype Cofree f a = Cofree (Lazy ({head :: a, tail :: (f (Cofree f a))}))
 -- | functor-full of "subtrees".
 deferCofree :: forall f a. (Unit -> Tuple a (f (Cofree f a))) -> Cofree f a
 deferCofree = Cofree <<< defer <<< map (\(Tuple a b) -> { head: a, tail: b })
+
+-- | Lazily creates a value of type `Cofree f a` from a label and a
+-- | functor-full of "subtrees". Slightly faster than `deferCofree`.
+deferCofree2 :: forall f a. (Unit -> {head :: a, tail :: (f (Cofree f a))}) -> Cofree f a
+deferCofree2 = Cofree <<< defer
 
 -- | Create a value of type `Cofree f a` from a label and a
 -- | functor-full of "subtrees".
@@ -120,10 +126,10 @@ exploreM pair m w =
     eval (Tuple f cof) = f (extract cof)
 
 instance semigroupCofree :: (Apply f, Semigroup a) => Semigroup (Cofree f a) where
-  append x y = deferCofree \_ -> Tuple (head x <> head y) (append <$> tail x <*> tail y)
+  append x y = deferCofree2 \_ ->  { head: head x <> head y, tail: append <$> tail x <*> tail y }
 
 instance monoidCofree :: (Applicative f, Monoid a) => Monoid (Cofree f a) where
-  mempty = deferCofree \_ -> Tuple mempty (pure mempty)
+  mempty = deferCofree2 \_ -> { head: mempty, tail: pure mempty }
 
 instance eqCofree :: (Eq1 f, Eq a) => Eq (Cofree f a) where
   eq x y = head x == head y && tail x `eq1` tail y
