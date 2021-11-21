@@ -12,7 +12,15 @@ Bugfixes:
 
 Other improvements:
 
-## [v6.1.0](https://github.com/purescript/purescript-free/releases/tag/v6.101) - 2021-09-09
+## [v6.2.0](https://github.com/purescript/purescript-free/releases/tag/v6.2.0) - 2021-11-19
+
+New features:
+- Added a `FunctorWithIndex` instance for `Cofree` (#118 by @mikesol)
+
+Other improvements:
+- Split `LICENSE` into `LICENSE` and `LICENSE_THIRDPARTY` (#119 by @maxdeviant)
+
+## [v6.1.0](https://github.com/purescript/purescript-free/releases/tag/v6.1.0) - 2021-09-09
 
 New features:
 - Added semigroup and monoid instances for `Cofree` (#116 by @mikesol)
