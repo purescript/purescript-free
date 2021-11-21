@@ -37,7 +37,7 @@ import Data.Tuple (Tuple(..))
 -- |
 -- | The `Comonad` instance supports _redecoration_, recomputing
 -- | labels from the local context.
-newtype Cofree f a = Cofree (Lazy ({head :: a, tail :: (f (Cofree f a))}))
+newtype Cofree f a = Cofree (Lazy ({head :: a, tail :: f (Cofree f a)}))
 
 -- | Lazily creates a value of type `Cofree f a` from a label and a
 -- | functor-full of "subtrees".
@@ -46,7 +46,7 @@ deferCofree = Cofree <<< defer <<< map (\(Tuple a b) -> { head: a, tail: b })
 
 -- | Lazily creates a value of type `Cofree f a` from a label and a
 -- | functor-full of "subtrees". Slightly faster than `deferCofree`.
-deferCofree2 :: forall f a. (Unit -> {head :: a, tail :: (f (Cofree f a))}) -> Cofree f a
+deferCofree2 :: forall f a. (Unit -> {head :: a, tail :: f (Cofree f a)}) -> Cofree f a
 deferCofree2 = Cofree <<< defer
 
 -- | Create a value of type `Cofree f a` from a label and a
@@ -155,7 +155,7 @@ instance functorCofree :: Functor f => Functor (Cofree f) where
 instance functorWithIndexCofree :: Functor f => FunctorWithIndex Int (Cofree f) where
   mapWithIndex f = loop 0
     where
-    loop n (Cofree fa) = Cofree ((\(Tuple a b) -> Tuple (f n a) (loop (n + 1) <$> b)) <$> fa)
+    loop n (Cofree fa) = Cofree ((\r -> { head: f n r.head, tail: loop (n + 1) <$> r.tail}) <$> fa)
 
 instance foldableCofree :: Foldable f => Foldable (Cofree f) where
   foldr f = flip go
