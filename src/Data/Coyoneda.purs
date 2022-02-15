@@ -15,7 +15,7 @@ import Control.Alternative (class Alternative, class Plus, empty)
 import Control.Comonad (class Comonad, extract)
 import Control.Extend (class Extend, (<<=))
 import Control.Monad.Trans.Class (class MonadTrans)
-import Control.MonadPlus (class MonadPlus, class MonadZero)
+import Control.MonadPlus (class MonadPlus)
 import Data.Distributive (class Distributive, collect)
 import Data.Eq (class Eq1, eq1)
 import Data.Exists (Exists, runExists, mkExists)
@@ -96,8 +96,6 @@ instance monadCoyoneda :: Monad f => Monad (Coyoneda f)
 
 instance monadTransCoyoneda :: MonadTrans Coyoneda where
   lift = liftCoyoneda
-
-instance monadZeroCoyoneda :: MonadZero f => MonadZero (Coyoneda f)
 
 instance monadPlusCoyoneda :: MonadPlus f => MonadPlus (Coyoneda f)
 
