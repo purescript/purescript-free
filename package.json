@@ -9,8 +9,8 @@
   },
   "devDependencies": {
     "benchmark": "^2.1.4",
-    "pulp": "^15.0.0",
-    "purescript-psa": "^0.8.x",
+    "pulp": "16.0.0-0",
+    "purescript-psa": "^0.8.2",
     "rimraf": "^3.0.2"
   }
 }
