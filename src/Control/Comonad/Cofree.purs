@@ -7,7 +7,6 @@ module Control.Comonad.Cofree
   , head
   , tail
   , hoistCofree
-  , unfoldCofree
   , buildCofree
   , explore
   , exploreM
@@ -60,17 +59,6 @@ tail (Cofree c) = snd (force c)
 
 hoistCofree :: forall f g. Functor f => (f ~> g) -> Cofree f ~> Cofree g
 hoistCofree nat (Cofree c) = Cofree (map (nat <<< map (hoistCofree nat)) <$> c)
-
--- | This signature is deprecated and will be replaced by `buildCofree` in a
--- | future release.
-unfoldCofree
-  :: forall f s a
-   . Functor f
-  => (s -> a)
-  -> (s -> f s)
-  -> s
-  -> Cofree f a
-unfoldCofree e n = buildCofree (\s -> Tuple (e s) (n s))
 
 -- | Recursively unfolds a `Cofree` structure given a seed.
 buildCofree
