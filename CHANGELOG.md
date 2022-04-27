@@ -5,6 +5,16 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
+
+New features:
+
+Bugfixes:
+
+Other improvements:
+
+## [v7.0.0](https://github.com/purescript/purescript-free/releases/tag/v7.0.0) - 2022-04-27
+
+Breaking changes:
 - Update project and deps to PureScript v0.15.0 (#123 by @JordanMartinez)
 - Drop deprecated `MonadZero` instance (#122 by @JordanMartinez)
 - Drop deprecated `unfoldCofree`; use `buildCofree` instead (#124 by @JordanMartinez)
