@@ -21,11 +21,13 @@ import Control.Monad.Free (Free, runFreeM)
 import Control.Monad.Rec.Class (class MonadRec)
 import Control.Monad.State (State, StateT(..), runState, runStateT, state)
 import Data.Eq (class Eq1, eq1)
+import Data.FoldableWithIndex (class FoldableWithIndex)
 import Data.FunctorWithIndex (class FunctorWithIndex)
 import Data.Foldable (class Foldable, foldr, foldl, foldMap)
 import Data.Lazy (Lazy, force, defer)
 import Data.Ord (class Ord1, compare1)
 import Data.Traversable (class Traversable, traverse)
+import Data.TraversableWithIndex (class TraversableWithIndex)
 import Data.Tuple (Tuple(..), fst, snd)
 
 -- | The `Cofree` `Comonad` for a functor.
@@ -152,11 +154,29 @@ instance foldableCofree :: Foldable f => Foldable (Cofree f) where
     where
     go fa = f (head fa) <> (foldMap go (tail fa))
 
+instance foldableWithIndexCofree :: Foldable f => FoldableWithIndex Int (Cofree f) where
+  foldrWithIndex f = go 0
+    where
+    go ix b fa = f ix (head fa) (foldr (flip (go (ix + 1))) b (tail fa))
+
+  foldlWithIndex f = go 0
+    where
+    go ix b fa = foldl (go (ix + 1)) (f ix b (head fa)) (tail fa)
+
+  foldMapWithIndex f = go 0
+    where
+    go ix fa = f ix (head fa) <> foldMap (go (ix + 1)) (tail fa)
+
 instance traversableCofree :: Traversable f => Traversable (Cofree f) where
   sequence = traverse identity
   traverse f = loop
     where
     loop ta = mkCofree <$> f (head ta) <*> (traverse loop (tail ta))
+
+instance traversableWithIndexCofree :: Traversable f => TraversableWithIndex Int (Cofree f) where
+  traverseWithIndex f = loop 0
+    where
+    loop ix ta = mkCofree <$> f ix (head ta) <*> (traverse (loop (ix + 1)) (tail ta))
 
 instance extendCofree :: Functor f => Extend (Cofree f) where
   extend f = loop
