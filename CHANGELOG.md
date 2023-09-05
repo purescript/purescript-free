@@ -12,6 +12,11 @@ Bugfixes:
 
 Other improvements:
 
+## [v7.1.0](https://github.com/purescript/purescript-free/releases/tag/v7.1.0) - 2023-09-05
+
+New features:
+- Added `FoldableWithIndex` and `TraversableWithIndex` instances for `Cofree` (#126 by @postsolar)
+
 ## [v7.0.0](https://github.com/purescript/purescript-free/releases/tag/v7.0.0) - 2022-04-27
 
 Breaking changes:
