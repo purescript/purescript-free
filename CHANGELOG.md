@@ -8,6 +8,8 @@ Breaking changes:
 
 New features:
 
+- Added `ZipCofree` wrapper newtype, with zipping `Apply` and `Applicative` instances (#128)
+
 Bugfixes:
 
 Other improvements:
