@@ -6,7 +6,7 @@ Notable changes to this project are documented in this file. The format is based
 
 Other improvements:
 
-- Migrate from Bower/Pulp to Spago, update CI and formatting, and restore the benchmark runner.
+- Migrate from Bower/Pulp to Spago, update CI and formatting, and restore the benchmark runner (#129 by @thomashoneyman).
 
 ## [v7.1.0](https://github.com/purescript/purescript-free/releases/tag/v7.1.0) - 2023-09-05
 
