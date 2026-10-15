@@ -3,11 +3,11 @@ import { mkdirSync, writeFileSync } from "node:fs";
 
 // Benchotron disabled decompilation because generated PureScript functions
 // close over imported modules. Keep its Benchmark.js defaults and batch timing.
-export const runSuiteImpl = map => suite => () => {
+export const runSuiteImpl = (map) => (suite) => () => {
   Benchmark.support.decompilation = false;
   mkdirSync("tmp", { recursive: true });
   for (const benchmark of suite) {
-    const series = benchmark.functions.map(fn => ({ name: fn.name, results: [] }));
+    const series = benchmark.functions.map((fn) => ({ name: fn.name, results: [] }));
     for (const size of benchmark.sizes) {
       console.error(`${benchmark.slug}: n=${size}`);
       // Generate the same shared batch before measuring any competitor.
@@ -26,7 +26,7 @@ export const runSuiteImpl = map => suite => () => {
       slug: benchmark.slug,
       title: benchmark.title,
       sizeInterpretation: benchmark.sizeInterpretation,
-      series
+      series,
     };
     const path = `tmp/${benchmark.slug}.json`;
     writeFileSync(path, JSON.stringify(result));

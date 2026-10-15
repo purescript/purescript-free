@@ -5,16 +5,19 @@ Notable changes to this project are documented in this file. The format is based
 ## [v7.1.1](https://github.com/purescript/purescript-free/releases/tag/v7.1.1)
 
 Other improvements:
+
 - Migrate from Bower/Pulp to Spago, update CI and formatting, and restore the benchmark runner.
 
 ## [v7.1.0](https://github.com/purescript/purescript-free/releases/tag/v7.1.0) - 2023-09-05
 
 New features:
+
 - Added `FoldableWithIndex` and `TraversableWithIndex` instances for `Cofree` (#126 by @postsolar)
 
 ## [v7.0.0](https://github.com/purescript/purescript-free/releases/tag/v7.0.0) - 2022-04-27
 
 Breaking changes:
+
 - Update project and deps to PureScript v0.15.0 (#123 by @JordanMartinez)
 - Drop deprecated `MonadZero` instance (#122 by @JordanMartinez)
 - Drop deprecated `unfoldCofree`; use `buildCofree` instead (#124 by @JordanMartinez)
@@ -28,30 +31,37 @@ Other improvements:
 ## [v6.2.0](https://github.com/purescript/purescript-free/releases/tag/v6.2.0) - 2021-11-19
 
 New features:
+
 - Added a `FunctorWithIndex` instance for `Cofree` (#118 by @mikesol)
 
 Other improvements:
+
 - Split `LICENSE` into `LICENSE` and `LICENSE_THIRDPARTY` (#119 by @maxdeviant)
 
 ## [v6.1.0](https://github.com/purescript/purescript-free/releases/tag/v6.1.0) - 2021-09-09
 
 New features:
+
 - Added semigroup and monoid instances for `Cofree` (#116 by @mikesol)
 
 ## [v6.0.1](https://github.com/purescript/purescript-free/releases/tag/v6.0.1) - 2021-04-20
 
 Bugfixes:
+
 - Removed unused constraint from `Ord1` instance (#114 by @rintcius)
 
 Other improvements:
+
 - Fixed warnings revealed by v0.14.1 PS release (#115 by @JordanMartinez)
 
 ## [v6.0.0](https://github.com/purescript/purescript-free/releases/tag/v6.0.0) - 2021-02-26
 
 Breaking changes:
+
 - Added support for PureScript 0.14 and dropped support for all previous versions (#106, #110)
 
 Other improvements:
+
 - Migrated CI to GitHub Actions and updated installation instructions to use Spago (#108)
 - Added a CHANGELOG.md file and pull request template (#111, #112)
 - Updated benchmarks (#103)
@@ -227,6 +237,7 @@ This release works with versions 0.7.\* of the PureScript compiler. It will not 
 ## [v0.3.0](https://github.com/purescript/purescript-free/releases/tag/v0.3.0) - 2015-02-21
 
 **This release requires PureScript v0.6.8 or later**
+
 - Updated dependencies
 
 ## [v0.2.0](https://github.com/purescript/purescript-free/releases/tag/v0.2.0) - 2015-01-10

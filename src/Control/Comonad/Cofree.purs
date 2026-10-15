@@ -3,7 +3,8 @@
 module Control.Comonad.Cofree
   ( Cofree
   , deferCofree
-  , mkCofree, (:<)
+  , mkCofree
+  , (:<)
   , head
   , tail
   , hoistCofree
@@ -13,7 +14,8 @@ module Control.Comonad.Cofree
   ) where
 
 import Prelude
-import Control.Alternative (class Alternative, (<|>), empty)
+
+import Control.Alternative (class Alternative, empty, (<|>))
 import Control.Comonad (class Comonad, extract)
 import Control.Extend (class Extend)
 import Control.Lazy as Z
@@ -21,10 +23,10 @@ import Control.Monad.Free (Free, runFreeM)
 import Control.Monad.Rec.Class (class MonadRec)
 import Control.Monad.State (State, StateT(..), runState, runStateT, state)
 import Data.Eq (class Eq1, eq1)
+import Data.Foldable (class Foldable, foldMap, foldl, foldr)
 import Data.FoldableWithIndex (class FoldableWithIndex)
 import Data.FunctorWithIndex (class FunctorWithIndex)
-import Data.Foldable (class Foldable, foldr, foldl, foldMap)
-import Data.Lazy (Lazy, force, defer)
+import Data.Lazy (Lazy, defer, force)
 import Data.Ord (class Ord1, compare1)
 import Data.Traversable (class Traversable, traverse)
 import Data.TraversableWithIndex (class TraversableWithIndex)
@@ -86,11 +88,11 @@ explore
   -> Cofree g a
   -> b
 explore pair m w =
-    case runState (runFreeM step m) w of
-      Tuple f cof -> f (extract cof)
+  case runState (runFreeM step m) w of
+    Tuple f cof -> f (extract cof)
   where
-    step :: f (Free f (a -> b)) -> State (Cofree g a) (Free f (a -> b))
-    step ff = state \cof -> pair (map Tuple ff) (tail cof)
+  step :: f (Free f (a -> b)) -> State (Cofree g a) (Free f (a -> b))
+  step ff = state \cof -> pair (map Tuple ff) (tail cof)
 
 exploreM
   :: forall f g a b m
@@ -104,11 +106,11 @@ exploreM
 exploreM pair m w =
   eval <$> runStateT (runFreeM step m) w
   where
-    step :: f (Free f (a -> b)) -> StateT (Cofree g a) m (Free f (a -> b))
-    step ff = StateT \cof -> pair (map Tuple ff) (tail cof)
+  step :: f (Free f (a -> b)) -> StateT (Cofree g a) m (Free f (a -> b))
+  step ff = StateT \cof -> pair (map Tuple ff) (tail cof)
 
-    eval :: forall x y. Tuple (x -> y) (Cofree g x) -> y
-    eval (Tuple f cof) = f (extract cof)
+  eval :: forall x y. Tuple (x -> y) (Cofree g x) -> y
+  eval (Tuple f cof) = f (extract cof)
 
 instance semigroupCofree :: (Apply f, Semigroup a) => Semigroup (Cofree f a) where
   append x y = deferCofree \_ -> Tuple (head x <> head y) (append <$> tail x <*> tail y)
@@ -196,8 +198,10 @@ instance bindCofree :: Alternative f => Bind (Cofree f) where
   bind fa f = loop fa
     where
     loop fa' =
-      let fh = f (head fa')
-      in mkCofree (head fh) ((tail fh) <|> (loop <$> tail fa'))
+      let
+        fh = f (head fa')
+      in
+        mkCofree (head fh) ((tail fh) <|> (loop <$> tail fa'))
 
 instance monadCofree :: Alternative f => Monad (Cofree f)
 

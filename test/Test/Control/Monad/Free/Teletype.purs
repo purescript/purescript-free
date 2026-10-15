@@ -2,9 +2,9 @@ module Test.Control.Monad.Free.Teletype where
 
 import Prelude
 
+import Control.Monad.Free (Free, foldFree, liftF)
 import Effect (Effect)
 import Effect.Console (log)
-import Control.Monad.Free (Free, foldFree, liftF)
 
 data TeletypeF a = PutStrLn String a | GetLine (String -> a)
 

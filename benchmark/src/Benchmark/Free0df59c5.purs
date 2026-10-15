@@ -41,15 +41,16 @@ type Natural f g = forall a. f a -> g a
 newtype GosubF f a i = GosubF { a :: Unit -> Free f i, f :: i -> Free f a }
 
 gosub :: forall f a i. (Unit -> Free f i) -> (i -> Free f a) -> Free f a
-gosub a f = Gosub $ mkExists $ GosubF { a: a, f: f}
+gosub a f = Gosub $ mkExists $ GosubF { a: a, f: f }
 
 -- | The free `Monad` for a `Functor`.
 -- |
 -- | The implementation defers the evaluation of monadic binds so that it
 -- | is safe to use monadic tail recursion, for example.
-data Free f a = Pure a
-              | Free (f (Free f a))
-              | Gosub (Exists (GosubF f a))
+data Free f a
+  = Pure a
+  | Free (f (Free f a))
+  | Gosub (Exists (GosubF f a))
 
 -- | The free `Monad` for an arbitrary type constructor.
 type FreeC f = Free (Coyoneda f)
@@ -74,7 +75,7 @@ instance applicativeFree :: Functor f => Applicative (Free f) where
 
 instance bindFree :: Functor f => Bind (Free f) where
   bind (Gosub g) k = runExists (\(GosubF v) -> gosub v.a (\x -> gosub (\_ -> v.f x) k)) g
-  bind a         k = gosub (\_ -> a) k
+  bind a k = gosub (\_ -> a) k
 
 instance monadFree :: Functor f => Monad (Free f)
 
@@ -88,12 +89,12 @@ instance monadFreeFree :: Functor f => MonadFree f (Free f) where
 
 instance monadRecFree :: Functor f => MonadRec (Free f) where
   tailRecM f u = f u >>= \o -> case o of
-                                    Loop a -> tailRecM f a
-                                    Done b -> pure b
+    Loop a -> tailRecM f a
+    Done b -> pure b
 
 -- | Lift an action described by the generating functor `f` into the monad `m`
 -- | (usually `Free f`).
-liftF :: forall f m a. Functor f => Monad m => MonadFree f m  => f a -> m a
+liftF :: forall f m a. Functor f => Monad m => MonadFree f m => f a -> m a
 liftF = wrap <<< map pure
 
 -- | Lift an action described by the generating type constructor `f` into
@@ -165,10 +166,13 @@ resume f = case f of
   where
   resumeGosub :: Partial => Free f a -> Either (f (Free f a)) (Free f a)
   resumeGosub (Gosub g) =
-    runExists (\(GosubF v) -> case v.a unit of
-                                   Pure a -> Right (v.f a)
-                                   Free t -> Left ((\h -> h >>= v.f) <$> t)
-                                   Gosub h -> runExists (\(GosubF w) -> Right (w.a unit >>= (\z -> w.f z >>= v.f))) h) g
+    runExists
+      ( \(GosubF v) -> case v.a unit of
+          Pure a -> Right (v.f a)
+          Free t -> Left ((\h -> h >>= v.f) <$> t)
+          Gosub h -> runExists (\(GosubF w) -> Right (w.a unit >>= (\z -> w.f z >>= v.f))) h
+      )
+      g
 
 -- | `runFree` runs a computation of type `Free f a`, using a function which unwraps a single layer of
 -- | the functor `f` at a time.
