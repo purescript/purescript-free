@@ -4,7 +4,7 @@
     "build": "spago build -p free",
     "build:benchmark": "spago build -p free-benchmark",
     "test": "spago test -p free",
-    "test:benchmark": "node --expose-gc --max-old-space-size=2560 --max-semi-space-size=8 --input-type=module -e \"import { main } from './output/Benchmark.Main/index.js'; main()\"",
+    "test:benchmark": "NODE_OPTIONS='--expose-gc --max-old-space-size=2560' spago run -p free-benchmark",
     "format": "purs-tidy format-in-place src test benchmark/src && oxfmt --write .",
     "format:check": "purs-tidy check src test benchmark/src && oxfmt --check ."
   },
