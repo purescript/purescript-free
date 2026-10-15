@@ -1,6 +1,7 @@
 package:
   name: free
-  description: Free monad, Cofree comonad, Yoneda and Coyoneda functors, and the Trampoline monad
+  description: Free monad, Cofree comonad, Yoneda and Coyoneda functors, and the
+    Trampoline monad
   build:
     strict: true
     pedanticPackages: true
