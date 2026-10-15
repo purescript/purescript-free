@@ -35,6 +35,7 @@ import Data.Identity (Identity(..))
 import Data.Newtype (unwrap)
 import Partial.Unsafe (unsafePartial)
 
+type Natural :: forall k. (k -> Type) -> (k -> Type) -> Type
 type Natural f g = forall a. f a -> g a
 
 newtype GosubF f a i = GosubF { a :: Unit -> Free f i, f :: i -> Free f a }
@@ -57,6 +58,7 @@ type FreeC f = Free (Coyoneda f)
 -- | actions described by a generating functor into a monad.
 -- |
 -- | The canonical instance of `MonadFree f` is `Free f`.
+class MonadFree :: forall k. (Type -> Type) -> (k -> Type) -> Constraint
 class MonadFree f m where
   wrap :: forall a. f (m a) -> m a
 
@@ -71,8 +73,8 @@ instance applicativeFree :: Functor f => Applicative (Free f) where
   pure = Pure
 
 instance bindFree :: Functor f => Bind (Free f) where
-  bind (Gosub g) k = runExists (\(GosubF v) -> gosub v.a (\x -> gosub (\unit -> v.f x) k)) g
-  bind a         k = gosub (\unit -> a) k
+  bind (Gosub g) k = runExists (\(GosubF v) -> gosub v.a (\x -> gosub (\_ -> v.f x) k)) g
+  bind a         k = gosub (\_ -> a) k
 
 instance monadFree :: Functor f => Monad (Free f)
 
