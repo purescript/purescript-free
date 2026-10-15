@@ -4,7 +4,7 @@
     "build": "spago build -p free",
     "build:benchmark": "spago build -p free-benchmark",
     "test": "spago test -p free",
-    "test:benchmark": "spago run -p free-benchmark",
+    "test:benchmark": "node --max-old-space-size=3072 --input-type=module -e \"import { main } from './output/Benchmark.Main/index.js'; main()\"",
     "lint": "oxlint --deny-warnings benchmark/src",
     "format": "purs-tidy format-in-place src test benchmark/src && oxfmt --write .",
     "format:check": "purs-tidy check src test benchmark/src && oxfmt --check ."

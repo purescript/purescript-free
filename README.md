@@ -25,6 +25,7 @@ Module documentation is [published on Pursuit](http://pursuit.purescript.org/pac
 ## Benchmarks
 
 Run `npm run build:benchmark` and `npm run test:benchmark` to run all four workloads.
+The runner allows a 3 GiB Node heap for the three-million-bind cases.
 Results are written to `tmp/`. The runner uses Benchmark.js defaults and times a
 batch of inputs, including both bind construction and trampoline execution, as
 the original Benchotron harness did. Its deterministic zero-array inputs and
