@@ -24,6 +24,13 @@ Module documentation is [published on Pursuit](http://pursuit.purescript.org/pac
 
 ## Benchmarks
 
+Run `npm run build:benchmark` and `npm run test:benchmark` to run all four workloads.
+Results are written to `tmp/`. The runner uses Benchmark.js defaults and times a
+batch of inputs, including both bind construction and trampoline execution, as
+the original Benchotron harness did. Its deterministic zero-array inputs and
+historical implementations are unchanged; measurements on the current compiler
+and Node runtime are not directly comparable to the historical results below.
+
 The following benchmarks compare the implementation at `v5.2.0` (commit f686f5fc07766f3ca9abc83b47b6ad3da326759a) with the implementation at `v0.6.1` (commit 0df59c5d459fed983131856886fc3a4b43234f1f), which used the `Gosub` technique to defer monadic binds.
 
 ![left-bind-small](benchmark/left-bind-small.png)

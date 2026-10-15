@@ -33,7 +33,7 @@ import Data.Exists (Exists, mkExists, runExists)
 import Data.Functor.Coproduct.Inject (class Inject, inj)
 import Data.Identity (Identity(..))
 import Data.Newtype (unwrap)
-import Partial.Unsafe (unsafePartialBecause)
+import Partial.Unsafe (unsafePartial)
 
 type Natural f g = forall a. f a -> g a
 
@@ -157,7 +157,7 @@ resume :: forall f a. Functor f => Free f a -> Either (f (Free f a)) a
 resume f = case f of
   Pure x -> Right x
   Free x -> Left x
-  g -> unsafePartialBecause "Existing implementation." case resumeGosub g of
+  g -> unsafePartial case resumeGosub g of
     Left l -> Left l
     Right r -> resume r
   where

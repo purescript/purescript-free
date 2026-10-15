@@ -3,7 +3,7 @@
 -- | monadic computations.
 
 module Benchmark.Trampoline0df59c5
-  ( Trampoline()
+  ( Trampoline
   , done
   , suspend
   , delay'

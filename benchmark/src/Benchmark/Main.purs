@@ -3,13 +3,12 @@ module Benchmark.Main (main) where
 import Prelude
 
 import Benchmark.Freef686f5f as Freef686f5f
+import Benchmark.Harness (Benchmark, benchFn, mkBenchmark, runSuite)
 import Benchmark.Trampoline0df59c5 as Trampoline0df59c5
 import Benchmark.Trampolinef686f5f as Trampolinef686f5f
-import Benchotron.Core (Benchmark, benchFn, mkBenchmark)
-import Benchotron.UI.Console (runSuite)
+import Data.Array (replicate)
 import Data.Foldable (foldl)
 import Effect (Effect)
-import Test.QuickCheck.Gen (vectorOf)
 
 main :: Effect Unit
 main =
@@ -28,7 +27,7 @@ leftBindSmallBenchmark =
     , sizes: [1, 2, 3, 4, 5, 10, 20, 30, 40, 50, 100, 250, 500, 1000]
     , sizeInterpretation: "Number of binds"
     , inputsPerSize: inputsPerSize
-    , gen: \n -> vectorOf n (pure 0.0)
+    , gen: \n -> replicate n 0.0
     , functions:
         [ benchFn "Free v5.2.0" (Trampolinef686f5f.runTrampoline <<< binds)
         , benchFn "Free v0.6.1" (Trampoline0df59c5.runTrampoline <<< bindsT)
@@ -58,7 +57,7 @@ rightBindSmallBenchmark =
   , sizes: [1, 2, 3, 4, 5, 10, 20, 30, 40, 50, 100, 250, 500, 1000]
   , sizeInterpretation: "Number of binds"
   , inputsPerSize: inputsPerSize
-  , gen: \n -> vectorOf n (pure 0.0)
+  , gen: \n -> replicate n 0.0
   , functions:
       [ benchFn "Free v5.2.0" (Trampolinef686f5f.runTrampoline <<< binds)
       , benchFn "Free v0.6.1" (Trampoline0df59c5.runTrampoline <<< bindsT)
@@ -88,7 +87,7 @@ leftBindLargeBenchmark =
     , sizes: [1, 5, 10, 15, 20, 25, 30 ] <#> (_ * 100_000)
     , sizeInterpretation: "Number of binds"
     , inputsPerSize: inputsPerSize
-    , gen: \n -> vectorOf n (pure 0.0)
+    , gen: \n -> replicate n 0.0
     , functions:
         [ benchFn "Free v5.2.0" (Trampolinef686f5f.runTrampoline <<< binds)
         -- Disabled due to stack overflow
@@ -119,7 +118,7 @@ rightBindLargeBenchmark =
     , sizes: [1, 5, 10, 15, 20, 25, 30 ] <#> (_ * 100_000)
     , sizeInterpretation: "Number of binds"
     , inputsPerSize: inputsPerSize
-    , gen: \n -> vectorOf n (pure 0.0)
+    , gen: \n -> replicate n 0.0
     , functions:
         [ benchFn "Free v5.2.0" (Trampolinef686f5f.runTrampoline <<< binds)
         , benchFn "Free v0.6.1" (Trampoline0df59c5.runTrampoline <<< bindsT)
