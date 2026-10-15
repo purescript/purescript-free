@@ -14,8 +14,7 @@ export const runSuiteImpl = map => suite => () => {
       const inputs = Array.from({ length: benchmark.inputsPerSize }, () => benchmark.gen(size));
       for (let i = 0; i < benchmark.functions.length; i++) {
         const fn = benchmark.functions[i];
-        const batch = map(fn.fn);
-        const measured = new Benchmark(() => batch(inputs));
+        const measured = new Benchmark(() => map(fn.fn)(inputs));
         measured.run();
         if (measured.error) {
           throw new Error(`While running ${fn.name} at n=${size}: ${measured.error}`);
