@@ -6,8 +6,11 @@ package:
   run:
     main: Benchmark.Main
   dependencies:
+    - argonaut-codecs: ">=9.1.0 <10.0.0"
+    - argonaut-core: ">=7.0.0 <8.0.0"
     - arrays: ">=7.0.0 <8.0.0"
     - catenable-lists: ">=7.0.0 <8.0.0"
+    - console: ">=6.0.0 <7.0.0"
     - effect: ">=4.0.0 <5.0.0"
     - either: ">=6.0.0 <7.0.0"
     - exists: ">=6.0.0 <7.0.0"
@@ -15,9 +18,12 @@ package:
     - free: "*"
     - functors: ">=5.0.0 <6.0.0"
     - identity: ">=6.0.0 <7.0.0"
+    - integers: ">=6.0.0 <7.0.0"
     - lazy: ">=6.0.0 <7.0.0"
     - maybe: ">=6.0.0 <7.0.0"
+    - minibench: ">=4.0.1 <5.0.0"
     - newtype: ">=5.0.0 <6.0.0"
+    - numbers: ">=9.0.0 <10.0.0"
     - partial: ">=4.0.0 <5.0.0"
     - prelude: ">=6.0.0 <7.0.0"
     - tailrec: ">=6.0.0 <7.0.0"

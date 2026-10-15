@@ -25,12 +25,17 @@ Module documentation is [published on Pursuit](http://pursuit.purescript.org/pac
 ## Benchmarks
 
 Run `npm run build:benchmark` and `npm run test:benchmark` to run all four workloads.
-The runner allows a 3 GiB Node heap for the three-million-bind cases.
-Results are written to `tmp/`. The runner uses Benchmark.js defaults and times a
-batch of inputs, including both bind construction and trampoline execution, as
-the original Benchotron harness did. Its deterministic zero-array inputs and
-historical implementations are unchanged; measurements on the current compiler
-and Node runtime are not directly comparable to the historical results below.
+The runner uses Minibench with garbage collection before each measurement series
+and allows a 2.5 GiB old-generation Node heap for the three-million-bind cases.
+To save JSON results, run
+`npm run --silent test:benchmark > /tmp/free-benchmarks.json`; progress goes to stderr.
+Timings include both bind construction and trampoline execution over each input
+batch. Short cases group repeated batches to reduce timing noise. Results record
+sample, warm-up and repetition counts, with timings normalized to seconds per
+batch; the deviation and min/max describe these normalized samples.
+The deterministic zero-array inputs and historical implementations are unchanged.
+The sampling method differs from Benchotron, so these measurements are not directly
+comparable to the historical results below.
 
 The following benchmarks compare the implementation at `v5.2.0` (commit f686f5fc07766f3ca9abc83b47b6ad3da326759a) with the implementation at `v0.6.1` (commit 0df59c5d459fed983131856886fc3a4b43234f1f), which used the `Gosub` technique to defer monadic binds.
 
