@@ -27,11 +27,5 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Build benchmarks
-        run: npm run build:benchmark
-
-      - name: Run benchmarks
-        run: npm run test:benchmark
-
       - name: Check formatting
         run: npm run format:check

@@ -2,11 +2,9 @@
   "private": true,
   "scripts": {
     "build": "spago build -p free",
-    "build:benchmark": "spago build -p free-benchmark",
     "test": "spago test -p free",
-    "test:benchmark": "NODE_OPTIONS='--expose-gc --max-old-space-size=2560' spago run -p free-benchmark",
-    "format": "purs-tidy format-in-place src test benchmark/src && oxfmt --write .",
-    "format:check": "purs-tidy check src test benchmark/src && oxfmt --check ."
+    "format": "purs-tidy format-in-place src test && oxfmt --write .",
+    "format:check": "purs-tidy check src test && oxfmt --check ."
   },
   "devDependencies": {
     "oxfmt": "^0.73.0",
