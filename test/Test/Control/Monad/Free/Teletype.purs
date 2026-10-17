@@ -17,8 +17,9 @@ getLine :: Teletype String
 getLine = liftF (GetLine identity)
 
 teletypeN :: TeletypeF ~> Effect
-teletypeN (PutStrLn s a) = const a <$> log s
-teletypeN (GetLine k) = pure (k "fake input")
+teletypeN = case _ of
+  PutStrLn s a -> const a <$> log s
+  GetLine k -> pure (k "fake input")
 
 run :: Teletype ~> Effect
 run = foldFree teletypeN
