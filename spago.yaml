@@ -1,0 +1,37 @@
+package:
+  name: free
+  description: Free monad, Cofree comonad, Yoneda and Coyoneda functors, and the
+    Trampoline monad
+  build:
+    strict: true
+    pedanticPackages: true
+  publish:
+    version: 7.1.1
+    license: BSD-3-Clause
+    location:
+      githubOwner: purescript
+      githubRepo: purescript-free
+  dependencies:
+    - catenable-lists: ">=7.0.0 <8.0.0"
+    - control: ">=6.0.0 <7.0.0"
+    - distributive: ">=6.0.0 <7.0.0"
+    - either: ">=6.0.0 <7.0.0"
+    - exists: ">=6.0.0 <7.0.0"
+    - foldable-traversable: ">=6.0.0 <7.0.0"
+    - invariant: ">=6.0.0 <7.0.0"
+    - lazy: ">=6.0.0 <7.0.0"
+    - maybe: ">=6.0.0 <7.0.0"
+    - prelude: ">=6.0.0 <7.0.0"
+    - tailrec: ">=6.0.0 <7.0.0"
+    - transformers: ">=6.0.0 <7.0.0"
+    - tuples: ">=7.0.0 <8.0.0"
+    - unsafe-coerce: ">=6.0.0 <7.0.0"
+  test:
+    main: Test.Main
+    strict: true
+    pedanticPackages: true
+    dependencies:
+      - console: ">=6.0.0 <7.0.0"
+      - effect: ">=4.0.0 <5.0.0"
+      - functors: ">=5.0.0 <6.0.0"
+workspace: {}

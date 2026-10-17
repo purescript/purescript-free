@@ -17,7 +17,6 @@ import Prelude
 import Control.Apply (lift2)
 import Control.Monad.Rec.Class (class MonadRec, Step(..), tailRecM)
 import Control.Monad.Trans.Class (class MonadTrans)
-
 import Data.CatList (CatList, empty, snoc, uncons)
 import Data.Either (Either(..))
 import Data.Eq (class Eq1, eq1)
@@ -26,7 +25,6 @@ import Data.Maybe (Maybe(..))
 import Data.Ord (class Ord1, compare1)
 import Data.Traversable (class Traversable, traverse)
 import Data.Tuple (Tuple(..))
-
 import Unsafe.Coerce (unsafeCoerce)
 
 -- | The free monad for a type constructor `f`.
@@ -95,7 +93,7 @@ instance foldableFree :: (Functor f, Foldable f) => Foldable (Free f) where
       Right a -> f a
   foldl f = go
     where
-    go r = resume >>> case _  of
+    go r = resume >>> case _ of
       Left fa -> foldl go r fa
       Right a -> f r a
   foldr f = go
@@ -117,7 +115,7 @@ instance semigroupFree :: Semigroup a => Semigroup (Free f a) where
 
 instance monoidFree :: Monoid a => Monoid (Free f a) where
   mempty = pure mempty
-  
+
 -- | Lift an impure value described by the generating type constructor `f` into
 -- | the free monad.
 liftF :: forall f. f ~> Free f

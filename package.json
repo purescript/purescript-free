@@ -1,16 +1,15 @@
 {
   "private": true,
   "scripts": {
-    "clean": "rimraf output && rimraf .pulp-cache",
-    "build": "pulp build -- --censor-lib --strict",
-    "build:benchmark": "pulp build --main 'Benchmark.Main' --include './benchmark' -- --censor-lib --strict",
-    "test": "pulp test",
-    "test:benchmark": "node -e \"require('./output/Benchmark.Main').main()\""
+    "build": "spago build -p free",
+    "test": "spago test -p free",
+    "format": "purs-tidy format-in-place src test && oxfmt --write .",
+    "format:check": "purs-tidy check src test && oxfmt --check ."
   },
   "devDependencies": {
-    "benchmark": "^2.1.4",
-    "pulp": "16.0.0-0",
-    "purescript-psa": "^0.8.2",
-    "rimraf": "^3.0.2"
+    "oxfmt": "^0.73.0",
+    "purescript": "^0.15.16",
+    "purs-tidy": "^0.11.1",
+    "spago": "^1.0.5"
   }
 }
