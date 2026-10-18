@@ -1,8 +1,10 @@
 /.*
 !/.gitignore
 !/.github/
+!/.tidyrc.json
 /bower_components/
 /node_modules/
 /output/
-package-lock.json
+/package-lock.json
+/spago.lock
 /tmp/

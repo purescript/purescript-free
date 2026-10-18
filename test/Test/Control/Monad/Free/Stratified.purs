@@ -24,8 +24,9 @@ runTeletype :: Teletype ~> Effect
 runTeletype = foldFree go
   where
   go :: TeletypeF ~> Effect
-  go (PutStrLn s next) = log s $> next
-  go (GetLine k) = pure (k "fake input")
+  go = case _ of
+    PutStrLn s next -> log s $> next
+    GetLine k -> pure (k "fake input")
 
 -- | Initial DSL that we will reinterpret as TeletypeF
 data InitialF a
@@ -48,12 +49,13 @@ runInitial :: Initial ~> Teletype
 runInitial initial = foldFree go initial
   where
   go :: InitialF ~> Teletype
-  go (Greet k) = do
-    name <- getLine
-    putStrLn $ "Hello " <> name
-    putStrLn "How's things?"
-    pure (k name)
-  go (Farewell next) = putStrLn "Bye!" $> next
+  go = case _ of
+    Greet k -> do
+      name <- getLine
+      putStrLn $ "Hello " <> name
+      putStrLn "How's things?"
+      pure (k name)
+    Farewell next -> putStrLn "Bye!" $> next
 
 -- | Our test "script" in the Initial DSL
 test :: Initial String

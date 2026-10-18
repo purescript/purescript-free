@@ -13,7 +13,6 @@ import Prelude
 
 import Control.Monad.Free (Free, liftF, runFree)
 
-
 -- | The `Trampoline` monad
 -- |
 -- | A computation of type `Trampoline a` consists of zero or more lazy
