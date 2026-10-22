@@ -4,6 +4,7 @@ import Prelude
 
 import Effect (Effect)
 import Effect.Console (log)
+import Test.Control.Comonad.Cofree as Cofree
 import Test.Control.Monad.Free.Coproduct as C
 import Test.Control.Monad.Free.Stratified as S
 import Test.Control.Monad.Free.Teletype as T
@@ -22,3 +23,8 @@ main = do
 
   log "Stratified"
   S.main
+
+  log ""
+
+  log "Cofree"
+  Cofree.main

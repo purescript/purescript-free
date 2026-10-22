@@ -8,6 +8,7 @@ Breaking changes:
 
 New features:
 
+- Added the `ZipCofree` newtype wrapper with layer-wise `Apply` and `Applicative` instances (#128 by @adenko).
 - Added `recastCofree` to transform a `Cofree`'s branching functor while allowing the transformation to inspect its subtrees (#117 by @mikesol).
 
 Bugfixes:
