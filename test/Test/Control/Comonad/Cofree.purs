@@ -2,9 +2,11 @@ module Test.Control.Comonad.Cofree where
 
 import Prelude
 
-import Control.Comonad.Cofree (Cofree, head, mkCofree, tail)
+import Control.Comonad.Cofree (Cofree, buildCofree, head, hoistCofree, mkCofree, recastCofree, tail)
 import Control.Comonad.ZipCofree (ZipCofree(..))
+import Data.Foldable (foldr)
 import Data.Maybe (Maybe(..))
+import Data.Tuple (Tuple(..))
 import Effect (Effect)
 import Effect.Exception (throw)
 
@@ -32,3 +34,27 @@ main = do
     throw "ZipCofree pure must lazily repeat at every layer"
   unless (unchanged == values) do
     throw "ZipCofree must satisfy applicative identity"
+
+  let
+    tree = mkCofree 0
+      [ mkCofree 3 []
+      , mkCofree 8 [ mkCofree 4 [], mkCofree 12 [] ]
+      ]
+
+    choose :: forall z. (Cofree Array Int -> z) -> Array (Cofree Array Int) -> Maybe z
+    choose convert = foldr (\child rest -> if head child >= 8 then Just (convert child) else rest) Nothing
+    pruned = recastCofree choose tree
+
+    toArray :: Maybe ~> Array
+    toArray Nothing = []
+    toArray (Just child) = [ child ]
+    expected = mkCofree 2 [ mkCofree 5 [ mkCofree 9 [] ] ]
+    infinite = buildCofree (\n -> Tuple n (Just (n + 1))) 1
+  unless (labels 4 pruned == [ 0, 8, 12 ]) do
+    throw "recastCofree must inspect original subtree labels and recurse into selected branches"
+  unless (hoistCofree toArray values == expected) do
+    throw "hoistCofree must preserve labels and transform every layer"
+  unless (labels 4 (recastCofree map infinite) == [ 1, 2, 3, 4 ]) do
+    throw "recastCofree must preserve laziness"
+  unless (labels 4 (hoistCofree identity infinite) == [ 1, 2, 3, 4 ]) do
+    throw "hoistCofree must preserve laziness"
