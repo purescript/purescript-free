@@ -8,7 +8,7 @@ Breaking changes:
 
 New features:
 
-- Added `ZipCofree` wrapper newtype, with zipping `Apply` and `Applicative` instances (#128)
+- Added the `ZipCofree` newtype wrapper with layer-wise `Apply` and `Applicative` instances (#128 by @adenko).
 
 Bugfixes:
 
