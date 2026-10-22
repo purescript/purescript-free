@@ -15,14 +15,14 @@ import Control.Alternative (class Alternative, class Plus, empty)
 import Control.Comonad (class Comonad, extract)
 import Control.Extend (class Extend, (<<=))
 import Control.Monad.Trans.Class (class MonadTrans)
-import Control.MonadPlus (class MonadPlus, class MonadZero)
+import Control.MonadPlus (class MonadPlus)
 import Data.Distributive (class Distributive, collect)
 import Data.Eq (class Eq1, eq1)
-import Data.Exists (Exists, runExists, mkExists)
+import Data.Exists (Exists, mkExists, runExists)
 import Data.Foldable (class Foldable, foldMap, foldl, foldr)
 import Data.Functor.Invariant (class Invariant, imapF)
 import Data.Ord (class Ord1, compare1)
-import Data.Semigroup.Foldable (class Foldable1, foldMap1, foldr1Default, foldl1Default)
+import Data.Semigroup.Foldable (class Foldable1, foldMap1, foldl1Default, foldr1Default)
 import Data.Semigroup.Traversable (class Traversable1, sequence1, traverse1)
 import Data.Traversable (class Traversable, traverse)
 
@@ -96,8 +96,6 @@ instance monadCoyoneda :: Monad f => Monad (Coyoneda f)
 
 instance monadTransCoyoneda :: MonadTrans Coyoneda where
   lift = liftCoyoneda
-
-instance monadZeroCoyoneda :: MonadZero f => MonadZero (Coyoneda f)
 
 instance monadPlusCoyoneda :: MonadPlus f => MonadPlus (Coyoneda f)
 

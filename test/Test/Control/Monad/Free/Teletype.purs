@@ -2,9 +2,9 @@ module Test.Control.Monad.Free.Teletype where
 
 import Prelude
 
+import Control.Monad.Free (Free, foldFree, liftF)
 import Effect (Effect)
 import Effect.Console (log)
-import Control.Monad.Free (Free, foldFree, liftF)
 
 data TeletypeF a = PutStrLn String a | GetLine (String -> a)
 
@@ -17,8 +17,9 @@ getLine :: Teletype String
 getLine = liftF (GetLine identity)
 
 teletypeN :: TeletypeF ~> Effect
-teletypeN (PutStrLn s a) = const a <$> log s
-teletypeN (GetLine k) = pure (k "fake input")
+teletypeN = case _ of
+  PutStrLn s a -> const a <$> log s
+  GetLine k -> pure (k "fake input")
 
 run :: Teletype ~> Effect
 run = foldFree teletypeN

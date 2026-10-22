@@ -3,18 +3,19 @@
 module Control.Comonad.Cofree
   ( Cofree
   , deferCofree
-  , mkCofree, (:<)
+  , mkCofree
+  , (:<)
   , head
   , tail
   , hoistCofree
-  , unfoldCofree
   , buildCofree
   , explore
   , exploreM
   ) where
 
 import Prelude
-import Control.Alternative (class Alternative, (<|>), empty)
+
+import Control.Alternative (class Alternative, empty, (<|>))
 import Control.Comonad (class Comonad, extract)
 import Control.Extend (class Extend)
 import Control.Lazy as Z
@@ -22,10 +23,13 @@ import Control.Monad.Free (Free, runFreeM)
 import Control.Monad.Rec.Class (class MonadRec)
 import Control.Monad.State (State, StateT(..), runState, runStateT, state)
 import Data.Eq (class Eq1, eq1)
-import Data.Foldable (class Foldable, foldr, foldl, foldMap)
-import Data.Lazy (Lazy, force, defer)
+import Data.Foldable (class Foldable, foldMap, foldl, foldr)
+import Data.FoldableWithIndex (class FoldableWithIndex)
+import Data.FunctorWithIndex (class FunctorWithIndex)
+import Data.Lazy (Lazy, defer, force)
 import Data.Ord (class Ord1, compare1)
 import Data.Traversable (class Traversable, traverse)
+import Data.TraversableWithIndex (class TraversableWithIndex)
 import Data.Tuple (Tuple(..), fst, snd)
 
 -- | The `Cofree` `Comonad` for a functor.
@@ -70,17 +74,6 @@ recastCofree
   -> Cofree g a
 recastCofree w (Cofree c) = Cofree ((map <<< map) (w (recastCofree w)) c)
 
--- | This signature is deprecated and will be replaced by `buildCofree` in a
--- | future release.
-unfoldCofree
-  :: forall f s a
-   . Functor f
-  => (s -> a)
-  -> (s -> f s)
-  -> s
-  -> Cofree f a
-unfoldCofree e n = buildCofree (\s -> Tuple (e s) (n s))
-
 -- | Recursively unfolds a `Cofree` structure given a seed.
 buildCofree
   :: forall f s a
@@ -105,11 +98,11 @@ explore
   -> Cofree g a
   -> b
 explore pair m w =
-    case runState (runFreeM step m) w of
-      Tuple f cof -> f (extract cof)
+  case runState (runFreeM step m) w of
+    Tuple f cof -> f (extract cof)
   where
-    step :: f (Free f (a -> b)) -> State (Cofree g a) (Free f (a -> b))
-    step ff = state \cof -> pair (map Tuple ff) (tail cof)
+  step :: f (Free f (a -> b)) -> State (Cofree g a) (Free f (a -> b))
+  step ff = state \cof -> pair (map Tuple ff) (tail cof)
 
 exploreM
   :: forall f g a b m
@@ -123,11 +116,11 @@ exploreM
 exploreM pair m w =
   eval <$> runStateT (runFreeM step m) w
   where
-    step :: f (Free f (a -> b)) -> StateT (Cofree g a) m (Free f (a -> b))
-    step ff = StateT \cof -> pair (map Tuple ff) (tail cof)
+  step :: f (Free f (a -> b)) -> StateT (Cofree g a) m (Free f (a -> b))
+  step ff = StateT \cof -> pair (map Tuple ff) (tail cof)
 
-    eval :: forall x y. Tuple (x -> y) (Cofree g x) -> y
-    eval (Tuple f cof) = f (extract cof)
+  eval :: forall x y. Tuple (x -> y) (Cofree g x) -> y
+  eval (Tuple f cof) = f (extract cof)
 
 instance semigroupCofree :: (Apply f, Semigroup a) => Semigroup (Cofree f a) where
   append x y = deferCofree \_ -> Tuple (head x <> head y) (append <$> tail x <*> tail y)
@@ -155,6 +148,11 @@ instance functorCofree :: Functor f => Functor (Cofree f) where
     where
     loop (Cofree fa) = Cofree ((\(Tuple a b) -> Tuple (f a) (loop <$> b)) <$> fa)
 
+instance functorWithIndexCofree :: Functor f => FunctorWithIndex Int (Cofree f) where
+  mapWithIndex f = loop 0
+    where
+    loop n (Cofree fa) = Cofree ((\(Tuple a b) -> Tuple (f n a) (loop (n + 1) <$> b)) <$> fa)
+
 instance foldableCofree :: Foldable f => Foldable (Cofree f) where
   foldr f = flip go
     where
@@ -168,11 +166,29 @@ instance foldableCofree :: Foldable f => Foldable (Cofree f) where
     where
     go fa = f (head fa) <> (foldMap go (tail fa))
 
+instance foldableWithIndexCofree :: Foldable f => FoldableWithIndex Int (Cofree f) where
+  foldrWithIndex f = go 0
+    where
+    go ix b fa = f ix (head fa) (foldr (flip (go (ix + 1))) b (tail fa))
+
+  foldlWithIndex f = go 0
+    where
+    go ix b fa = foldl (go (ix + 1)) (f ix b (head fa)) (tail fa)
+
+  foldMapWithIndex f = go 0
+    where
+    go ix fa = f ix (head fa) <> foldMap (go (ix + 1)) (tail fa)
+
 instance traversableCofree :: Traversable f => Traversable (Cofree f) where
   sequence = traverse identity
   traverse f = loop
     where
     loop ta = mkCofree <$> f (head ta) <*> (traverse loop (tail ta))
+
+instance traversableWithIndexCofree :: Traversable f => TraversableWithIndex Int (Cofree f) where
+  traverseWithIndex f = loop 0
+    where
+    loop ix ta = mkCofree <$> f ix (head ta) <*> (traverse (loop (ix + 1)) (tail ta))
 
 instance extendCofree :: Functor f => Extend (Cofree f) where
   extend f = loop
@@ -191,11 +207,13 @@ instance applicativeCofree :: Alternative f => Applicative (Cofree f) where
 instance bindCofree :: Alternative f => Bind (Cofree f) where
   bind fa f = loop fa
     where
-    loop fa' =
+    loop fa' = do
       let fh = f (head fa')
-      in mkCofree (head fh) ((tail fh) <|> (loop <$> tail fa'))
+      mkCofree (head fh) ((tail fh) <|> (loop <$> tail fa'))
 
 instance monadCofree :: Alternative f => Monad (Cofree f)
 
 instance lazyCofree :: Z.Lazy (Cofree f a) where
-  defer k = Cofree (defer \_ -> let (Cofree t) = k unit in force t)
+  defer k = Cofree $ defer \_ -> do
+    let Cofree t = k unit
+    force t

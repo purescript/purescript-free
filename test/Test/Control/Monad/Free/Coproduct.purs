@@ -2,7 +2,7 @@ module Test.Control.Monad.Free.Coproduct where
 
 import Prelude
 
-import Control.Monad.Free (Free, liftF, hoistFree, foldFree)
+import Control.Monad.Free (Free, foldFree, hoistFree, liftF)
 import Data.Functor.Coproduct (Coproduct, coproduct, left, right)
 import Effect (Effect)
 import Effect.Console (log)
@@ -42,7 +42,7 @@ t :: T Unit
 t = hoistFree (right <<< right) (print3 "3")
 
 u :: T Unit
-u =  r *> s *> t
+u = r *> s *> t
 
 teletype1N :: Teletype1F ~> Effect
 teletype1N (Print1 x a) = const a <$> log ("teletype1: " <> x)
