@@ -21,15 +21,3 @@ spago install free
 ## Documentation
 
 Module documentation is [published on Pursuit](http://pursuit.purescript.org/packages/purescript-free).
-
-## Benchmarks
-
-The following benchmarks compare the implementation at `v5.2.0` (commit f686f5fc07766f3ca9abc83b47b6ad3da326759a) with the implementation at `v0.6.1` (commit 0df59c5d459fed983131856886fc3a4b43234f1f), which used the `Gosub` technique to defer monadic binds.
-
-![left-bind-small](benchmark/left-bind-small.png)
-
-![left-bind-large](benchmark/left-bind-large.png)
-
-![right-bind-small](benchmark/right-bind-small.png)
-
-![right-bind-large](benchmark/right-bind-large.png)

@@ -11,7 +11,6 @@ import Prelude
 import Control.Comonad (class Comonad, extract)
 import Control.Extend (class Extend, (<<=))
 import Control.Monad.Trans.Class (class MonadTrans)
-
 import Data.Eq (class Eq1, eq1)
 import Data.Ord (class Ord1, compare1)
 
