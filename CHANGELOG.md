@@ -10,6 +10,8 @@ New features:
 
 Bugfixes:
 
+- Give `Free`'s result type a representational role. Previously accepted unsafe coercions between unrelated result types (such as `Free f Int` and `Free f String`) now fail to compile; valid newtype coercions remain supported (#127 by @thomashoneyman).
+
 Other improvements:
 
 ## [v7.1.1](https://github.com/purescript/purescript-free/releases/tag/v7.1.1) - 2026-10-17

@@ -35,6 +35,8 @@ import Unsafe.Coerce (unsafeCoerce)
 -- | and traversal through the free monad structure.
 data Free f a = Free (FreeView f Val Val) (CatList (ExpF f))
 
+type role Free representational representational
+
 newtype ExpF f = ExpF (Val -> Free f Val)
 
 data FreeView f a b = Return a | Bind (f b) (b -> Free f a)
