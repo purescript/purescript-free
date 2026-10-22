@@ -8,6 +8,7 @@ module Control.Comonad.Cofree
   , head
   , tail
   , hoistCofree
+  , recastCofree
   , buildCofree
   , explore
   , exploreM
@@ -64,8 +65,10 @@ tail (Cofree c) = snd (force c)
 hoistCofree :: forall f g. Functor f => (f ~> g) -> Cofree f ~> Cofree g
 hoistCofree nat = recastCofree (compose nat <<< map)
 
--- | Recasts a cofree comonad's functor from `f` to `g` by
--- | passing a function in which `g` can annihilate `f`.
+-- | Changes the branching functor from `f` to `g`, preserving each node's label.
+-- | Unlike `hoistCofree`, the transformation can inspect the original subtrees
+-- | before choosing which branches to keep. Its first argument recursively
+-- | converts a chosen subtree.
 recastCofree
   :: forall f g a
    . Functor f

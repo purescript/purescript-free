@@ -8,6 +8,8 @@ Breaking changes:
 
 New features:
 
+- Added `recastCofree` to transform a `Cofree`'s branching functor while allowing the transformation to inspect its subtrees (#117 by @mikesol).
+
 Bugfixes:
 
 Other improvements:
