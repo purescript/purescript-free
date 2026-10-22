@@ -6,7 +6,7 @@ package:
     strict: true
     pedanticPackages: true
   publish:
-    version: 7.1.1
+    version: 7.1.2
     license: BSD-3-Clause
     location:
       githubOwner: purescript
